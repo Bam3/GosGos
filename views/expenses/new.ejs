@@ -9,13 +9,47 @@
 <body>
     <h1>Add New Expense</h1>
     <form action="/expenses" method="POST" id="addNewExpense">
-        <label for="category">Izberi kategorijo</label>
-        <select name="category" id="category">
-            <% for(let category of categories){ %>
-                <option value="<%=category.name%>"><%=category.name.toUpperCase()%></option>
-            <% } %> 
-        </select>
-        <button>Add New</button>
+        <div>
+            <label for="category">Izberi kategorijo</label>
+            <select name="category" id="category">
+                <option value="">Izberi...</option>
+                <% for(let category of categories){ %>
+                    <option value="<%=category.name%>">
+                        <%=category.name.toUpperCase()%>
+                    </option>
+                    <% } %>
+            </select>
+        </div>
+        <div>
+            <label for="price">Strošek</label>
+            <input type="number" id="price" name="price" step=".01" placeholder="strošek">
+        </div>
+        <div>
+            <label for="description">Opis-komentar</label>
+            <textarea type="text" id="description" name="description"></textarea>
+        </div>
+        <div>
+            <label for="date">Dan Plačila:</label>
+            <input type="date" id="date" name="payDate">
+        </div>
+        <div>
+            <label for="costPeriod">Za plačilno obdobje:</label>
+            <select id="costPeriod" name="costPeriod">
+                <option selected>january</option>
+                <option>february</option>
+                <option>march</option>
+                <option>april</option>
+                <option>may</option>
+                <option>june</option>
+                <option>july</option>
+                <option>august</option>
+                <option>september</option>
+                <option>october</option>
+                <option>november</option>
+                <option>december</option>
+            </select>
+        </div>
+        <button>Dodaj strošek</button>
     </form>
     <script>
         const categories = <%- JSON.stringify(categories) %>

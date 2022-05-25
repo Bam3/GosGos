@@ -39,8 +39,30 @@ app.get('/', (req, res) => {
 
 app.get('/expenses/new', async (req, res) => {
 	const categories = await Category.find({});
-	console.log({ categories });
+	//console.log({ categories });
 	res.render('expenses/new', { categories });
+});
+
+app.get('/expenses/:id', async (req, res) => {
+	const expense = await Expense.findById(req.params.id);
+	res.render('expenses/show', { expense });
+});
+
+app.post('/expenses', async (req, res) => {
+	const expense = req.body;
+	const newExpense = new Expense({
+		cost: expense.price,
+		payer: 'Miha',
+		payDate: expense.payDate,
+		costPeriod: expense.costPeriod,
+		description: expense.description,
+		category: expense.category,
+		subCategory: expense.subCategory,
+		shared: true
+	});
+	await newExpense.save();
+	console.log(expense);
+	res.redirect(`/expenses/${newExpense._id}`);
 });
 
 app.post('/expenses', (req, res) => {

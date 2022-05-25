@@ -43,8 +43,17 @@ const expenseSchema = new Schema({
 		type: String
 	},
 	category: {
-		type: Schema.Types.ObjectId,
-		ref: 'Category',
+		type: String,
+		required: true,
+		lowercase: true
+	},
+	subCategory: {
+		type: String,
+		required: true,
+		lowercase: true
+	},
+	shared: {
+		type: Boolean,
 		required: true
 	}
 });
