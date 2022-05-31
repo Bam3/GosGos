@@ -47,7 +47,10 @@ app.get('/expenses/:id', async (req, res) => {
 	const expense = await Expense.findById(req.params.id);
 	res.render('expenses/show', { expense });
 });
-
+app.get('/expenses', async (req, res) => {
+	const expenses = await Expense.find({});
+	res.render('expenses/index', { expenses });
+});
 app.post('/expenses', async (req, res) => {
 	const expense = req.body;
 	const newExpense = new Expense({
@@ -65,12 +68,6 @@ app.post('/expenses', async (req, res) => {
 	res.redirect(`/expenses/${newExpense._id}`);
 });
 
-app.post('/expenses', (req, res) => {
-	//Add new expense in DB
-	console.log(req.body);
-	//Redirect Home!
-	res.redirect('/');
-});
 //open port&listen
 const port = 3000;
 app.listen(port, () => {

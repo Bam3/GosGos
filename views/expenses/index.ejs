@@ -1,0 +1,12 @@
+<% layout('layouts/boilerplate')%>
+    <h1>Vsi stroški</h1>
+    <% for(let expense of expenses) { %>
+        <div>Kategorija: <%=expense.category.toUpperCase()%> - <%= expense.subCategory %></div>
+        <div>Cena: <%=expense.cost%> €</div>
+        <div>Datum plačila:<%=expense.inputDate%></div>
+        <div>Plačnik: <%=expense.payer%> </div>
+        <div>Datum zapadlosti: <%=expense.payDate%></div>
+        <div>Komentar: <%=expense.description%></div>
+        <br>
+    <% } %> 
+    <a href="/expenses/new">Dodaj nov strošek</a> 

@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Expense</title>
-</head>
-<body>
-    <h1>Add New Expense</h1>
+<% layout('layouts/boilerplate')%>
+    <h1>Dodaj nov strošek</h1>
     <form action="/expenses" method="POST" id="addNewExpense">
         <div>
             <label for="category">Izberi kategorijo</label>
@@ -51,9 +43,8 @@
         </div>
         <button>Dodaj strošek</button>
     </form>
+    <a href="/expenses">Vsi stroški</a>
     <script>
         const categories = <%- JSON.stringify(categories) %>
     </script>
     <script src="/javascripts/getSubCategories.js" ></script>
-</body>
-</html>
