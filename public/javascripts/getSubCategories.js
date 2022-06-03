@@ -16,9 +16,10 @@ categorySelection.addEventListener('change', (event) => {
 	const newSelection = document.createElement('select');
 	const newLabel = document.createElement('label');
 	newLabel.htmlFor = 'subCategory';
-	newLabel.innerText = 'Podkategorija:';
+	newLabel.innerText = 'Podkategorija';
 	newSelection.name = 'subCategory';
 	newSelection.id = 'subCategory';
+	newSelection.classList.add('form-select', 'mb-3');
 	insertAfter(newLabel, categorySelection);
 	insertAfter(newSelection, newLabel);
 
