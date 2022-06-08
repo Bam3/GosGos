@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Category = require('../models/category');
+const Expense = require('../models/expense');
 const { categories } = require('./categories');
 
 mongoose
@@ -26,6 +27,12 @@ const seedDB = async () => {
 		await cat.save();
 	}
 };
+
+const expensesDB = async () => {
+	await Expense.deleteMany({});
+};
+
+expensesDB();
 
 seedDB().then(() => {
 	mongoose.connection.close();

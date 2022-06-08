@@ -1,9 +1,9 @@
 <% layout('layouts/boilerplate')%>
 <div class="row">
-    <h1 class="text-center">
+    <h1 >
         Dodaj strošek
     </h1>
-    <div class="col-md-6 offset-md-3">
+    <div class="col-md-6">
         <form action="/expenses" method="POST" id="addNewExpense">
             <label for="category">Kategorija</label>
             <select id="category" name="category" class="form-select mb-3" aria-label="category-select">
@@ -28,21 +28,12 @@
             <div class="input-group mb-3">
                 <input id="date" name="payDate" type="date" class="form-control">
             </div>
+
             <label for="costPeriod">Obdobje</label>
-            <select id="costPeriod" name="costPeriod" class="form-select mb-4" aria-label="costPeriod-select">
-                <option selected>january</option>
-                <option>february</option>
-                <option>march</option>
-                <option>april</option>
-                <option>may</option>
-                <option>june</option>
-                <option>july</option>
-                <option>august</option>
-                <option>september</option>
-                <option>october</option>
-                <option>november</option>
-                <option>december</option>
-            </select>
+            <div class="input-group mb-4">
+                <input id="costPeriod" name="costPeriod" type="month" class="form-control">
+            </div>
+
             <div class="d-grid col-12 mx-auto">
                 <button class="btn btn-secondary">Dodaj</button>
             </div>

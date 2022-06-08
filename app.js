@@ -55,9 +55,10 @@ app.post('/expenses', async (req, res) => {
 	const expense = req.body;
 	const newExpense = new Expense({
 		cost: expense.price,
+		//tukaj dodaj trenutno prijavljenega uporabnika, ko boš naredil uporabnike in session!
 		payer: 'Miha',
-		payDate: expense.payDate,
-		costPeriod: expense.costPeriod,
+		payDate: new Date(expense.payDate),
+		costPeriod: new Date(expense.costPeriod),
 		description: expense.description,
 		category: expense.category,
 		subCategory: expense.subCategory,
@@ -73,3 +74,5 @@ const port = 3000;
 app.listen(port, () => {
 	console.log(`Serving on port ${port}`);
 });
+
+//> db.expenses.find({ $and: [{ $expr: { $eq: [{$month: "$payDate" },6]}},{ $expr: { $eq: [{$year: "$payDate" },2021]}}]});

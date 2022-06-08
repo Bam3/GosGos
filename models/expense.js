@@ -14,30 +14,15 @@ const expenseSchema = new Schema({
 	},
 	inputDate: {
 		type: Date,
-		default: Date.now
+		default: new Date()
 	},
 	payDate: {
 		type: Date,
 		required: true
 	},
 	costPeriod: {
-		type: String,
-		required: true,
-		lowercase: true,
-		enum: [
-			'january',
-			'february',
-			'march',
-			'april',
-			'may',
-			'june',
-			'july',
-			'august',
-			'september',
-			'october',
-			'november',
-			'december'
-		]
+		type: Date,
+		required: true
 	},
 	description: {
 		type: String

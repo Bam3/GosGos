@@ -1,12 +1,28 @@
 <% layout('layouts/boilerplate')%>
-    <h1>Vsi stroški</h1>
-    <% for(let expense of expenses) { %>
-        <div>Kategorija: <%=expense.category.toUpperCase()%> - <%= expense.subCategory %></div>
-        <div>Cena: <%=expense.cost%> €</div>
-        <div>Datum plačila:<%=expense.inputDate%></div>
-        <div>Plačnik: <%=expense.payer%> </div>
-        <div>Datum zapadlosti: <%=expense.payDate%></div>
-        <div>Komentar: <%=expense.description%></div>
-        <br>
-    <% } %> 
-    <a href="/expenses/new">Dodaj nov strošek</a> 
+<div class="row">
+    <h1>Stroški</h1>
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Kategorija</th>
+                <th scope="col">Podkategorija</th>
+                <th scope="col">Strošek</th>
+                <th scope="col">Plačnik</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (let i = 0; i < expenses.length; i++) { %> 
+            <tr>
+                <th scope="row"><%= i+1 %></th>
+                <td><a href="/expenses/<%=expenses[i].id%>"><%=expenses[i].category.toUpperCase() %></a></td>
+                <td><%=expenses[i].subCategory.toUpperCase() %></td>
+                <td><%=expenses[i].cost %> €</td>
+                <td><%=expenses[i].payer %></td>
+                
+            </tr>
+            <% } %> 
+        </tbody>
+    </table>
+</div>
+

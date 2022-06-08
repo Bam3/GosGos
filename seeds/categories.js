@@ -17,5 +17,17 @@ module.exports.categories = [
 	{
 		name: 'hrana',
 		subCategory: [ 'hofer', 'dm', 'spar', 'tržnica', 'dostava', 'restavracije' ]
+	},
+	{
+		name: 'darila',
+		subCategory: [ 'družina', 'prijatelji' ]
+	},
+	{
+		name: 'ljubljenčki',
+		subCategory: [ 'hrana', 'zdravila', 'pregled', 'moda', 'igrače' ]
+	},
+	{
+		name: 'hobi',
+		subCategory: [ 'kolesarstvo', 'tek', 'pohodi', 'plezanje' ]
 	}
 ];
