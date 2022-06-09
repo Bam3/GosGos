@@ -1,6 +1,26 @@
 <% layout('layouts/boilerplate')%>
 <div class="row">
     <h1>Stroški</h1>
+
+        <div class="col-md-6">
+            <form action="/expenses/filter" method="POST" id="addNewExpense">
+
+                <label for="dateFrom">Dan Plačila - od:</label>
+                <div class="input-group mb-3">
+                    <input id="dateFrom" name="dateFrom" type="date" class="form-control" autocomplete>
+                </div>
+
+                <label for="dateTo">Dan Plačila - do:</label>
+                <div class="input-group mb-3">
+                    <input id="dateTo" name="dateTo" type="date" class="form-control" autocomplete>
+                </div>
+        
+                <div class="d-grid col-12 mx-auto mb-4">
+                    <button class="btn btn-secondary">Filtriraj</button>
+                </div>
+            </form>
+        </div>
+
     <table class="table table-hover">
         <thead class="table-light">
             <tr>

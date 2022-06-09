@@ -48,7 +48,8 @@ app.get('/expenses/:id', async (req, res) => {
 	res.render('expenses/show', { expense });
 });
 app.get('/expenses', async (req, res) => {
-	const expenses = await Expense.find({});
+	//
+	const expenses = await Expense.find().sort({ payDate: -1 });
 	res.render('expenses/index', { expenses });
 });
 app.post('/expenses', async (req, res) => {
@@ -67,6 +68,18 @@ app.post('/expenses', async (req, res) => {
 	await newExpense.save();
 	console.log(expense);
 	res.redirect(`/expenses/${newExpense._id}`);
+});
+
+app.post('/expenses/filter', async (req, res) => {
+	const filter = req.body;
+	const expenses = await Expense.find({
+		payDate: {
+			$gte: new Date(filter.dateFrom).toISOString(),
+			$lt: new Date(filter.dateTo).toISOString()
+		}
+	});
+	console.log(expenses);
+	res.render('expenses/index', { expenses });
 });
 
 //open port&listen
