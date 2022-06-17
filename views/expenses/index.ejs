@@ -2,7 +2,7 @@
 <div class="row">
     <h1>Stroški</h1>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
             <form action="/expenses/filter" method="POST" id="addNewExpense">
 
                 <label for="dateFrom">Dan Plačila - od:</label>
@@ -19,6 +19,10 @@
                     <button class="btn btn-secondary">Filtriraj</button>
                 </div>
             </form>
+        </div>
+
+        <div class="col-md-4">
+            <h3>Skupaj: <%=sum%> €</h3>
         </div>
 
     <table class="table table-hover">

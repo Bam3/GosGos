@@ -8,11 +8,16 @@ const express = require('express');
 const ejsMate = require('ejs-mate');
 const path = require('path');
 const methodOverride = require('method-override');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const session = require('express-session');
 
 const Category = require('./models/category');
 const Expense = require('./models/expense');
+const User = require('./models/user');
 
 //connect to DB
+const MongoStore = require('connect-mongo');
 const dbUrl = 'mongodb://localhost:27017/gos-gos';
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
@@ -23,6 +28,37 @@ db.once('open', () => {
 
 const app = express();
 
+const secret = process.env.SECRET || 'skrivnost';
+
+const store = new MongoStore({
+	mongoUrl: dbUrl,
+	secret,
+	//v sekundah.
+	touchAfter: 24 * 3600
+});
+
+store.on('error', function(e) {
+	console.log('SESSION STORE ERROR!', e);
+});
+const sessionConfig = {
+	store,
+	//s tem preimenujemo default name cookia
+	name: 'Session',
+	secret: 'skrivnost',
+	resave: false,
+	saveUninitialized: true,
+	cookie: {
+		// httpOnly je za varnost, cross scripting?
+		httpOnly: true,
+		//secure: true,
+		//nastavimo datom kdaj potece sej, da user ne ostan logiran v ms!
+		expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+		maxAge: 1000 * 60 * 60 * 24 * 7
+	}
+};
+
+app.use(session(sessionConfig));
+
 //middle ware
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
@@ -31,6 +67,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static('public'));
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 //first connection
 app.get('/', (req, res) => {
@@ -50,14 +93,18 @@ app.get('/expenses/:id', async (req, res) => {
 app.get('/expenses', async (req, res) => {
 	//
 	const expenses = await Expense.find().sort({ payDate: -1 });
-	res.render('expenses/index', { expenses });
+	let sum = 0;
+	for (const expense of expenses) {
+		sum = sum + expense.cost;
+	}
+	res.render('expenses/index', { expenses, sum });
 });
 app.post('/expenses', async (req, res) => {
 	const expense = req.body;
 	const newExpense = new Expense({
 		cost: expense.price,
 		//tukaj dodaj trenutno prijavljenega uporabnika, ko boš naredil uporabnike in session!
-		payer: 'Miha',
+		payer: 'Nataša',
 		payDate: new Date(expense.payDate),
 		costPeriod: new Date(expense.costPeriod),
 		description: expense.description,
@@ -79,7 +126,35 @@ app.post('/expenses/filter', async (req, res) => {
 		}
 	});
 	console.log(expenses);
-	res.render('expenses/index', { expenses });
+	//let userOne = [];
+	//let userTwo = [];
+	let sum = 0;
+	for (const expense of expenses) {
+		sum = sum + expense.cost;
+	}
+	res.render('expenses/index', { expenses, sum });
+});
+
+app.get('/register', (req, res) => {
+	res.render('users/register');
+});
+
+app.post('/register', async (res, req) => {
+	try {
+		//const { email, username, password } = req.body;
+		console.log(req.body);
+		const user = new User({ email, username });
+		const registeredUser = await User.register(user, password);
+		req.login(registeredUser, (err) => {
+			//if (err) return next(err);
+			//req.flash('success', 'Pozdravljen v GosGos!');
+			res.redirect('/expenses');
+		});
+	} catch (e) {
+		//req.flash('error', e.message);
+		//res.redirect('/register');
+		console.log('napaka!', e);
+	}
 });
 
 //open port&listen
