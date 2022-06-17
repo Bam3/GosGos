@@ -4,7 +4,6 @@ Pripravi modele:
   - stroški
   - kategorije
   - users
-  - skupek stroškov po mesecu ali letu??
 
 CRUD za:
   - stroške
