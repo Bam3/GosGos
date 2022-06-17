@@ -139,9 +139,9 @@ app.get('/register', (req, res) => {
 	res.render('users/register');
 });
 
-app.post('/register', async (res, req) => {
+app.post('/register', async (req, res) => {
 	try {
-		//const { email, username, password } = req.body;
+		const { email, username, password } = req.body;
 		console.log(req.body);
 		const user = new User({ email, username });
 		const registeredUser = await User.register(user, password);
