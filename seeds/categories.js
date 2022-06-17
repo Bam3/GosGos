@@ -1,33 +1,61 @@
+const category = require('../models/category');
+const Category = require('../models/category');
+
 //[ 'dom', 'avti', 'hrana', 'darila', 'ljubljenčki', 'zdravje', 'dopust', 'hobi' ];
-module.exports.categories = [
+const categories = [
 	{
 		name: 'dom',
-		subCategory: [ 'elektrika', 'plin', 'komunala', 'internet', 'upravnik', 'rtv', 'vzdrževanje' ]
+		subCategories: [ 'elektrika', 'plin', 'komunala', 'internet', 'upravnik', 'rtv', 'vzdrževanje' ]
 	},
 
 	{
 		name: 'bmw',
-		subCategory: [ 'gorivo', 'registracija', 'zavarovanje', 'vzdrževanje', 'pnevmatike' ]
+		subCategories: [ 'gorivo', 'registracija', 'zavarovanje', 'vzdrževanje', 'pnevmatike' ]
 	},
 
 	{
 		name: 'clio',
-		subCategory: [ 'gorivo', 'registracija', 'zavarovanje', 'vzdrževanje', 'pnevmatike' ]
+		subCategories: [ 'gorivo', 'registracija', 'zavarovanje', 'vzdrževanje', 'pnevmatike' ]
 	},
 	{
 		name: 'hrana',
-		subCategory: [ 'hofer', 'dm', 'spar', 'tržnica', 'dostava', 'restavracije' ]
+		subCategories: [ 'hofer', 'dm', 'spar', 'tržnica', 'dostava', 'restavracije' ]
 	},
 	{
 		name: 'darila',
-		subCategory: [ 'družina', 'prijatelji' ]
+		subCategories: [ 'družina', 'prijatelji' ]
 	},
 	{
 		name: 'ljubljenčki',
-		subCategory: [ 'hrana', 'zdravila', 'pregled', 'moda', 'igrače' ]
+		subCategories: [ 'hrana', 'zdravila', 'pregled', 'moda', 'igrače' ]
 	},
 	{
 		name: 'hobi',
-		subCategory: [ 'kolesarstvo', 'tek', 'pohodi', 'plezanje' ]
+		subCategories: [ 'kolesarstvo', 'tek', 'pohodi', 'plezanje' ]
 	}
 ];
+
+module.exports.seedCategories = async () => {
+	//zbrišem celo bazo Category
+	await Category.deleteMany({});
+
+	categories.forEach(async category => {
+		const categoryObject = new Category({ name: category.name })
+		await categoryObject.save();
+
+		// Gremo čez stringe subcategoryjev
+		category.subCategories.forEach(async subCategory => {
+			// Vsakega damo v bazo
+			const subCategoryObject = new Category({
+				name: subCategory,
+				parentCategory: categoryObject._id
+			})
+			await subCategoryObject.save();
+		})
+
+		objekt = await Category.findById(categoryObject._id).populate('subCategories');
+		console.log(objekt)
+	})
+
+
+}

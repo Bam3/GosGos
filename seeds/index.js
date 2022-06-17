@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const Category = require('../models/category');
 const Expense = require('../models/expense');
-const { categories } = require('./categories');
+const { seedCategories } = require('./categories');
 
 mongoose
 	.connect('mongodb://localhost:27017/gos-gos', { useNewUrlParser: true, useUnifiedTopology: true })
@@ -12,20 +11,9 @@ mongoose
 		console.log('OH NO MONGO CONNECTION ERROR!!!!');
 		console.log(err);
 	});
-console.log(categories[0].name);
-console.log(categories[0].subCategory[0]);
+
 const seedDB = async () => {
-	//zbrišem celo bazo Category
-	await Category.deleteMany({});
-	//grem čez cats in jih ustvarim
-	for (let i = 0; i < categories.length; i++) {
-		const cat = new Category({
-			name: categories[i].name,
-			subCategory: categories[i].subCategory
-		});
-		//console.log(cat);
-		await cat.save();
-	}
+	await seedCategories()
 };
 
 const expensesDB = async () => {
@@ -33,7 +21,7 @@ const expensesDB = async () => {
 };
 
 expensesDB();
+seedDB()
 
-seedDB().then(() => {
-	mongoose.connection.close();
-});
+
+console.log("AHA")
