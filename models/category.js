@@ -6,7 +6,6 @@ const categorySchema = new Schema(
         name: {
             type: String,
             required: true,
-            lowercase: true,
         },
         parentCategory: {
             type: Schema.Types.ObjectId,
