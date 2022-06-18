@@ -20,7 +20,7 @@ module.exports.createExpense = async (reqBody) => {
         payDate: new Date(reqBody.payDate),
         description: reqBody.description,
         category: reqBody.category,
-        shared: true,
+        shared: Boolean(reqBody.shared),
     })
     await newExpense.save()
 
