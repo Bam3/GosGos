@@ -1,8 +1,10 @@
 <% layout('layouts/boilerplate')%>
 <div class="row">
-    <h1>Stroški</h1>
+    <div class="col-md-12">
+        <h1>Stroški</h1>
+    </div>
 
-    <div class="col-md-4">
+    <div class="col-md-4 mb-4">
         <form action="/expenses/filter" method="POST" id="addNewExpense">
             <label for="dateFrom">Dan Plačila - od:</label>
             <div class="input-group mb-3">
@@ -28,40 +30,49 @@
                 />
             </div>
 
-            <div class="d-grid col-12 mx-auto mb-4">
+            <div class="d-grid col-12 mx-auto">
                 <button class="btn btn-secondary">Filtriraj</button>
             </div>
         </form>
     </div>
 
-    <div class="col-md-4">
-        <h3>Skupaj: <%=sum%> €</h3>
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h3>Skupaj: <%=sum%> €</h3>
+            </div>
+        </div>
     </div>
 
-    <table class="table table-hover">
-        <thead class="table-light">
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Datum</th>
-                <th scope="col">Kategorija</th>
-                <th scope="col">Strošek</th>
-                <th scope="col">Plačnik</th>
-                <th>Podrobnosti</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for (let i = 0; i < expenses.length; i++) { %>
-            <tr>
-                <th scope="row"><%= i+1 %></th>
-                <td><%=expenses[i].payDate.toLocaleDateString('sl-SI') %></td>
-                <td><%=expenses[i].categoryLabel %></td>
-                <td><%=expenses[i].cost %> €</td>
-                <td><%=expenses[i].payer.username %></td>
-                <td>
-                    <a href="/expenses/<%= expenses[i].id %>"> 💰 </a>
-                </td>
-            </tr>
-            <% } %>
-        </tbody>
-    </table>
+    <div class="col-md-12">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th class="d-none d-sm-block" scope="col">#</th>
+                    <th scope="col">Datum</th>
+                    <th scope="col">Kategorija</th>
+                    <th scope="col">Strošek</th>
+                    <th class="d-none d-sm-block" scope="col">Plačnik</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (let i = 0; i < expenses.length; i++) { %>
+                <tr>
+                    <th class="d-none d-sm-block" scope="row"><%= i+1 %></th>
+                    <td>
+                        <a href="/expenses/<%= expenses[i].id %>">
+                            <%=expenses[i].payDate.toLocaleDateString('sl-SI')
+                            %></a
+                        >
+                    </td>
+                    <td><%=expenses[i].categoryLabel %></td>
+                    <td><%=expenses[i].cost %> €</td>
+                    <td class="d-none d-sm-block">
+                        <%=expenses[i].payer.username %>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
 </div>
