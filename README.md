@@ -1,24 +1,28 @@
 # GosGos
 
 Pripravi modele:
-  - stroški
-  - kategorije
-  - users
+
+-   stroški
+-   kategorije
+-   users
 
 CRUD za:
-  - stroške
-  - kategorije
-  - users
+
+-   stroške
+-   kategorije
+-   users
 
 Osnovni stili:
-  - boilerplate
-  - navbar
-  - footer
+
+-   boilerplate
+-   navbar
+-   footer
 
 ErrorHandler:
 
 Validiranje Form:
-  - JOI
-  - Client side validation!
+
+-   JOI
+-   Client side validation!
 
 section48
