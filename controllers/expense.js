@@ -30,7 +30,7 @@ module.exports.createExpense = async (reqBody) => {
 module.exports.getExpenseContext = async () => {
     const expenses = await Expense.find()
         .sort({ payDate: -1 })
-        .populate('category')
+        .populate(['category', 'payer'])
     let sum = 0
     for (const expense of expenses) {
         sum = sum + expense.cost

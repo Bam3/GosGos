@@ -41,7 +41,6 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Kategorija</th>
-                <th scope="col">Podkategorija</th>
                 <th scope="col">Strošek</th>
                 <th scope="col">Plačnik</th>
             </tr>
@@ -56,7 +55,7 @@
                     >
                 </td>
                 <td><%=expenses[i].cost %> €</td>
-                <td><%=expenses[i].payer %></td>
+                <td><%=expenses[i].payer.username %></td>
             </tr>
             <% } %>
         </tbody>
