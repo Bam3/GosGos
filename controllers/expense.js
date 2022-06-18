@@ -41,18 +41,18 @@ module.exports.getExpenseContext = async (filter) => {
     const expenses = await Expense.find(filterObject)
         .sort({ payDate: -1 })
         .populate(['category', 'payer'])
-    let sum = 0
-    for (const expense of expenses) {
-        sum = sum + expense.cost
-    }
+
     await Promise.all(
         expenses.map(async (expense) => {
             const neki = await generateCategoryLabel(expense.category)
             expense.categoryLabel = neki
         })
     )
-    console.log(expenses)
-    return { expenses, sum, filter }
+
+    const sum = calculateSum(expenses)
+    const comparison = calculateComparison(expenses)
+
+    return { expenses, sum, filter, comparison }
 }
 
 const generateCategoryLabel = async (category) => {
@@ -62,4 +62,16 @@ const generateCategoryLabel = async (category) => {
     } else {
         return category.name
     }
+}
+
+const calculateSum = (expenses) => {
+    sum = 0
+    for (const expense of expenses) {
+        sum = sum + expense.cost
+    }
+    return sum
+}
+
+const calculateComparison = (expenses) => {
+    return {}
 }
