@@ -69,13 +69,15 @@ module.exports.seedCategories = async () => {
             const categoryObject = new Category({ name: category.name })
             await categoryObject.save()
 
-            category.subCategories.forEach(async (subCategory) => {
-                const subCategoryObject = new Category({
-                    name: subCategory,
-                    parentCategory: categoryObject._id,
+            await Promise.all(
+                category.subCategories.map(async (subCategory) => {
+                    const subCategoryObject = new Category({
+                        name: subCategory,
+                        parentCategory: categoryObject._id,
+                    })
+                    await subCategoryObject.save()
                 })
-                await subCategoryObject.save()
-            })
+            )
         })
     )
 }

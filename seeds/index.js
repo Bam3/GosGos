@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const { seedCategories } = require('./category')
 const { seedExpenses } = require('./expense')
+const { seedUsers } = require('./user')
 
 mongoose
     .connect('mongodb://localhost:27017/gos-gos', {
@@ -8,9 +9,11 @@ mongoose
         useUnifiedTopology: true,
     })
     .then(async (client) => {
+        await seedUsers()
         await seedCategories()
         await seedExpenses()
-        client.disconnect()
+
+        await client.disconnect()
     })
     .catch((err) => {
         console.log('Mongo connection error!')
