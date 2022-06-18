@@ -79,10 +79,5 @@ module.exports.seedCategories = async () => {
             })
             await subCategoryObject.save()
         })
-
-        objekt = await Category.findById(categoryObject._id).populate(
-            'subCategories'
-        )
-        console.log(objekt)
     })
 }

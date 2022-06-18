@@ -7,7 +7,7 @@ function insertAfter(newNode, existingNode) {
 
 categorySelection.addEventListener('change', (event) => {
     //store selectet category
-    selectedCategory = event.target.value
+    selectedCategoryId = event.target.value
     //remove selection element if exist
     if (document.querySelector('#subCategory')) {
         document.querySelector('#subCategory').remove()
@@ -23,15 +23,18 @@ categorySelection.addEventListener('change', (event) => {
     insertAfter(newLabel, categorySelection)
     insertAfter(newSelection, newLabel)
 
-    let subCats = []
+    let subCategories = []
+
     for (const cat of categories) {
-        cat.name === selectedCategory ? (subCats = cat.subCategory) : 'Null'
+        cat.id === selectedCategoryId
+            ? (subCategories = cat.subCategories)
+            : 'Null'
     }
-    //Create and append opptions
-    for (let i = 0; i < subCats.length; i++) {
+
+    subCategories.forEach((subCategory) => {
         const option = document.createElement('option')
-        option.value = subCats[i]
-        option.text = subCats[i].toUpperCase()
+        option.value = subCategory._id
+        option.text = subCategory.name.toUpperCase()
         newSelection.append(option)
-    }
+    })
 })

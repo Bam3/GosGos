@@ -12,9 +12,9 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local')
 const session = require('express-session')
 
-const Category = require('./models/category')
 const Expense = require('./models/expense')
 const User = require('./models/user')
+const { getNewExpenseContext } = require('./controllers/expense')
 
 //connect to DB
 const MongoStore = require('connect-mongo')
@@ -81,9 +81,8 @@ app.get('/', (req, res) => {
 })
 
 app.get('/expenses/new', async (req, res) => {
-    const categories = await Category.find({})
-    //console.log({ categories });
-    res.render('expenses/new', { categories })
+    const context = await getNewExpenseContext()
+    res.render('expenses/new', context)
 })
 
 app.get('/expenses/:id', async (req, res) => {
