@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { seedCategories } = require('./categories')
+const { seedCategories } = require('./category')
 const { seedExpenses } = require('./expense')
 
 mongoose
