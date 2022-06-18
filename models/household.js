@@ -5,7 +5,6 @@ const householdSchema = new Schema({
     name: {
         type: String,
         required: true,
-        lowercase: true,
     },
     address: {
         type: String,
