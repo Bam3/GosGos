@@ -27,8 +27,18 @@ module.exports.createExpense = async (reqBody) => {
     return newExpense
 }
 
-module.exports.getExpenseContext = async () => {
-    const expenses = await Expense.find()
+module.exports.getExpenseContext = async (filter) => {
+    let filterObject = {}
+    if (filter) {
+        filterObject = {
+            payDate: {
+                $gte: new Date(filter.dateFrom).toISOString(),
+                $lt: new Date(filter.dateTo).toISOString(),
+            },
+        }
+    }
+
+    const expenses = await Expense.find(filterObject)
         .sort({ payDate: -1 })
         .populate(['category', 'payer'])
     let sum = 0

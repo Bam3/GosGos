@@ -104,21 +104,8 @@ app.post('/expenses', async (req, res) => {
 })
 
 app.post('/expenses/filter', async (req, res) => {
-    const filter = req.body
-    const expenses = await Expense.find({
-        payDate: {
-            $gte: new Date(filter.dateFrom).toISOString(),
-            $lt: new Date(filter.dateTo).toISOString(),
-        },
-    })
-    console.log(expenses)
-    //let userOne = [];
-    //let userTwo = [];
-    let sum = 0
-    for (const expense of expenses) {
-        sum = sum + expense.cost
-    }
-    res.render('expenses/index', { expenses, sum })
+    const context = await getExpenseContext(req.body)
+    res.render('expenses/index', context)
 })
 
 app.get('/register', (req, res) => {
