@@ -7,9 +7,8 @@ const expenseSchema = new Schema({
         required: true,
     },
     payer: {
-        //type: Schema.Types.ObjectId,
-        //ref: 'User'
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
     },
     inputDate: {
@@ -28,14 +27,9 @@ const expenseSchema = new Schema({
         type: String,
     },
     category: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Category',
         required: true,
-        lowercase: true,
-    },
-    subCategory: {
-        type: String,
-        required: true,
-        lowercase: true,
     },
     shared: {
         type: Boolean,
