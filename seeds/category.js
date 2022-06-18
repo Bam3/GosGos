@@ -1,7 +1,6 @@
 const category = require('../models/category')
 const Category = require('../models/category')
 
-//[ 'dom', 'avti', 'hrana', 'darila', 'ljubljenčki', 'zdravje', 'dopust', 'hobi' ];
 const categories = [
     {
         name: 'Dom',
@@ -63,21 +62,20 @@ const categories = [
 ]
 
 module.exports.seedCategories = async () => {
-    //zbrišem celo bazo Category
     await Category.deleteMany({})
 
-    categories.forEach(async (category) => {
-        const categoryObject = new Category({ name: category.name })
-        await categoryObject.save()
+    await Promise.all(
+        categories.map(async (category) => {
+            const categoryObject = new Category({ name: category.name })
+            await categoryObject.save()
 
-        // Gremo čez stringe subcategoryjev
-        category.subCategories.forEach(async (subCategory) => {
-            // Vsakega damo v bazo
-            const subCategoryObject = new Category({
-                name: subCategory,
-                parentCategory: categoryObject._id,
+            category.subCategories.forEach(async (subCategory) => {
+                const subCategoryObject = new Category({
+                    name: subCategory,
+                    parentCategory: categoryObject._id,
+                })
+                await subCategoryObject.save()
             })
-            await subCategoryObject.save()
         })
-    })
+    )
 }
