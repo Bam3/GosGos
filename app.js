@@ -95,7 +95,12 @@ app.get('/expenses/:id', async (req, res) => {
     res.render('expenses/show', { expense })
 })
 app.get('/expenses', async (req, res) => {
-    const { from, to } = req.query
+    let { from, to } = req.query
+    if (!from || !to) {
+        from = `${new Date().toISOString().substring(0, 8)}01`
+        to = new Date().toISOString().substring(0, 10)
+        res.redirect(`/expenses?from=${from}&to=${to}`)
+    }
     const context = await getExpenseContext({ from, to })
     res.render('expenses/index', context)
 })
