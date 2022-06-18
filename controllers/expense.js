@@ -26,3 +26,30 @@ module.exports.createExpense = async (reqBody) => {
 
     return newExpense
 }
+
+module.exports.getExpenseContext = async () => {
+    const expenses = await Expense.find()
+        .sort({ payDate: -1 })
+        .populate('category')
+    let sum = 0
+    for (const expense of expenses) {
+        sum = sum + expense.cost
+    }
+    await Promise.all(
+        expenses.map(async (expense) => {
+            const neki = await generateCategoryLabel(expense.category)
+            expense.categoryLabel = neki
+        })
+    )
+    console.log(expenses)
+    return { expenses, sum }
+}
+
+const generateCategoryLabel = async (category) => {
+    if (category.parentCategory) {
+        await category.populate('parentCategory')
+        return `${category.parentCategory.name} - ${category.name}`
+    } else {
+        return category.name
+    }
+}

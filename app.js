@@ -14,7 +14,11 @@ const session = require('express-session')
 
 const Expense = require('./models/expense')
 const User = require('./models/user')
-const { getNewExpenseContext, createExpense } = require('./controllers/expense')
+const {
+    getNewExpenseContext,
+    createExpense,
+    getExpenseContext,
+} = require('./controllers/expense')
 
 //connect to DB
 const MongoStore = require('connect-mongo')
@@ -91,13 +95,8 @@ app.get('/expenses/:id', async (req, res) => {
     res.render('expenses/show', { expense })
 })
 app.get('/expenses', async (req, res) => {
-    //
-    const expenses = await Expense.find().sort({ payDate: -1 })
-    let sum = 0
-    for (const expense of expenses) {
-        sum = sum + expense.cost
-    }
-    res.render('expenses/index', { expenses, sum })
+    const context = await getExpenseContext()
+    res.render('expenses/index', context)
 })
 app.post('/expenses', async (req, res) => {
     const newExpense = await createExpense(req.body)
