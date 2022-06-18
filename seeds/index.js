@@ -7,10 +7,10 @@ mongoose
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
-    .then(async () => {
+    .then(async (client) => {
         await seedCategories()
         await seedExpenses()
-        mongoose.connection.close()
+        client.disconnect()
     })
     .catch((err) => {
         console.log('Mongo connection error!')

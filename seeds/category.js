@@ -1,7 +1,6 @@
 const category = require('../models/category')
 const Category = require('../models/category')
 
-//[ 'dom', 'avti', 'hrana', 'darila', 'ljubljenčki', 'zdravje', 'dopust', 'hobi' ];
 const categories = [
     {
         name: 'Dom',
