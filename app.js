@@ -77,7 +77,7 @@ passport.deserializeUser(User.deserializeUser())
 
 //first connection
 app.get('/', (req, res) => {
-    res.send('TUKAJ BO APP!')
+    res.redirect('/expenses')
 })
 
 app.get('/expenses/new', async (req, res) => {
@@ -135,7 +135,7 @@ app.post('/register', async (req, res) => {
         req.login(registeredUser, (err) => {
             //if (err) return next(err);
             //req.flash('success', 'Pozdravljen v GosGos!');
-            res.redirect('/expenses')
+            res.redirect('/')
         })
     } catch (e) {
         //req.flash('error', e.message);
