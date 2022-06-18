@@ -14,7 +14,7 @@ const session = require('express-session')
 
 const Expense = require('./models/expense')
 const User = require('./models/user')
-const { getNewExpenseContext } = require('./controllers/expense')
+const { getNewExpenseContext, createExpense } = require('./controllers/expense')
 
 //connect to DB
 const MongoStore = require('connect-mongo')
@@ -100,20 +100,7 @@ app.get('/expenses', async (req, res) => {
     res.render('expenses/index', { expenses, sum })
 })
 app.post('/expenses', async (req, res) => {
-    console.log(req.body)
-    const expense = req.body
-    const newExpense = new Expense({
-        cost: expense.price,
-        //tukaj dodaj trenutno prijavljenega uporabnika, ko boš naredil uporabnike in session!
-        payer: 'Nataša',
-        payDate: new Date(expense.payDate),
-        costPeriod: new Date(expense.costPeriod),
-        description: expense.description,
-        category: expense.category,
-        shared: true,
-    })
-    await newExpense.save()
-    console.log(expense)
+    const newExpense = await createExpense(req.body)
     res.redirect(`/expenses/${newExpense._id}`)
 })
 
