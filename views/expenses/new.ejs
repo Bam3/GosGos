@@ -14,9 +14,13 @@
                 <select class="form-select" id="category" required>
                     <option selected disabled value="">Izberi...</option>
                     <% for(let category of categories){ %>
-                    <option value="<%=category._id%>">
-                        <%=category.name.toUpperCase()%>
-                    </option>
+                    <optgroup label="<%=category.name%>">
+                        <% for(let subCategory of category.subCategories){ %>
+                        <option value="<%=subCategory._id%>">
+                            <%=subCategory.name%>
+                        </option>
+                        <% } %>
+                    </optgroup>
                     <% } %>
                 </select>
                 <div class="invalid-feedback">Kategorija je obvezna.</div>
@@ -80,8 +84,4 @@
             </div>
         </form>
     </div>
-    <script>
-        const categories = <%- JSON.stringify(categories) %>
-    </script>
-    <script src="/javascripts/getSubCategories.js"></script>
 </div>
