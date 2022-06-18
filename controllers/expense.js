@@ -18,7 +18,6 @@ module.exports.createExpense = async (reqBody) => {
         //tukaj dodaj trenutno prijavljenega uporabnika, ko boš naredil uporabnike in session!
         payer: reqBody.user,
         payDate: new Date(reqBody.payDate),
-        costPeriod: reqBody.costPeriod ? new Date(reqBody.costPeriod) : null,
         description: reqBody.description,
         category: reqBody.category,
         shared: true,
