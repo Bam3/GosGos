@@ -52,7 +52,7 @@ module.exports.getExpenseContext = async (filter) => {
         })
     )
     console.log(expenses)
-    return { expenses, sum }
+    return { expenses, sum, filter }
 }
 
 const generateCategoryLabel = async (category) => {
