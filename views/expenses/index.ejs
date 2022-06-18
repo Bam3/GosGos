@@ -42,22 +42,24 @@
         <thead class="table-light">
             <tr>
                 <th scope="col">#</th>
+                <th scope="col">Datum</th>
                 <th scope="col">Kategorija</th>
                 <th scope="col">Strošek</th>
                 <th scope="col">Plačnik</th>
+                <th>Podrobnosti</th>
             </tr>
         </thead>
         <tbody>
             <% for (let i = 0; i < expenses.length; i++) { %>
             <tr>
                 <th scope="row"><%= i+1 %></th>
-                <td>
-                    <a href="/expenses/<%=expenses[i].id%>"
-                        ><%=expenses[i].categoryLabel %></a
-                    >
-                </td>
+                <td><%=expenses[i].payDate.toLocaleDateString('sl-SI') %></td>
+                <td><%=expenses[i].categoryLabel %></td>
                 <td><%=expenses[i].cost %> €</td>
                 <td><%=expenses[i].payer.username %></td>
+                <td>
+                    <a href="/expenses/<%= expenses[i].id %>"> 💰 </a>
+                </td>
             </tr>
             <% } %>
         </tbody>
