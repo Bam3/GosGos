@@ -29,11 +29,11 @@ module.exports.createExpense = async (reqBody) => {
 
 module.exports.getExpenseContext = async (filter) => {
     let filterObject = {}
-    if (filter) {
+    if (filter.from && filter.to) {
         filterObject = {
             payDate: {
-                $gte: new Date(filter.dateFrom).toISOString(),
-                $lt: new Date(filter.dateTo).toISOString(),
+                $gte: new Date(filter.from).toISOString(),
+                $lt: new Date(filter.to).toISOString(),
             },
         }
     }

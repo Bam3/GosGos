@@ -81,7 +81,7 @@ passport.deserializeUser(User.deserializeUser())
 
 //first connection
 app.get('/', (req, res) => {
-    res.redirect('/expenses')
+    res.redirect('/expenses/new')
 })
 
 app.get('/expenses/new', async (req, res) => {
@@ -95,7 +95,8 @@ app.get('/expenses/:id', async (req, res) => {
     res.render('expenses/show', { expense })
 })
 app.get('/expenses', async (req, res) => {
-    const context = await getExpenseContext()
+    const { from, to } = req.query
+    const context = await getExpenseContext({ from, to })
     res.render('expenses/index', context)
 })
 app.post('/expenses', async (req, res) => {
@@ -104,8 +105,8 @@ app.post('/expenses', async (req, res) => {
 })
 
 app.post('/expenses/filter', async (req, res) => {
-    const context = await getExpenseContext(req.body)
-    res.render('expenses/index', context)
+    const formData = req.body
+    res.redirect(`/expenses?from=${formData.dateFrom}&to=${formData.dateTo}`)
 })
 
 app.get('/register', (req, res) => {
