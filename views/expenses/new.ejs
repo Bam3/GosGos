@@ -2,65 +2,77 @@
 <div class="row">
     <h1>Dodaj strošek</h1>
     <div class="col-md-6">
-        <form action="/expenses" method="POST" id="addNewExpense">
-            <label for="category">Kategorija</label>
-            <select
-                id="category"
-                name="category"
-                class="form-select mb-3"
-                aria-label="category-select"
-            >
-                <option selected>Izberi...</option>
-                <% for(let category of categories){ %>
-                <option value="<%=category._id%>">
-                    <%=category.name.toUpperCase()%>
-                </option>
-                <% } %>
-            </select>
-
-            <label for="price">Strošek</label>
-            <div class="input-group mb-3">
-                <input
-                    id="price"
-                    name="price"
-                    type="number"
-                    class="form-control"
-                    step=".01"
-                    aria-label="Amount"
-                />
-                <span class="input-group-text">€</span>
+        <form
+            action="/expenses"
+            class="validated-form"
+            method="POST"
+            id="addNewExpense"
+            novalidate
+        >
+            <div class="mb-3">
+                <label for="category" class="form-label">Kategorija</label>
+                <select class="form-select" id="category" required>
+                    <option selected disabled value="">Izberi...</option>
+                    <% for(let category of categories){ %>
+                    <option value="<%=category._id%>">
+                        <%=category.name.toUpperCase()%>
+                    </option>
+                    <% } %>
+                </select>
+                <div class="invalid-feedback">Kategorija je obvezna.</div>
             </div>
 
-            <label for="description">Komentar</label>
-            <div class="input-group mb-3">
-                <textarea
-                    id="description"
-                    name="description"
-                    type="text"
-                    class="form-control"
-                ></textarea>
+            <div class="mb-3">
+                <label for="price">Strošek</label>
+                <div class="input-group">
+                    <input
+                        id="price"
+                        name="price"
+                        type="number"
+                        class="form-control"
+                        step=".01"
+                        aria-label="Amount"
+                    />
+                    <span class="input-group-text">€</span>
+                </div>
             </div>
 
-            <label for="date">Dan Plačila</label>
-            <div class="input-group mb-3">
-                <input
-                    id="date"
-                    name="payDate"
-                    type="date"
-                    class="form-control"
-                    autocomplete
-                />
+            <div class="mb-3">
+                <label for="description">Komentar</label>
+                <div class="input-group">
+                    <textarea
+                        id="description"
+                        name="description"
+                        type="text"
+                        class="form-control"
+                    ></textarea>
+                </div>
             </div>
 
-            <label for="costPeriod">Obdobje</label>
-            <div class="input-group mb-4">
-                <input
-                    id="costPeriod"
-                    name="costPeriod"
-                    type="month"
-                    class="form-control"
-                    autocomplete
-                />
+            <div class="mb-3">
+                <label for="date">Dan Plačila</label>
+                <div class="input-group">
+                    <input
+                        id="date"
+                        name="payDate"
+                        type="date"
+                        class="form-control"
+                        autocomplete
+                    />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="costPeriod">Obdobje</label>
+                <div class="input-group">
+                    <input
+                        id="costPeriod"
+                        name="costPeriod"
+                        type="month"
+                        class="form-control"
+                        autocomplete
+                    />
+                </div>
             </div>
 
             <div class="d-grid col-12 mx-auto">
