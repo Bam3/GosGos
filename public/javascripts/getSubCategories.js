@@ -11,11 +11,13 @@ categorySelection.addEventListener('change', (event) => {
     //remove selection element if exist
     if (document.querySelector('#subCategory')) {
         document.querySelector('#subCategory').remove()
+        document.querySelector('#subCategoryLabel').remove()
     }
     //Create and append selection list
     const newSelection = document.createElement('select')
     const newLabel = document.createElement('label')
     newLabel.htmlFor = 'subCategory'
+    newLabel.id = 'subCategoryLabel'
     newLabel.innerText = 'Podkategorija'
     newSelection.name = 'subCategory'
     newSelection.id = 'subCategory'
