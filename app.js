@@ -82,6 +82,7 @@ app.get('/', (req, res) => {
 
 app.get('/expenses/new', async (req, res) => {
     const context = await getNewExpenseContext()
+    console.log(context)
     res.render('expenses/new', context)
 })
 
@@ -99,6 +100,7 @@ app.get('/expenses', async (req, res) => {
     res.render('expenses/index', { expenses, sum })
 })
 app.post('/expenses', async (req, res) => {
+    console.log(req.body)
     const expense = req.body
     const newExpense = new Expense({
         cost: expense.price,
@@ -108,7 +110,6 @@ app.post('/expenses', async (req, res) => {
         costPeriod: new Date(expense.costPeriod),
         description: expense.description,
         category: expense.category,
-        subCategory: expense.subCategory,
         shared: true,
     })
     await newExpense.save()

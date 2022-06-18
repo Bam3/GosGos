@@ -11,7 +11,12 @@
         >
             <div class="mb-3">
                 <label for="category" class="form-label">Kategorija</label>
-                <select class="form-select" id="category" required>
+                <select
+                    class="form-select"
+                    id="category"
+                    name="category"
+                    required
+                >
                     <option selected disabled value="">Izberi...</option>
                     <% for(let category of categories){ %>
                     <optgroup label="<%=category.name%>">
@@ -36,8 +41,10 @@
                         class="form-control"
                         step=".01"
                         aria-label="Amount"
+                        required
                     />
                     <span class="input-group-text">€</span>
+                    <div class="invalid-feedback">Cena je obvezna.</div>
                 </div>
             </div>
 
@@ -62,8 +69,10 @@
                         type="date"
                         class="form-control"
                         autocomplete
+                        required
                     />
                 </div>
+                <div class="invalid-feedback">Dan plačila je obvezna.</div>
             </div>
 
             <div class="mb-3">
@@ -77,6 +86,18 @@
                         autocomplete
                     />
                 </div>
+            </div>
+            <div class="mb-3">
+                <label for="user" class="form-label">Uporabnik</label>
+                <select class="form-select" id="user" name="user" required>
+                    <option selected disabled value>
+                        Izberi uporabnika...
+                    </option>
+                    <% for(let user of users) { %>
+                    <option value="<%=user.id %> "><%=user.username %></option>
+                    <% } %>
+                </select>
+                <div class="invalid-feedback">Uporabnik je obvezen!</div>
             </div>
 
             <div class="d-grid col-12 mx-auto">

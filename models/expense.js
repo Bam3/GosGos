@@ -21,7 +21,6 @@ const expenseSchema = new Schema({
     },
     costPeriod: {
         type: Date,
-        required: true,
     },
     description: {
         type: String,
