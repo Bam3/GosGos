@@ -39,7 +39,16 @@
     <div class="col-md-8 mb-4">
         <div class="card">
             <div class="card-body">
-                <h3>Skupaj: <%=sum%> €</h3>
+                <h4>
+                    <%= comparison.users[0]%>: <%=comparison.usersPayments[0] %>
+                    €
+                </h4>
+                <h4>
+                    <%= comparison.users[1]%>: <%=comparison.usersPayments[1] %>
+                    €
+                </h4>
+                <h4>Skupaj: <%=sum%> €</h4>
+                <p><%= comparison.textOutput%></p>
             </div>
         </div>
     </div>

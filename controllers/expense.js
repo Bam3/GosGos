@@ -33,7 +33,7 @@ module.exports.getExpenseContext = async (filter) => {
         filterObject = {
             payDate: {
                 $gte: new Date(filter.from).toISOString(),
-                $lt: new Date(filter.to).toISOString(),
+                $lte: new Date(filter.to).toISOString(),
             },
         }
     }
@@ -67,11 +67,46 @@ const generateCategoryLabel = async (category) => {
 const calculateSum = (expenses) => {
     sum = 0
     for (const expense of expenses) {
-        sum = sum + expense.cost
+        if (expense.shared) {
+            sum = sum + expense.cost
+        }
     }
     return sum
 }
 
 const calculateComparison = (expenses) => {
-    return {}
+    let users = []
+    let usersPayments = [0, 0]
+    let textOutput = ''
+    //pojdem čez vse stroške in pregledam userje
+    expenses.map((expense) => {
+        users.push(expense.payer.username)
+    })
+    //ponavljajoče odstrnaim tako, da dobim vse uporabnike
+    users = [...new Set(users)]
+
+    for (const expense of expenses) {
+        if (expense.shared) {
+            if (expense.payer.username === users[0]) {
+                usersPayments[0] = usersPayments[0] + expense.cost
+            } else {
+                usersPayments[1] = usersPayments[1] + expense.cost
+            }
+        }
+    }
+    let perUser =
+        usersPayments[0] -
+        (usersPayments[0] + usersPayments[1]) / usersPayments.length
+
+    if (perUser < 0) {
+        textOutput = `${users[0]} dolguje ${users[1]}: ${Math.abs(perUser)} €`
+    } else {
+        textOutput = `${users[1]} dolguje ${users[0]}: ${Math.abs(perUser)} €`
+    }
+
+    for (const expense of expenses) {
+        if (expense.shared) {
+        }
+    }
+    return { users, usersPayments, perUser, textOutput }
 }

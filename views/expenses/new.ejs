@@ -76,16 +76,14 @@
             </div>
 
             <div class="mb-3">
-                <label for="user" class="form-label">Uporabnik</label>
+                <label for="user" class="form-label">Plačnik</label>
                 <select class="form-select" id="user" name="user" required>
-                    <option selected disabled value>
-                        Izberi uporabnika...
-                    </option>
+                    <option selected disabled value>Izberi plačnika...</option>
                     <% for(let user of users) { %>
                     <option value="<%=user._id%>"><%=user.username%></option>
                     <% } %>
                 </select>
-                <div class="invalid-feedback">Uporabnik je obvezen!</div>
+                <div class="invalid-feedback">Plačnik je obvezen!</div>
             </div>
 
             <div class="mb-3">
