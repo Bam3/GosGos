@@ -1,15 +1,19 @@
+if (process.env.NODE_ENV !== 'production') {
+    //s tem rečemo naj pogleda naš .env fajl in ga upošteva, ampak samo ko svmo v dev.
+    require('dotenv').config()
+}
+
 const mongoose = require('mongoose')
 const { seedCategories } = require('./category')
 const { seedExpenses } = require('./expense')
-const { seedUsers } = require('./user')
 
+//local DB
+//const dbUrl = 'mongodb://localhost:27017/gos-gos'
+const dbUrl = process.env.DB_URL
 mongoose
-    .connect('mongodb://localhost:27017/gos-gos', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+    .connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(async (client) => {
-        await seedUsers()
+        //await seedUsers()
         await seedCategories()
         await seedExpenses()
 

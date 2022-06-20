@@ -22,7 +22,9 @@ const {
 
 //connect to DB
 const MongoStore = require('connect-mongo')
-const dbUrl = 'mongodb://localhost:27017/gos-gos'
+//local DB
+//const dbUrl = 'mongodb://localhost:27017/gos-gos'
+const dbUrl = process.env.DB_URL
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
