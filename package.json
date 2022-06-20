@@ -7,7 +7,8 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "npx nodemon app.js",
         "seed": "node seeds/index.js",
-        "format": "npx prettier --write ."
+        "format": "npx prettier --write .",
+        "start": "node app.js"
     },
     "keywords": [],
     "author": "BaM",
