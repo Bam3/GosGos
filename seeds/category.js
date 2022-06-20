@@ -1,4 +1,3 @@
-const category = require('../models/category')
 const Category = require('../models/category')
 
 const categories = [
@@ -11,7 +10,7 @@ const categories = [
             'Internet',
             'Upravnik',
             'RTV',
-            'Vzdrževanje',
+            'Vzdrževanje in nakupi',
         ],
     },
 

@@ -1,4 +1,17 @@
 <% layout('layouts/boilerplate')%>
-    <h1><%= expense.category%></h1>
-    <a href="/expenses">Vsi stroški</a>
-    <div><%= expense.payDate.toDateString() %> </div>
+<div class="card" style="width: auto">
+    <div class="card-body">
+        <h5 class="card-title"><%= expenses.categoryLabel%></h5>
+        <p class="card-text"><%= expenses.description%></p>
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">Cena: <%= expenses.cost%> €</li>
+        <li class="list-group-item">Plačnik: <%= expenses.payer.username%></li>
+        <li class="list-group-item">
+            Dan nakupa: <%= expenses.payDate.toLocaleDateString('sl-SI') %>
+        </li>
+    </ul>
+    <div class="card-body">
+        <a href="/expenses">Vsi stroški</a>
+    </div>
+</div>

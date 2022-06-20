@@ -87,13 +87,15 @@ app.get('/', (req, res) => {
 
 app.get('/expenses/new', async (req, res) => {
     const context = await getNewExpenseContext()
-    console.log(context)
     res.render('expenses/new', context)
 })
 
 app.get('/expenses/:id', async (req, res) => {
-    const expense = await Expense.findById(req.params.id)
-    res.render('expenses/show', { expense })
+    //const expense = await Expense.findById(req.params.id)
+    const id = req.params.id
+    const context = await getExpenseContext({ id })
+    console.log(context)
+    res.render('expenses/show', context)
 })
 app.get('/expenses', async (req, res) => {
     let { from, to } = req.query

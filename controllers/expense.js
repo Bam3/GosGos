@@ -29,6 +29,7 @@ module.exports.createExpense = async (reqBody) => {
 
 module.exports.getExpenseContext = async (filter) => {
     let filterObject = {}
+    let expenses = {}
     if (filter.from && filter.to) {
         filterObject = {
             payDate: {
@@ -36,23 +37,28 @@ module.exports.getExpenseContext = async (filter) => {
                 $lte: new Date(filter.to).toISOString(),
             },
         }
+        expenses = await Expense.find(filterObject)
+            .sort({ payDate: -1 })
+            .populate(['category', 'payer'])
+
+        await Promise.all(
+            expenses.map(async (expense) => {
+                const neki = await generateCategoryLabel(expense.category)
+                expense.categoryLabel = neki
+            })
+        )
+        const sum = calculateSum(expenses)
+        const comparison = calculateComparison(expenses)
+        return { expenses, sum, filter, comparison }
+    } else if (filter.id) {
+        expenses = await Expense.findById(filter.id).populate([
+            'category',
+            'payer',
+        ])
+        const neki = await generateCategoryLabel(expenses.category)
+        expenses.categoryLabel = neki
+        return { expenses }
     }
-
-    const expenses = await Expense.find(filterObject)
-        .sort({ payDate: -1 })
-        .populate(['category', 'payer'])
-
-    await Promise.all(
-        expenses.map(async (expense) => {
-            const neki = await generateCategoryLabel(expense.category)
-            expense.categoryLabel = neki
-        })
-    )
-
-    const sum = calculateSum(expenses)
-    const comparison = calculateComparison(expenses)
-
-    return { expenses, sum, filter, comparison }
 }
 
 const generateCategoryLabel = async (category) => {

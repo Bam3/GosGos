@@ -15,7 +15,7 @@ mongoose
     .then(async (client) => {
         //await seedUsers()
         await seedCategories()
-        await seedExpenses()
+        //await seedExpenses()
 
         await client.disconnect()
     })
