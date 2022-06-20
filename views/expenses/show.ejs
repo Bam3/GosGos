@@ -10,6 +10,9 @@
         <li class="list-group-item">
             Dan nakupa: <%= expenses.payDate.toLocaleDateString('sl-SI') %>
         </li>
+        <li class="list-group-item">
+            Strošek deljen: <%= expenses.shared ? "DA":"NE"%>
+        </li>
     </ul>
     <div class="card-body">
         <a href="/expenses">Vsi stroški</a>

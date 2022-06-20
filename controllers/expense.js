@@ -30,6 +30,7 @@ module.exports.createExpense = async (reqBody) => {
 module.exports.getExpenseContext = async (filter) => {
     let filterObject = {}
     let expenses = {}
+    //če podamo filter datuma, od - do
     if (filter.from && filter.to) {
         filterObject = {
             payDate: {
@@ -50,6 +51,7 @@ module.exports.getExpenseContext = async (filter) => {
         const sum = calculateSum(expenses)
         const comparison = calculateComparison(expenses)
         return { expenses, sum, filter, comparison }
+        // če želimo filtriratio po id-ju
     } else if (filter.id) {
         expenses = await Expense.findById(filter.id).populate([
             'category',
