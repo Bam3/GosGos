@@ -22,9 +22,8 @@ const {
 
 //connect to DB
 const MongoStore = require('connect-mongo')
-//local DB
-//const dbUrl = 'mongodb://localhost:27017/gos-gos'
-const dbUrl = process.env.DB_URL
+
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/gos-gos'
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
@@ -50,7 +49,7 @@ const sessionConfig = {
     store,
     //s tem preimenujemo default name cookia
     name: 'Session',
-    secret: 'skrivnost',
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
