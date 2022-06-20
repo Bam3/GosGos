@@ -91,7 +91,6 @@ app.get('/expenses/new', async (req, res) => {
 })
 
 app.get('/expenses/:id', async (req, res) => {
-    //const expense = await Expense.findById(req.params.id)
     const id = req.params.id
     const context = await getExpenseContext({ id })
     console.log(context)

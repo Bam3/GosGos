@@ -79,7 +79,7 @@ const calculateSum = (expenses) => {
             sum = sum + expense.cost
         }
     }
-    return sum
+    return roundToTwo(sum)
 }
 
 const calculateComparison = (expenses) => {
@@ -105,7 +105,7 @@ const calculateComparison = (expenses) => {
     let perUser =
         usersPayments[0] -
         (usersPayments[0] + usersPayments[1]) / usersPayments.length
-
+    perUser = roundToTwo(perUser)
     if (perUser < 0) {
         textOutput = `${users[0]} dolguje ${users[1]}: ${Math.abs(perUser)} €`
     } else {
@@ -117,4 +117,8 @@ const calculateComparison = (expenses) => {
         }
     }
     return { users, usersPayments, perUser, textOutput }
+}
+
+function roundToTwo(num) {
+    return +(Math.round(num + 'e+2') + 'e-2')
 }
