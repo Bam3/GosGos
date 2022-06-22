@@ -68,6 +68,7 @@ app.use(session(sessionConfig))
 app.engine('ejs', ejsMate)
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
+app.set('contollers', path.join(__dirname, 'controllers'))
 
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
@@ -104,6 +105,7 @@ app.get('/expenses', async (req, res) => {
         res.redirect(`/expenses?from=${from}&to=${to}`)
     }
     const context = await getExpenseContext({ from, to })
+    console.log(from, to)
     res.render('expenses/index', context)
 })
 app.post('/expenses', async (req, res) => {

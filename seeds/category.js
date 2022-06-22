@@ -44,6 +44,10 @@ const categories = [
             'Tržnica',
             'Dostava',
             'Restavracije',
+            'Mercator',
+            'E.Leclerc',
+            'Lekarna',
+            'Tuš',
         ],
     },
     {
@@ -57,6 +61,10 @@ const categories = [
     {
         name: 'Hobi',
         subCategories: ['Kolesarstvo', 'Tek', 'Pohodi', 'Plezanje'],
+    },
+    {
+        name: 'Zabava',
+        subCategories: ['Dopust', 'Igrice', 'Knjige'],
     },
 ]
 

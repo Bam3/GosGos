@@ -32,5 +32,4 @@ const expenseSchema = new Schema({
         required: true,
     },
 })
-//enum: [ 'home', 'cars', 'food', 'presents', 'pets', 'helth', 'vacation', 'hobby', 'other' ],
 module.exports = mongoose.model('Expense', expenseSchema)
