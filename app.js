@@ -19,11 +19,14 @@ const {
     createExpense,
     getExpenseContext,
 } = require('./controllers/expense')
+const { isLoggedIn } = require('./middleware')
 
 //connect to DB
 const MongoStore = require('connect-mongo')
+const { authenticate } = require('passport')
 
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/gos-gos'
+//const dbUrl = process.env.DB_URL
+const dbUrl = 'mongodb://localhost:27017/gos-gos'
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
@@ -81,12 +84,17 @@ passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
+app.use((req, res, next) => {
+    res.locals.currentUser = req.user
+    next()
+})
+
 //first connection
-app.get('/', (req, res) => {
+app.get('/', isLoggedIn, (req, res) => {
     res.redirect('/expenses/new')
 })
 
-app.get('/expenses/new', async (req, res) => {
+app.get('/expenses/new', isLoggedIn, async (req, res) => {
     const context = await getNewExpenseContext()
     res.render('expenses/new', context)
 })
@@ -94,21 +102,21 @@ app.get('/expenses/new', async (req, res) => {
 app.get('/expenses/:id', async (req, res) => {
     const id = req.params.id
     const context = await getExpenseContext({ id })
-    console.log(context)
     res.render('expenses/show', context)
 })
-app.get('/expenses', async (req, res) => {
+
+app.get('/expenses', isLoggedIn, async (req, res) => {
     let { from, to } = req.query
     if (!from || !to) {
         from = `${new Date().toISOString().substring(0, 8)}01`
         to = new Date().toISOString().substring(0, 10)
-        res.redirect(`/expenses?from=${from}&to=${to}`)
+        return res.redirect(`/expenses?from=${from}&to=${to}`)
     }
     const context = await getExpenseContext({ from, to })
     console.log(from, to)
     res.render('expenses/index', context)
 })
-app.post('/expenses', async (req, res) => {
+app.post('/expenses', isLoggedIn, async (req, res) => {
     const newExpense = await createExpense(req.body)
     res.redirect(`/expenses/${newExpense._id}`)
 })
@@ -121,6 +129,32 @@ app.post('/expenses/filter', async (req, res) => {
 app.get('/register', (req, res) => {
     res.render('users/register')
 })
+
+app.get('/login', (req, res) => {
+    res.render('users/login')
+})
+
+app.get('/logout', (req, res, next) => {
+    req.logout(function (err) {
+        if (err) {
+            return next(err)
+        }
+        res.redirect('/')
+    })
+})
+
+app.post(
+    '/login',
+    passport.authenticate('local', {
+        failureFlash: false,
+        failureRedirect: '/login',
+    }),
+    (req, res) => {
+        const redirectUrl = req.session.returnTo || '/'
+        delete req.session.returnTo
+        res.redirect(redirectUrl)
+    }
+)
 
 app.post('/register', async (req, res) => {
     try {

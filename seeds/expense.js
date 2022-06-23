@@ -6,56 +6,41 @@ module.exports.seedExpenses = async () => {
     //vsem stroškom popravi cost v number
     const subCategories = await Category.find({}).populate('subCategories')
 
+    //zbrišem vse stroške v bazi
     await Expense.deleteMany({})
 
+    const promises = []
     //vzamem prvi vpisan strosek
-    await Promise.all(
-        allExpenses.forEach(async (expense) => {
-            //vzamem prvo kategorijo in preverim če se ujema parentCat s kat. prvega stroška
-            await Promise.all(
-                subCategories.forEach(async (subCategory) => {
-                    if (subCategory.name === expense.category) {
-                        //ko najdem preverim če se ujema ime podkategorije s prvim stroškom
-                        //če se si zapišem id podkategorije, katera ima parentCategory
-                        await Promise.all(
-                            subCategory.subCategories.forEach(
-                                async (subCatName) => {
-                                    if (
-                                        subCatName.name === expense.subCategory
-                                    ) {
-                                        const newExpense = new Expense({
-                                            cost:
-                                                typeof expense.cost == 'string'
-                                                    ? (expense.cost = Number(
-                                                          expense.cost.replace(
-                                                              ',',
-                                                              '.'
-                                                          )
-                                                      ))
-                                                    : expense.cost,
-                                            payer:
-                                                expense.payer === 'Miha'
-                                                    ? '62aca9d08b4df26a60e2570a'
-                                                    : '62acabbc8b4df26a60e25711',
-                                            payDate: new Date(expense.payDate),
-                                            description: expense.description,
-                                            category: subCatName.id,
-                                            shared: Boolean(expense.shared),
-                                        })
-                                        console.log(newExpense)
-                                        await newExpense.save()
-                                    }
-                                }
-                            )
-                        )
+    allExpenses.forEach(async (expense) => {
+        //vzamem prvo kategorijo in preverim če se ujema parentCat s kat. prvega stroška
+        subCategories.forEach(async (subCategory) => {
+            if (subCategory.name === expense.category) {
+                //ko najdem preverim če se ujema ime podkategorije s prvim stroškom
+                //če se si zapišem id podkategorije, katera ima parentCategory
+                subCategory.subCategories.forEach(async (subCatName) => {
+                    if (subCatName.name === expense.subCategory) {
+                        const newExpense = new Expense({
+                            cost:
+                                typeof expense.cost == 'string'
+                                    ? (expense.cost = Number(
+                                          expense.cost.replace(',', '.')
+                                      ))
+                                    : expense.cost,
+                            payer:
+                                expense.payer === 'Miha'
+                                    ? '62b0220d04b744701a0bab83'
+                                    : '62b021f604b744701a0bab7a',
+                            payDate: new Date(expense.payDate),
+                            description: expense.description,
+                            category: subCatName.id,
+                            shared: Boolean(expense.shared),
+                        })
+                        console.log(newExpense)
+                        promises.push(newExpense.save())
                     }
                 })
-            )
+            }
         })
-    )
+    })
+    await Promise.all(promises)
 }
-
-//subCategories[n].name === allExpenses[n].category &&
-//subCategories[0].subCategories.name === allExpenses[n].subCategory
-//potem
-//    iskanID = subCategories[0].subCategories.id

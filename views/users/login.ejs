@@ -9,9 +9,9 @@
                     class="card-img-top"
                 />
                 <div class="card-body">
-                    <h5 class="card-title">Registracija</h5>
+                    <h5 class="card-title">Prijava</h5>
                     <form
-                        action="/register"
+                        action="/login"
                         method="POST"
                         class="validated-form"
                         novalidate
@@ -30,19 +30,7 @@
                             />
                             <div class="valid-feedback">Looks good!</div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="email"
-                                >Elektronska pošta</label
-                            >
-                            <input
-                                class="form-control"
-                                type="email"
-                                id="email"
-                                name="email"
-                                required
-                            />
-                            <div class="valid-feedback">Looks good!</div>
-                        </div>
+
                         <div class="mb-3">
                             <label class="form-label" for="password"
                                 >Geslo</label
@@ -57,7 +45,7 @@
                             <div class="valid-feedback">Looks good!</div>
                         </div>
                         <button class="btn btn-success btn-block">
-                            Registracija
+                            Prijava
                         </button>
                     </form>
                 </div>

@@ -102,23 +102,23 @@ const calculateComparison = (expenses) => {
             }
         }
     }
+    usersPayments[0] = roundToTwo(usersPayments[0])
+    usersPayments[1] = roundToTwo(usersPayments[1])
     let perUser =
         usersPayments[0] -
         (usersPayments[0] + usersPayments[1]) / usersPayments.length
-    perUser = roundToTwo(perUser)
     if (perUser < 0) {
-        textOutput = `${users[0]} dolguje ${users[1]}: ${Math.abs(perUser)} €`
+        textOutput = `${users[0]} dolguje ${users[1]}: ${Math.abs(
+            roundToTwo(perUser)
+        )} €`
     } else {
-        textOutput = `${users[1]} dolguje ${users[0]}: ${Math.abs(perUser)} €`
-    }
-
-    for (const expense of expenses) {
-        if (expense.shared) {
-        }
+        textOutput = `${users[1]} dolguje ${users[0]}: ${Math.abs(
+            roundToTwo(perUser)
+        )} €`
     }
     return { users, usersPayments, perUser, textOutput }
 }
 
 function roundToTwo(num) {
-    return +(Math.round(num + 'e+2') + 'e-2')
+    return Number(Math.round(num + 'e2') + 'e-2')
 }

@@ -47,6 +47,14 @@
                     </ul>
                 </li>
             </div>
+            <div class="navbar-nav ms-auto">
+                <% if (!currentUser) { %>
+                <a class="nav-link" href="/login">Prijava</a>
+                <a class="nav-link" href="/register">Registracija</a>
+                <% } else { %>
+                <a class="nav-link" href="/logout">Odjava</a>
+                <% } %>
+            </div>
         </div>
     </div>
 </nav>
