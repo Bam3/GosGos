@@ -57,9 +57,13 @@ module.exports.getExpenseContext = async (filter) => {
             'category',
             'payer',
         ])
-        const neki = await generateCategoryLabel(expenses.category)
-        expenses.categoryLabel = neki
-        return { expenses }
+        if (expenses) {
+            const neki = await generateCategoryLabel(expenses.category)
+            expenses.categoryLabel = neki
+            return { expenses }
+        } else {
+            return undefined
+        }
     }
 }
 

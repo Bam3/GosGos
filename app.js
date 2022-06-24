@@ -10,6 +10,7 @@ const path = require('path')
 const methodOverride = require('method-override')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
+const flash = require('connect-flash')
 const session = require('express-session')
 
 const Expense = require('./models/expense')
@@ -72,6 +73,7 @@ app.engine('ejs', ejsMate)
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 app.set('contollers', path.join(__dirname, 'controllers'))
+app.use(flash())
 
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
@@ -84,8 +86,11 @@ passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
+//local storage for storing things you need in templates...
 app.use((req, res, next) => {
     res.locals.currentUser = req.user
+    res.locals.success = req.flash('success')
+    res.locals.error = req.flash('error')
     next()
 })
 
@@ -102,6 +107,11 @@ app.get('/expenses/new', isLoggedIn, async (req, res) => {
 app.get('/expenses/:id', async (req, res) => {
     const id = req.params.id
     const context = await getExpenseContext({ id })
+    console.log(context)
+    if (context === undefined) {
+        req.flash('error', 'Iskanega stroška ni moč najti!')
+        return res.redirect('/expenses/new')
+    }
     res.render('expenses/show', context)
 })
 
@@ -112,12 +122,17 @@ app.get('/expenses', isLoggedIn, async (req, res) => {
         to = new Date().toISOString().substring(0, 10)
         return res.redirect(`/expenses?from=${from}&to=${to}`)
     }
-    const context = await getExpenseContext({ from, to })
-    console.log(from, to)
-    res.render('expenses/index', context)
+    if (from > to) {
+        req.flash('error', 'Začetni datum ne mora biti po končnem!')
+        res.redirect('/expenses/new')
+    } else {
+        const context = await getExpenseContext({ from, to })
+        res.render('expenses/index', context)
+    }
 })
 app.post('/expenses', isLoggedIn, async (req, res) => {
     const newExpense = await createExpense(req.body)
+    req.flash('success', 'Strošek dodan in shranjen')
     res.redirect(`/expenses/${newExpense._id}`)
 })
 
@@ -146,7 +161,7 @@ app.get('/logout', (req, res, next) => {
 app.post(
     '/login',
     passport.authenticate('local', {
-        failureFlash: false,
+        failureFlash: true,
         failureRedirect: '/login',
     }),
     (req, res) => {
@@ -163,13 +178,13 @@ app.post('/register', async (req, res) => {
         const user = new User({ email, username })
         const registeredUser = await User.register(user, password)
         req.login(registeredUser, (err) => {
-            //if (err) return next(err);
-            //req.flash('success', 'Pozdravljen v GosGos!');
-            res.redirect('/')
+            if (err) return next(err)
+            req.flash('success', 'Pozdravljen v GosGos!')
+            res.redirect('/expenses/new')
         })
     } catch (e) {
-        //req.flash('error', e.message);
-        //res.redirect('/register');
+        req.flash('error', e.message)
+        res.redirect('/register')
         console.log('napaka!', e)
     }
 })
