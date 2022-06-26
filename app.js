@@ -27,7 +27,10 @@ const {
     renderLogin,
     logoutUser,
 } = require('./controllers/users')
-const { createCategory } = require('./controllers/categories')
+const {
+    createCategory,
+    getCategoriesContext,
+} = require('./controllers/categories')
 const { isLoggedIn } = require('./middleware')
 
 //connect to DB
@@ -173,12 +176,33 @@ app.get('/categories/new', isLoggedIn, (req, res) => {
     res.render('categories/new')
 })
 
+app.get(
+    '/categories/:id',
+    catchAsync(async (req, res) => {
+        const id = req.params.id
+        const context = await getExpenseContext({ id })
+        if (!context) {
+            req.flash('error', 'Iskane kategorije ni moč najti!')
+            return res.redirect('/categories')
+        }
+        res.render('expenses/show', context)
+    })
+)
+
+app.get(
+    '/categories',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const context = await getNewExpenseContext()
+        res.render('categories/index', context)
+    })
+)
+
 app.post(
     '/categories',
     isLoggedIn,
     catchAsync(async (req, res) => {
         const newCategory = await createCategory(req.body)
-        console.log(newCategory)
         req.flash('success', 'Kategorija dodan in shranjen')
         res.redirect(`/categories/${newCategory._id}`)
     })
