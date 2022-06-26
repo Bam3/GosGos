@@ -22,6 +22,12 @@ const {
     createExpense,
     getExpenseContext,
 } = require('./controllers/expense')
+const {
+    renderRegister,
+    renderLogin,
+    logoutUser,
+} = require('./controllers/users')
+const { createCategory } = require('./controllers/categories')
 const { isLoggedIn } = require('./middleware')
 
 //connect to DB
@@ -97,7 +103,7 @@ app.use((req, res, next) => {
 })
 
 //first connection
-app.get('/', isLoggedIn, (req, res) => {
+app.get('/', isLoggedIn, async (req, res) => {
     res.redirect('/expenses/new')
 })
 
@@ -116,7 +122,6 @@ app.get(
     catchAsync(async (req, res) => {
         const id = req.params.id
         const context = await getExpenseContext({ id })
-        console.log(context)
         if (!context) {
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
@@ -164,22 +169,24 @@ app.post(
     })
 )
 
-app.get('/register', (req, res) => {
-    res.render('users/register')
+app.get('/categories/new', isLoggedIn, (req, res) => {
+    res.render('categories/new')
 })
 
-app.get('/login', (req, res) => {
-    res.render('users/login')
-})
-
-app.get('/logout', (req, res, next) => {
-    req.logout(function (err) {
-        if (err) {
-            return next(err)
-        }
-        res.redirect('/')
+app.post(
+    '/categories',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const newCategory = await createCategory(req.body)
+        console.log(newCategory)
+        req.flash('success', 'Kategorija dodan in shranjen')
+        res.redirect(`/categories/${newCategory._id}`)
     })
-})
+)
+
+app.get('/register', renderRegister)
+app.get('/login', renderLogin)
+app.get('/logout', logoutUser)
 
 app.post(
     '/login',
@@ -188,8 +195,9 @@ app.post(
         failureRedirect: '/login',
     }),
     (req, res) => {
-        const redirectUrl = req.session.returnTo || '/'
+        const redirectUrl = req.session.returnTo || '/expenses/new'
         delete req.session.returnTo
+        req.flash('success', 'Pozdravljen v GosGos!')
         res.redirect(redirectUrl)
     }
 )
