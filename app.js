@@ -8,6 +8,8 @@ const express = require('express')
 const ejsMate = require('ejs-mate')
 const path = require('path')
 const methodOverride = require('method-override')
+const catchAsync = require('./utils/catchAsync')
+const ExpressError = require('./utils/ExpressError')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
 const flash = require('connect-flash')
@@ -99,47 +101,68 @@ app.get('/', isLoggedIn, (req, res) => {
     res.redirect('/expenses/new')
 })
 
-app.get('/expenses/new', isLoggedIn, async (req, res) => {
-    const context = await getNewExpenseContext()
-    res.render('expenses/new', context)
-})
+app.get(
+    '/expenses/new',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        //get categories from DB for form
+        const context = await getNewExpenseContext()
+        res.render('expenses/new', context)
+    })
+)
 
-app.get('/expenses/:id', async (req, res) => {
-    const id = req.params.id
-    const context = await getExpenseContext({ id })
-    console.log(context)
-    if (context === undefined) {
-        req.flash('error', 'Iskanega stroška ni moč najti!')
-        return res.redirect('/expenses/new')
-    }
-    res.render('expenses/show', context)
-})
+app.get(
+    '/expenses/:id',
+    catchAsync(async (req, res) => {
+        const id = req.params.id
+        const context = await getExpenseContext({ id })
+        console.log(context)
+        if (!context) {
+            req.flash('error', 'Iskanega stroška ni moč najti!')
+            return res.redirect('/expenses/new')
+        }
+        res.render('expenses/show', context)
+    })
+)
 
-app.get('/expenses', isLoggedIn, async (req, res) => {
-    let { from, to } = req.query
-    if (!from || !to) {
-        from = `${new Date().toISOString().substring(0, 8)}01`
-        to = new Date().toISOString().substring(0, 10)
-        return res.redirect(`/expenses?from=${from}&to=${to}`)
-    }
-    if (from > to) {
-        req.flash('error', 'Začetni datum ne mora biti po končnem!')
-        res.redirect('/expenses/new')
-    } else {
-        const context = await getExpenseContext({ from, to })
-        res.render('expenses/index', context)
-    }
-})
-app.post('/expenses', isLoggedIn, async (req, res) => {
-    const newExpense = await createExpense(req.body)
-    req.flash('success', 'Strošek dodan in shranjen')
-    res.redirect(`/expenses/${newExpense._id}`)
-})
+app.get(
+    '/expenses',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        let { from, to } = req.query
+        if (!from || !to) {
+            from = `${new Date().toISOString().substring(0, 8)}01`
+            to = new Date().toISOString().substring(0, 10)
+            return res.redirect(`/expenses?from=${from}&to=${to}`)
+        }
+        if (from > to) {
+            req.flash('error', 'Začetni datum ne mora biti po končnem!')
+            res.redirect('/expenses/new')
+        } else {
+            const context = await getExpenseContext({ from, to })
+            res.render('expenses/index', context)
+        }
+    })
+)
 
-app.post('/expenses/filter', async (req, res) => {
-    const formData = req.body
-    res.redirect(`/expenses?from=${formData.dateFrom}&to=${formData.dateTo}`)
-})
+app.post(
+    '/expenses',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const newExpense = await createExpense(req.body)
+        req.flash('success', 'Strošek dodan in shranjen')
+        res.redirect(`/expenses/${newExpense._id}`)
+    })
+)
+app.post(
+    '/expenses/filter',
+    catchAsync(async (req, res) => {
+        const formData = req.body
+        res.redirect(
+            `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}`
+        )
+    })
+)
 
 app.get('/register', (req, res) => {
     res.render('users/register')
@@ -189,6 +212,15 @@ app.post('/register', async (req, res) => {
     }
 })
 
+app.all('*', (req, res, next) => {
+    next(new ExpressError('Page not Found', 404))
+})
+//error Handler
+app.use((err, req, res, next) => {
+    const { statusCode = 500 } = err
+    if (!err.message) err.message = 'Oh No, Something went wrong!'
+    res.status(statusCode).render('error', { err })
+})
 //open port&listen
 const port = process.env.PORT || 3000
 app.listen(port, () => {
