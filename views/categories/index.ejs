@@ -1,16 +1,17 @@
 <% layout('layouts/boilerplate')%>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 mb-3">
         <h1>Kategorije</h1>
     </div>
 
     <div class="col-md-12">
         <% for(let category of categories){ %>
-        <div> <%=category.name%></div>
-            <% for(let subCategory of category.subCategories){ %>
-            <div> <%=subCategory.name%></div>
-            <% } %>
-        </div>
+        <div><strong><%=category.name.toUpperCase()%></strong></div>
+        <hr />
+        <% for(let subCategory of category.subCategories){ %>
+        <div><%=subCategory.name%></div>
+        <% } %>
+        <div class="mb-4"></div>
         <% } %>
     </div>
 </div>

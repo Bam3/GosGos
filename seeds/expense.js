@@ -10,6 +10,7 @@ module.exports.seedExpenses = async () => {
     await Expense.deleteMany({})
 
     const promises = []
+    let payerID = ''
     //vzamem prvi vpisan strosek
     allExpenses.forEach(async (expense) => {
         //vzamem prvo kategorijo in preverim če se ujema parentCat s kat. prvega stroška
@@ -19,6 +20,13 @@ module.exports.seedExpenses = async () => {
                 //če se si zapišem id podkategorije, katera ima parentCategory
                 subCategory.subCategories.forEach(async (subCatName) => {
                     if (subCatName.name === expense.subCategory) {
+                        if (expense.payer === 'Miha') {
+                            payerID = '62b0220d04b744701a0bab83'
+                        } else if (expense.payer === 'Nataša') {
+                            payerID = '62b021f604b744701a0bab7a'
+                        } else {
+                            payerID = '62ba152107ee0fb001590933'
+                        }
                         const newExpense = new Expense({
                             cost:
                                 typeof expense.cost == 'string'
@@ -26,10 +34,7 @@ module.exports.seedExpenses = async () => {
                                           expense.cost.replace(',', '.')
                                       ))
                                     : expense.cost,
-                            payer:
-                                expense.payer === 'Miha'
-                                    ? '62b0220d04b744701a0bab83'
-                                    : '62b021f604b744701a0bab7a',
+                            payer: payerID,
                             payDate: new Date(expense.payDate),
                             description: expense.description,
                             category: subCatName.id,

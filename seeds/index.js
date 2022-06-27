@@ -3,9 +3,11 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
 
+const { request } = require('express')
 const mongoose = require('mongoose')
 const { seedCategories } = require('./category')
 const { seedExpenses } = require('./expense')
+const { seedUsers } = require('./user')
 
 //local DB
 //const dbUrl = 'mongodb://localhost:27017/gos-gos'
@@ -14,7 +16,7 @@ mongoose
     .connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(async (client) => {
         //await seedUsers()
-        await seedCategories()
+        //await seedCategories()
         await seedExpenses()
 
         await client.disconnect()
