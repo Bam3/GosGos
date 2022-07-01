@@ -1,6 +1,7 @@
 const Category = require('../models/category')
 const Expense = require('../models/expense')
 const User = require('../models/user')
+const userObject = require('../public/javascripts/Classes')
 
 module.exports.getNewExpenseContext = async () => {
     const categories = await Category.find({}).populate('subCategories')
@@ -50,6 +51,8 @@ module.exports.getExpenseContext = async (filter) => {
         )
         const sum = calculateSum(expenses)
         const comparison = calculateComparison(expenses)
+        console.log(sum)
+        console.log(comparison.sumAll)
         return { expenses, sum, filter, comparison }
         // če želimo filtriratio po id-ju
     } else if (filter.id) {
@@ -88,39 +91,79 @@ const calculateSum = (expenses) => {
 
 const calculateComparison = (expenses) => {
     let users = []
-    let usersPayments = [0, 0]
     let textOutput = ''
+    let usersObject = []
+    let sumForCalculation = 0
+    let activeUsers = []
+    let perUser = 0
+
     //pojdem čez vse stroške in pregledam userje
     expenses.map((expense) => {
         users.push(expense.payer.username)
     })
+
     //ponavljajoče odstrnaim tako, da dobim vse uporabnike
     users = [...new Set(users)]
 
-    for (const expense of expenses) {
-        if (expense.shared) {
-            if (expense.payer.username === users[0]) {
-                usersPayments[0] = usersPayments[0] + expense.cost
-            } else {
-                usersPayments[1] = usersPayments[1] + expense.cost
+    //Ustvarim uporabnike glede na zbrane zgoraj
+    users.forEach(function (user) {
+        let newUser = []
+        if (user === 'Revolut') {
+            newUser = new userObject(user, [], false)
+        } else {
+            newUser = new userObject(user, [], true)
+        }
+        usersObject.push(newUser)
+    })
+    // če so users prazni pomeni da nimamo izračuna, ker ni stroškov
+    if (usersObject.length !== 0) {
+        //vsem zapišem kaj so plačali
+        expenses.forEach(function (expense) {
+            usersObject.forEach(function (user) {
+                if (expense.shared) {
+                    if (expense.payer.username === user.name) {
+                        user.payments.push(expense.cost)
+                    }
+                }
+            })
+        })
+        usersObject.forEach(function (user) {
+            if (user.name !== 'Revolut') {
+                sumForCalculation += user.sumOfExpenses
             }
+            activeUsers = usersObject.filter((user) => user.name !== 'Revolut')
+        })
+        perUser = sumForCalculation / 2
+
+        if (activeUsers.length > 1) {
+            if (activeUsers[0].sumOfExpenses - perUser >= 0) {
+                textOutput = `${
+                    activeUsers[1].name
+                } dolguje ${activeUsers[0].name.replace(/.$/, 'i')}: ${Math.abs(
+                    roundToTwo(activeUsers[0].sumOfExpenses - perUser)
+                )} €`
+            } else {
+                textOutput = `${
+                    activeUsers[0].name
+                } dolguje ${activeUsers[1].name.replace(/.$/, 'i')}: ${Math.abs(
+                    roundToTwo(activeUsers[0].sumOfExpenses - perUser)
+                )} €`
+            }
+        } else if (activeUsers.length === 1) {
+            if (activeUsers.name === 'Miha') {
+                textOutput = `Nataša dolguje Mihi: ${Math.abs(
+                    roundToTwo(activeUsers[0].sumOfExpenses - perUser)
+                )} €`
+            } else {
+                textOutput = `Miha dolguje Nataši: ${Math.abs(
+                    roundToTwo(activeUsers[0].sumOfExpenses - perUser)
+                )} €`
+            }
+        } else {
+            textOutput = 'Stroški poravnani!'
         }
     }
-    usersPayments[0] = roundToTwo(usersPayments[0])
-    usersPayments[1] = roundToTwo(usersPayments[1])
-    let perUser =
-        usersPayments[0] -
-        (usersPayments[0] + usersPayments[1]) / usersPayments.length
-    if (perUser < 0) {
-        textOutput = `${users[0]} dolguje ${users[1]}: ${Math.abs(
-            roundToTwo(perUser)
-        )} €`
-    } else {
-        textOutput = `${users[1]} dolguje ${users[0]}: ${Math.abs(
-            roundToTwo(perUser)
-        )} €`
-    }
-    return { users, usersPayments, perUser, textOutput }
+    return { users, perUser, textOutput, usersObject }
 }
 
 function roundToTwo(num) {

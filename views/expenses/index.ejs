@@ -39,16 +39,16 @@
     <div class="col-md-8 mb-4">
         <div class="card">
             <div class="card-body">
-                <h4>
-                    <%= comparison.users[0]%>: <%=comparison.usersPayments[0] %>
-                    €
-                </h4>
-                <h4>
-                    <%= comparison.users[1]%>: <%=comparison.usersPayments[1] %>
-                    €
-                </h4>
-                <h4>Skupaj: <%=sum%> €</h4>
-                <p><%= comparison.textOutput%></p>
+                <p class="class display-6">Obračun</p>
+                <% for (user of comparison.usersObject) { %>
+                <div>
+                    <h5 class="lead">
+                        <b><%= user.name %></b>: <%= user.sumOfExpenses%> €
+                    </h5>
+                </div>
+                <% } %>
+                <h4>Skupaj: <%= sum %> €</h4>
+                <h3 class="lead"><%= comparison.textOutput%></h3>
             </div>
         </div>
     </div>

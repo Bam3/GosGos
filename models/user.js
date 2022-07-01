@@ -8,6 +8,10 @@ const UserSchema = new Schema({
         required: true,
         unique: true,
     },
+    // shared: {
+    //     type: Boolean,
+    //     default: false,
+    // },
 })
 //ta passpor-local-mongoose nam na našo schemo doda username,
 //salt, hash itd...

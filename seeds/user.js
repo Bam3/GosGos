@@ -1,16 +1,16 @@
 const User = require('../models/user')
 
 const users = [
-    // {
-    //     username: 'Miha',
-    //     email: 'bastasic.miha@gmail.com',
-    //     password: 'miha123',
-    // },
-    // {
-    //     username: 'Nataša',
-    //     email: 'natasa.vidmar@gmail.com',
-    //     password: 'natasa123',
-    // },
+    {
+        username: 'Miha',
+        email: 'bastasic.miha@gmail.com',
+        password: 'miha123',
+    },
+    {
+        username: 'Nataša',
+        email: 'natasa.vidmar@gmail.com',
+        password: 'natasa123',
+    },
     {
         username: 'Revolut',
         email: 'bastasic.revolut@gmail.com',
@@ -19,7 +19,7 @@ const users = [
 ]
 
 module.exports.seedUsers = async () => {
-    //await User.deleteMany({})
+    await User.deleteMany({})
     await Promise.all(
         users.map(async (user) => {
             const { email, username, password } = user

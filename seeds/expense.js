@@ -21,11 +21,11 @@ module.exports.seedExpenses = async () => {
                 subCategory.subCategories.forEach(async (subCatName) => {
                     if (subCatName.name === expense.subCategory) {
                         if (expense.payer === 'Miha') {
-                            payerID = '62b0220d04b744701a0bab83'
+                            payerID = '62ba19ce8f200bc201bf3020' //production user id: '62b0220d04b744701a0bab83'
                         } else if (expense.payer === 'Nataša') {
-                            payerID = '62b021f604b744701a0bab7a'
+                            payerID = '62ba19ce8f200bc201bf3021' //production user id: '62b021f604b744701a0bab7a'
                         } else {
-                            payerID = '62ba152107ee0fb001590933'
+                            payerID = '62ba19ce8f200bc201bf3022' //production user id: '62ba152107ee0fb001590933'
                         }
                         const newExpense = new Expense({
                             cost:
