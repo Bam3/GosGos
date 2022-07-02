@@ -51,8 +51,6 @@ module.exports.getExpenseContext = async (filter) => {
         )
         const sum = calculateSum(expenses)
         const comparison = calculateComparison(expenses)
-        console.log(sum)
-        console.log(comparison.sumAll)
         return { expenses, sum, filter, comparison }
         // če želimo filtriratio po id-ju
     } else if (filter.id) {

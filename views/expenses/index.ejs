@@ -36,10 +36,10 @@
         </form>
     </div>
 
-    <div class="col-md-8 mb-4">
+    <div class="col-md-4 mb-4">
         <div class="card">
             <div class="card-body">
-                <p class="class display-6">Obračun</p>
+                <p class="display-6">Obračun</p>
                 <% for (user of comparison.usersObject) { %>
                 <div>
                     <h5 class="lead">
@@ -49,6 +49,13 @@
                 <% } %>
                 <h4>Skupaj: <%= sum %> €</h4>
                 <h3 class="lead text-success"><%= comparison.textOutput%></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <canvas id="myChart"></canvas>
             </div>
         </div>
     </div>
@@ -85,3 +92,6 @@
         </table>
     </div>
 </div>
+<script>
+    const expenses = <%- JSON.stringify(expenses) %>
+</script>
