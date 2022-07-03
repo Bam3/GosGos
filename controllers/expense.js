@@ -1,6 +1,7 @@
 const Category = require('../models/category')
 const Expense = require('../models/expense')
 const User = require('../models/user')
+var _ = require('lodash')
 const userObject = require('../public/javascripts/Classes')
 
 module.exports.getNewExpenseContext = async () => {
@@ -91,17 +92,24 @@ const calculateComparison = (expenses) => {
     let users = []
     let textOutput = ''
     let usersObject = []
+    let parentCategoriesObject = []
     let sumForCalculation = 0
     let activeUsers = []
     let perUser = 0
+    let parentCategories = []
 
-    //pojdem čez vse stroške in pregledam userje
-    expenses.map((expense) => {
-        users.push(expense.payer.username)
+    //pojdem čez stroške in izločim vse glavne kategorije
+    parentCategories = extractFrom(expenses, 'category.parentCategory.name')
+
+    //ustvarimo kategorije glede na filtriranje zgoraj
+    parentCategories.forEach(function (category) {
+        let newCategory = []
+        newCategory = new userObject(category, [], false)
+        parentCategoriesObject.push(newCategory)
     })
 
-    //ponavljajoče odstrnaim tako, da dobim vse uporabnike
-    users = [...new Set(users)]
+    //pojdem čez vse stroške in izločim vse uporabnike
+    users = extractFrom(expenses, 'payer.username')
 
     //Ustvarim uporabnike glede na zbrane zgoraj
     users.forEach(function (user) {
@@ -113,8 +121,20 @@ const calculateComparison = (expenses) => {
         }
         usersObject.push(newUser)
     })
-    // če so users prazni pomeni da nimamo izračuna, ker ni stroškov
+    // če so users prazni pomeni, da nimamo izračuna, ker ni stroškov
     if (usersObject.length !== 0) {
+        // za vse parent kategorije zapišemo koliko je vosta stroškov
+        expenses.forEach(function (expense) {
+            parentCategoriesObject.forEach(function (category) {
+                if (expense.shared) {
+                    if (
+                        expense.category.parentCategory.name === category.name
+                    ) {
+                        category.payments.push(expense.cost)
+                    }
+                }
+            })
+        })
         //vsem zapišem kaj so plačali
         expenses.forEach(function (expense) {
             usersObject.forEach(function (user) {
@@ -125,6 +145,8 @@ const calculateComparison = (expenses) => {
                 }
             })
         })
+
+        //seštejemo vse stroške po uporabnikih
         usersObject.forEach(function (user) {
             if (user.name !== 'Revolut') {
                 sumForCalculation += user.sumOfExpenses
@@ -161,9 +183,19 @@ const calculateComparison = (expenses) => {
             textOutput = 'Stroški poravnani!'
         }
     }
-    return { users, perUser, textOutput, usersObject }
+    return { users, perUser, textOutput, usersObject, parentCategoriesObject }
 }
 
 function roundToTwo(num) {
     return Number(Math.round(num + 'e2') + 'e-2')
+}
+
+//funkcija prečisti array tako da ostanejo samo unikati,
+//argumenta sta array objektov in properti katerega iščemo.
+function extractFrom(arrayOfObjects, property) {
+    let output = []
+    arrayOfObjects.map((object) => {
+        output.push(_.get(object, property))
+    })
+    return [...new Set(output)]
 }

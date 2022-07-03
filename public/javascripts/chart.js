@@ -1,19 +1,29 @@
-let labels = []
-expenses.map((expense) => {
-    labels.push(expense.category.parentCategory.name)
+const labels = []
+const inputData = []
+parentCategoriesObject.forEach((category) => {
+    labels.push(category.name)
+    inputData.push(category.payments.reduce((a, b) => a + b, 0))
 })
-labels = [...new Set(labels)]
 
 const data = {
-    labels: labels,
     datasets: [
         {
-            label: 'My First dataset',
-            backgroundColor: 'rgb(255, 99, 132)',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [0, 10, 5, 2, 20, 30, 45],
+            data: inputData,
+            backgroundColor: [
+                '#0073ff',
+                '#47b6ff',
+                '#57d2ff',
+                '#ffd119',
+                '#ffb10a',
+                '#ff8000',
+                '#ff6314',
+                '#ff7890',
+            ],
+            hoverOffset: 4,
         },
     ],
+
+    labels: labels,
 }
 
 const config = {
@@ -21,6 +31,4 @@ const config = {
     data: data,
     options: {},
 }
-console.log(expenses)
-console.log(labels)
 const myChart = new Chart(document.getElementById('myChart'), config)

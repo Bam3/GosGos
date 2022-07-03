@@ -4,7 +4,7 @@
         <h1>Stroški</h1>
     </div>
 
-    <div class="col-md-4 mb-4">
+    <div class="col-md-2 mb-4">
         <form action="/expenses/filter" method="POST" id="addNewExpense">
             <label for="dateFrom">Dan Plačila - od:</label>
             <div class="input-group mb-3">
@@ -36,7 +36,7 @@
         </form>
     </div>
 
-    <div class="col-md-4 mb-4">
+    <div class="col-md-3 mb-4">
         <div class="card">
             <div class="card-body">
                 <p class="display-6">Obračun</p>
@@ -52,7 +52,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4 mb-4">
+    <div class="col-md-7 mb-4">
         <div class="card">
             <div class="card-body">
                 <canvas id="myChart"></canvas>
@@ -94,4 +94,5 @@
 </div>
 <script>
     const expenses = <%- JSON.stringify(expenses) %>
+    const parentCategoriesObject = <%- JSON.stringify(comparison.parentCategoriesObject) %>
 </script>
