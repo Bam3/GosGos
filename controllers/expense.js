@@ -3,6 +3,7 @@ const Expense = require('../models/expense')
 const User = require('../models/user')
 var _ = require('lodash')
 const userObject = require('../public/javascripts/Classes')
+const user = require('../models/user')
 
 module.exports.getNewExpenseContext = async () => {
     const categories = await Category.find({}).populate('subCategories')
@@ -124,27 +125,14 @@ const calculateComparison = (expenses) => {
     // če so users prazni pomeni, da nimamo izračuna, ker ni stroškov
     if (usersObject.length !== 0) {
         // za vse parent kategorije zapišemo koliko je vosta stroškov
-        expenses.forEach(function (expense) {
-            parentCategoriesObject.forEach(function (category) {
-                if (expense.shared) {
-                    if (
-                        expense.category.parentCategory.name === category.name
-                    ) {
-                        category.payments.push(expense.cost)
-                    }
-                }
-            })
-        })
+        updateUserClass(
+            expenses,
+            parentCategoriesObject,
+            'category.parentCategory.name'
+        )
+
         //vsem zapišem kaj so plačali
-        expenses.forEach(function (expense) {
-            usersObject.forEach(function (user) {
-                if (expense.shared) {
-                    if (expense.payer.username === user.name) {
-                        user.payments.push(expense.cost)
-                    }
-                }
-            })
-        })
+        updateUserClass(expenses, usersObject, 'payer.username')
 
         //seštejemo vse stroške po uporabnikih
         usersObject.forEach(function (user) {
@@ -198,4 +186,19 @@ function extractFrom(arrayOfObjects, property) {
         output.push(_.get(object, property))
     })
     return [...new Set(output)]
+}
+
+function updateUserClass(expenses, usersObject, property) {
+    expenses.forEach(function (expense) {
+        usersObject.forEach(function (user) {
+            if (expense.shared) {
+                if (_.get(expense, property) === user.name) {
+                    user.payments.push(expense.cost)
+                }
+            }
+        })
+    })
+    usersObject.forEach(function (user) {
+        user.payments = [user.sumOfExpenses]
+    })
 }
