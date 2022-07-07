@@ -37,8 +37,8 @@ const { isLoggedIn } = require('./middleware')
 const MongoStore = require('connect-mongo')
 const { authenticate } = require('passport')
 
-const dbUrl = process.env.DB_URL
-//const dbUrl = 'mongodb://localhost:27017/gos-gos'
+//const dbUrl = process.env.DB_URL
+const dbUrl = 'mongodb://localhost:27017/gos-gos'
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
@@ -90,9 +90,6 @@ app.use(flash())
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use(express.static('public'))
-
-const HTML_DIR = path.join(__dirname, '/public/')
-app.use(express.static(HTML_DIR))
 
 app.use(passport.initialize())
 app.use(passport.session())
