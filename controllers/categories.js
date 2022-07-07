@@ -1,9 +1,5 @@
 const Category = require('../models/category')
 
-// category = {
-//     name: 'Dom',
-//     subCategories: ['Elektrika', 'Plin', 'Komunala'],
-// }
 module.exports.createCategory = async (category) => {
     const categoryObject = new Category({ name: category.name })
     await categoryObject.save()
