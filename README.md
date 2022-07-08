@@ -1,10 +1,11 @@
 # GosGos
 
-Pripravi modele:
+Popravi modele:
 
 -   stroški
 -   kategorije
 -   users
+* dodaj barve na kategotije in users (za Chart.js)
 
 CRUD za:
 
@@ -12,17 +13,13 @@ CRUD za:
 -   kategorije
 -   users
 
-Osnovni stili:
-
--   boilerplate
--   navbar
--   footer
-
-ErrorHandler:
-
 Validiranje Form:
 
 -   JOI
--   Client side validation!
 
-section48
+FILTRIRANJE:
+
+-   po Kategorijah
+-   leto/mesec
+
+CHART.js
