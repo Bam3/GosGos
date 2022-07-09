@@ -21,6 +21,7 @@ const {
     getNewExpenseContext,
     createExpense,
     getExpenseContext,
+    updateExpense,
 } = require('./controllers/expense')
 const {
     renderRegister,
@@ -138,13 +139,14 @@ app.get(
     '/expenses/:id/edit',
     catchAsync(async (req, res) => {
         const id = req.params.id
-        const expense = await getExpenseContext({ id })
-        console.log(expense)
-        if (!expense) {
+        const expenses = await getExpenseContext({ id })
+        const usersAndCategories = await getNewExpenseContext()
+        //console.log(expenses.expenses.category)
+        if (!expenses) {
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
         }
-        res.render('expenses/edit', expense)
+        res.render('expenses/edit', { expenses, usersAndCategories })
     })
 )
 
@@ -184,6 +186,14 @@ app.post(
         res.redirect(
             `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}`
         )
+    })
+)
+
+app.put(
+    '/expenses/:id',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        updateExpense(req, res)
     })
 )
 

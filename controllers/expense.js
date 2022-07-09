@@ -15,6 +15,18 @@ module.exports.getNewExpenseContext = async () => {
     return { categories: parentCategories, users }
 }
 
+module.exports.updateExpense = async (req, res) => {
+    const { id } = req.params
+    console.log(req.body.expense)
+    if (!req.body.expense.shared) {
+        req.body.expense.shared = 'false'
+        console.log(req.body.expense)
+    }
+    const expense = await Expense.findByIdAndUpdate(id, { ...req.body.expense })
+    req.flash('success', 'Uspešno posodobljen strošek!')
+    res.redirect(`/expenses/${expense._id}`)
+}
+
 module.exports.createExpense = async (reqBody) => {
     const newExpense = new Expense({
         cost: reqBody.price,

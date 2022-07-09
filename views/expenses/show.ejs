@@ -15,7 +15,19 @@
         </li>
     </ul>
     <div class="card-body">
-        <a href="/expenses">Vsi stroški</a>
-        <a href="/expenses/<%= expenses._id%>/edit">Uredi</a>
+        <a href="/expenses" class="btn btn-primary stretched-link">
+            Vsi stroški
+        </a>
+        <a
+            href="/expenses/<%= expenses._id%>/edit"
+            class="btn btn-info stretched-link"
+            >Uredi
+        </a>
+        <a
+            href="/expenses/<%= expenses._id%>/edit"
+            class="btn btn-danger stretched-link"
+        >
+            Izbriši
+        </a>
     </div>
 </div>

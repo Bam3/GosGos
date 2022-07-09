@@ -3,18 +3,46 @@
     <h1>Uredi strošek</h1>
     <div class="col-md-6">
         <form
-            action="/expenses"
+            action="/expenses/<%=expenses.expenses._id%>?_method=PUT"
             class="validated-form"
-            method="PUT"
+            method="POST"
             id="addNewExpense"
             novalidate
         >
             <div class="mb-3">
-                <label for="category" class="form-label">Kategorija</label>
-                <h4>
-                    <%=expenses.category.parentCategory.name%> -
-                    <%=expenses.category.name%>
+                <label class="form-label">Trenutna kategorija</label>
+                <h4 class="lead">
+                    <%=expenses.expenses.category.parentCategory.name%> -
+                    <%=expenses.expenses.category.name%>
                 </h4>
+            </div>
+
+            <div class="mb-3">
+                <label for="category" class="form-label">Kategorija</label>
+                <select
+                    class="form-select"
+                    id="category"
+                    name="expense[category]"
+                    required
+                >
+                    <option
+                        selected
+                        disabled
+                        value="<%=expenses.expenses.category._id%>"
+                    >
+                        <%=expenses.expenses.category.name%>
+                    </option>
+                    <% for(let category of usersAndCategories.categories){ %>
+                    <optgroup label="<%=category.name%>">
+                        <% for(let subCategory of category.subCategories){ %>
+                        <option value="<%=subCategory._id%>">
+                            <%=subCategory.name%>
+                        </option>
+                        <% } %>
+                    </optgroup>
+                    <% } %>
+                </select>
+                <div class="invalid-feedback">Kategorija je obvezna.</div>
             </div>
 
             <div class="mb-3">
@@ -22,12 +50,12 @@
                 <div class="input-group">
                     <input
                         id="price"
-                        name="price"
+                        name="expense[cost]"
                         type="number"
                         class="form-control"
                         step=".01"
                         aria-label="Amount"
-                        value="<%=expenses.cost%>"
+                        value="<%=expenses.expenses.cost%>"
                         required
                     />
                     <span class="input-group-text">€</span>
@@ -40,11 +68,11 @@
                 <div class="input-group">
                     <textarea
                         id="description"
-                        name="description"
+                        name="expense[description]"
                         type="text"
                         class="form-control"
                     >
-<%= expenses.description %></textarea
+<%= expenses.expenses.description %></textarea
                     >
                 </div>
             </div>
@@ -54,12 +82,12 @@
                 <div class="input-group">
                     <input
                         id="date"
-                        name="payDate"
+                        name="expense[payDate]"
                         type="date"
                         class="form-control"
                         autocomplete
                         required
-                        value="<%=expenses.payDate.toISOString().substring(0, 10)%>"
+                        value="<%=expenses.expenses.payDate.toISOString().substring(0, 10)%>"
                     />
                     <div class="invalid-feedback">Dan plačila je obvezen.</div>
                 </div>
@@ -67,36 +95,54 @@
 
             <div class="mb-3">
                 <label for="user" class="form-label">Plačnik</label>
-                <select class="form-select" id="user" name="user" required>
-                    <option selected disabled value>Izberi plačnika...</option>
-                    <%// for(let user of users) { %>
-                    <option value="<%=//user._id%>">
-                        <%=//user.username%>
+                <select class="form-select" id="user" name="expense[payer]">
+                    <option selected disabled value>
+                        <%= expenses.expenses.payer.username %>
                     </option>
-                    <%// } %>
+                    <% for(let user of usersAndCategories.users) { %>
+                    <option value="<%=user._id%>"><%=user.username%></option>
+                    <% } %>
                 </select>
                 <div class="invalid-feedback">Plačnik je obvezen!</div>
             </div>
 
+            <% if (expenses.expenses.shared) { %>
             <div class="mb-3">
+                <label class="form-check-label" for="flexSwitchCheckChecked"
+                    >Deljen strošek</label
+                >
                 <div class="form-check form-switch">
                     <input
                         class="form-check-input"
                         type="checkbox"
                         role="switch"
                         id="flexSwitchCheckChecked"
-                        name="shared"
+                        name="expense[shared]"
                         value="true"
                         checked
                     />
-                    <label class="form-check-label" for="flexSwitchCheckChecked"
-                        >Deljen strošek</label
-                    >
                 </div>
             </div>
+            <% } else {%>
+            <div class="mb-3">
+                <label class="form-check-label" for="flexSwitchCheckChecked"
+                    >Deljen strošek</label
+                >
+                <div class="form-check form-switch">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="flexSwitchCheckChecked"
+                        name="expense[shared]"
+                        value="true"
+                    />
+                </div>
+            </div>
+            <% } %>
 
             <div class="d-grid col-12 mx-auto">
-                <button class="btn btn-secondary">Dodaj</button>
+                <button class="btn btn-info">Uredi</button>
             </div>
         </form>
     </div>
