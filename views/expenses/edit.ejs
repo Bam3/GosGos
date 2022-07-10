@@ -3,7 +3,7 @@
     <h1>Uredi strošek</h1>
     <div class="col-md-6">
         <form
-            action="/expenses/<%=expenses.expenses._id%>?_method=PUT"
+            action="/expenses/<%=context.expenses._id%>?_method=PUT"
             class="validated-form"
             method="POST"
             id="addNewExpense"
@@ -12,8 +12,8 @@
             <div class="mb-3">
                 <label class="form-label">Trenutna kategorija</label>
                 <h4 class="lead">
-                    <%=expenses.expenses.category.parentCategory.name%> -
-                    <%=expenses.expenses.category.name%>
+                    <%=context.expenses.category.parentCategory.name%> -
+                    <%=context.expenses.category.name%>
                 </h4>
             </div>
 
@@ -28,9 +28,9 @@
                     <option
                         selected
                         disabled
-                        value="<%=expenses.expenses.category._id%>"
+                        value="<%=context.expenses.category._id%>"
                     >
-                        <%=expenses.expenses.category.name%>
+                        <%=context.expenses.category.name%>
                     </option>
                     <% for(let category of usersAndCategories.categories){ %>
                     <optgroup label="<%=category.name%>">
@@ -55,7 +55,7 @@
                         class="form-control"
                         step=".01"
                         aria-label="Amount"
-                        value="<%=expenses.expenses.cost%>"
+                        value="<%=context.expenses.cost%>"
                         required
                     />
                     <span class="input-group-text">€</span>
@@ -72,7 +72,7 @@
                         type="text"
                         class="form-control"
                     >
-<%= expenses.expenses.description %></textarea
+<%= context.expenses.description %></textarea
                     >
                 </div>
             </div>
@@ -87,7 +87,7 @@
                         class="form-control"
                         autocomplete
                         required
-                        value="<%=expenses.expenses.payDate.toISOString().substring(0, 10)%>"
+                        value="<%=context.expenses.payDate.toISOString().substring(0, 10)%>"
                     />
                     <div class="invalid-feedback">Dan plačila je obvezen.</div>
                 </div>
@@ -97,7 +97,7 @@
                 <label for="user" class="form-label">Plačnik</label>
                 <select class="form-select" id="user" name="expense[payer]">
                     <option selected disabled value>
-                        <%= expenses.expenses.payer.username %>
+                        <%= context.expenses.payer.username %>
                     </option>
                     <% for(let user of usersAndCategories.users) { %>
                     <option value="<%=user._id%>"><%=user.username%></option>
@@ -106,7 +106,7 @@
                 <div class="invalid-feedback">Plačnik je obvezen!</div>
             </div>
 
-            <% if (expenses.expenses.shared) { %>
+            <% if (context.expenses.shared) { %>
             <div class="mb-3">
                 <label class="form-check-label" for="flexSwitchCheckChecked"
                     >Deljen strošek</label
@@ -141,7 +141,7 @@
             </div>
             <% } %>
 
-            <div class="d-grid col-6 mx-auto">
+            <div class="d-grid col-12 mx-auto">
                 <button class="btn btn-info">Uredi</button>
             </div>
         </form>

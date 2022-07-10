@@ -140,14 +140,14 @@ app.get(
     '/expenses/:id/edit',
     catchAsync(async (req, res) => {
         const id = req.params.id
-        const expenses = await getExpenseContext({ id })
+        const context = await getExpenseContext({ id })
         const usersAndCategories = await getNewExpenseContext()
         //console.log(expenses.expenses.category)
-        if (!expenses) {
+        if (!context) {
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
         }
-        res.render('expenses/edit', { expenses, usersAndCategories })
+        res.render('expenses/edit', { context, usersAndCategories })
     })
 )
 
@@ -182,6 +182,7 @@ app.post(
 )
 app.post(
     '/expenses/filter',
+    isLoggedIn,
     catchAsync(async (req, res) => {
         const formData = req.body
         res.redirect(
