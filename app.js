@@ -22,6 +22,7 @@ const {
     createExpense,
     getExpenseContext,
     updateExpense,
+    deleteExpense,
 } = require('./controllers/expense')
 const {
     renderRegister,
@@ -194,6 +195,14 @@ app.put(
     isLoggedIn,
     catchAsync(async (req, res) => {
         updateExpense(req, res)
+    })
+)
+
+app.delete(
+    '/expenses/:id',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        deleteExpense(req, res)
     })
 )
 

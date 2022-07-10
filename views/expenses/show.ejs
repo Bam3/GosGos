@@ -15,19 +15,16 @@
         </li>
     </ul>
     <div class="card-body">
-        <a href="/expenses" class="btn btn-primary stretched-link">
-            Vsi stroški
-        </a>
-        <a
-            href="/expenses/<%= expenses._id%>/edit"
-            class="btn btn-info stretched-link"
+        <a href="/expenses" class="btn btn-primary"> Vsi stroški </a>
+        <a href="/expenses/<%= expenses._id%>/edit" class="btn btn-info"
             >Uredi
         </a>
-        <a
-            href="/expenses/<%= expenses._id%>/edit"
-            class="btn btn-danger stretched-link"
+        <form
+            class="d-inline"
+            action="/expenses/<%=expenses._id%>?_method=DELETE"
+            method="POST"
         >
-            Izbriši
-        </a>
+            <button class="btn btn-danger">Izbriši</button>
+        </form>
     </div>
 </div>

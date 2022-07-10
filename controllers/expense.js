@@ -82,6 +82,13 @@ module.exports.getExpenseContext = async (filter) => {
     }
 }
 
+module.exports.deleteExpense = async (req, res) => {
+    const { id } = req.params
+    await Expense.findByIdAndDelete(id)
+    req.flash('success', 'Uspešno izbrisan strošek!')
+    res.redirect('/expenses')
+}
+
 const generateCategoryLabel = async (category) => {
     if (category.parentCategory) {
         await category.populate('parentCategory')
