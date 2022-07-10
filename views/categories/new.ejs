@@ -23,10 +23,23 @@
                 </div>
             </div>
 
-            <div class="mb-3">
+            <div id="subCatBody" class="mb-3">
                 <label for="SubCategories" class="form-label"
-                    >Pod kategorije</label
+                    >Pod kategorije:</label
+                ><button
+                    id="addSubCategory"
+                    type="button"
+                    class="btn btn-outline-success ms-2 mb-2"
                 >
+                    <b>+</b>
+                </button>
+                <button
+                    id="deleteSubCategory"
+                    type="button"
+                    class="btn btn-outline-warning mb-2"
+                >
+                    <b>-</b>
+                </button>
                 <div class="input-group mb-3">
                     <input
                         id="SubCategories"
@@ -36,17 +49,6 @@
                         required
                     />
                 </div>
-                <div class="invalid-feedback">Pod kategorija je obvezna.</div>
-                <div class="input-group mb-3">
-                    <input
-                        id="SubCategories"
-                        name="subCategories[]"
-                        type="text"
-                        class="form-control"
-                        required
-                    />
-                </div>
-                <div class="invalid-feedback">Pod kategorija je obvezna.</div>
             </div>
 
             <div class="d-grid col-12 mx-auto">
@@ -55,3 +57,4 @@
         </form>
     </div>
 </div>
+<script src="/javascripts/addCats.js"></script>
