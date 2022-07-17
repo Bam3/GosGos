@@ -55,14 +55,14 @@
     <div class="col-md-3 mb-4">
         <div class="card">
             <div class="card-body">
-                <canvas id="myChart1"></canvas>
+                <canvas id="myChartCategories"></canvas>
             </div>
         </div>
     </div>
     <div class="col-md-3 mb-4">
         <div class="card">
             <div class="card-body">
-                <canvas id="myChart2"></canvas>
+                <canvas id="myChartUsers"></canvas>
             </div>
         </div>
     </div>
@@ -102,5 +102,7 @@
     const expenses = <%- JSON.stringify(expenses) %>
     const parentCategoriesObject = <%- JSON.stringify(comparison.parentCategoriesObject) %>
     const usersObject = <%- JSON.stringify(comparison.usersObject) %>
+    const usersColor = <%- JSON.stringify(comparison.usersColor) %>
+    const categoriesColor = <%- JSON.stringify(comparison.categoriesColor) %>
 </script>
 <script src="/javascripts/chart.js"></script>

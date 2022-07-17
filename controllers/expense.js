@@ -63,6 +63,7 @@ module.exports.getExpenseContext = async (filter) => {
                 expense.categoryLabel = neki
             })
         )
+
         const sum = calculateSum(expenses)
         const comparison = calculateComparison(expenses)
         return { expenses, sum, filter, comparison }
@@ -110,6 +111,7 @@ const calculateSum = (expenses) => {
 
 const calculateComparison = (expenses) => {
     let users = []
+    let usersColor = []
     let textOutput = ''
     let usersObject = []
     let parentCategoriesObject = []
@@ -117,9 +119,11 @@ const calculateComparison = (expenses) => {
     let activeUsers = []
     let perUser = 0
     let parentCategories = []
+    let categoriesColor = []
 
     //pojdem čez stroške in izločim vse glavne kategorije
     parentCategories = extractFrom(expenses, 'category.parentCategory.name')
+    categoriesColor = extractFrom(expenses, 'category.parentCategory.color')
 
     //ustvarimo kategorije glede na filtriranje zgoraj
     parentCategories.forEach(function (category) {
@@ -130,6 +134,7 @@ const calculateComparison = (expenses) => {
 
     //pojdem čez vse stroške in izločim vse uporabnike
     users = extractFrom(expenses, 'payer.username')
+    usersColor = extractFrom(expenses, 'payer.color')
 
     //Ustvarim uporabnike glede na zbrane zgoraj
     users.forEach(function (user) {
@@ -190,7 +195,15 @@ const calculateComparison = (expenses) => {
             textOutput = 'Stroški poravnani!'
         }
     }
-    return { users, perUser, textOutput, usersObject, parentCategoriesObject }
+    return {
+        users,
+        perUser,
+        textOutput,
+        usersObject,
+        parentCategoriesObject,
+        usersColor,
+        categoriesColor,
+    }
 }
 
 function roundToTwo(num) {

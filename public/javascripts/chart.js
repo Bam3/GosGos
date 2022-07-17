@@ -1,62 +1,58 @@
-const labels = []
-const inputData = []
-const labels1 = []
-const inputData1 = []
+const labelsCategories = []
+const inputDataCategories = []
+const labelsUsers = []
+const inputDataUsers = []
 
+//Categories Pie Chart
 parentCategoriesObject.forEach((category) => {
-    labels.push(category.name)
-    inputData.push(category.payments)
+    labelsCategories.push(category.name)
+    inputDataCategories.push(category.payments)
 })
 
+const dataCategories = {
+    datasets: [
+        {
+            data: inputDataCategories,
+            backgroundColor: categoriesColor,
+            hoverOffset: 4,
+        },
+    ],
+
+    labels: labelsCategories,
+}
+
+const configCategories = {
+    type: 'pie',
+    data: dataCategories,
+    options: {},
+}
+const myChart = new Chart(
+    document.getElementById('myChartCategories'),
+    configCategories
+)
+
+//Users Pie Chart
 usersObject.forEach((user) => {
-    labels1.push(user.name)
-    inputData1.push(user.payments)
+    labelsUsers.push(user.name)
+    inputDataUsers.push(user.payments)
 })
 
-const data = {
+const dataUsers = {
     datasets: [
         {
-            data: inputData,
-            backgroundColor: [
-                '#0073ff',
-                '#47b6ff',
-                '#57d2ff',
-                '#ffd119',
-                '#ffb10a',
-                '#ff8000',
-                '#ff6314',
-                '#ff7890',
-            ],
+            data: inputDataUsers,
+            backgroundColor: usersColor,
             hoverOffset: 4,
         },
     ],
 
-    labels: labels,
+    labels: labelsUsers,
 }
 
-const data1 = {
-    datasets: [
-        {
-            data: inputData1,
-            backgroundColor: ['#0073ff', '#ffb10a', '#ff7890'],
-            hoverOffset: 4,
-        },
-    ],
-
-    labels: labels1,
-}
-
-const config = {
+const configUsers = {
     type: 'pie',
-    data: data,
+    data: dataUsers,
     options: {},
 }
 
-const config1 = {
-    type: 'pie',
-    data: data1,
-    options: {},
-}
-const myChart = new Chart(document.getElementById('myChart1'), config)
-
-const myChart2 = new Chart(document.getElementById('myChart2'), config1)
+const myChart2 = new Chart(document.getElementById('myChartUsers'), configUsers)

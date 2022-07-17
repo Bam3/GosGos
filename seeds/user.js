@@ -5,16 +5,19 @@ const users = [
         username: 'Miha',
         email: 'bastasic.miha@gmail.com',
         password: 'miha123',
+        color: '#2A9D8F',
     },
     {
         username: 'Nataša',
         email: 'natasa.vidmar@gmail.com',
         password: 'natasa123',
+        color: '#E76F51',
     },
     {
         username: 'Revolut',
         email: 'bastasic.revolut@gmail.com',
         password: 'revolut123',
+        color: '#E9C46A',
     },
 ]
 

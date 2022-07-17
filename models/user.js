@@ -8,6 +8,10 @@ const UserSchema = new Schema({
         required: true,
         unique: true,
     },
+    color: {
+        type: String,
+        required: true,
+    },
     // shared: {
     //     type: Boolean,
     //     default: false,
