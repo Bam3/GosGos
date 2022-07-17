@@ -9,17 +9,38 @@
             id="addNewExpense"
             novalidate
         >
-            <div class="mb-3">
-                <label for="category" class="form-label">Kategorija</label>
-                <div class="input-group">
+            <div class="row">
+                <div class="mb-3 col-9">
+                    <label for="category" class="form-label">Kategorija</label>
+                    <div class="input-group">
+                        <input
+                            id="category"
+                            name="name"
+                            type="text"
+                            class="form-control"
+                            required
+                        />
+                        <div class="invalid-feedback">
+                            Kategorija je obvezna.
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3 col-3">
+                    <label for="exampleColorInput" class="form-label"
+                        >Barva</label
+                    >
                     <input
-                        id="category"
-                        name="name"
-                        type="text"
-                        class="form-control"
+                        type="color"
+                        class="form-control form-control-color"
+                        id="exampleColorInput"
+                        value="#563d7c"
+                        title="Izberi barvo kategorije"
+                        name="color"
                         required
                     />
-                    <div class="invalid-feedback">Kategorija je obvezna.</div>
+                    <div class="invalid-feedback">
+                        Barva glavne kategorije je obvezna.
+                    </div>
                 </div>
             </div>
 
@@ -41,15 +62,15 @@
                 >
                     <b>-</b>
                 </button>
-                <div class="input-group mb-3">
-                    <input
-                        id="SubCategories"
-                        name="subCategories[]"
-                        type="text"
-                        class="form-control"
-                        required
-                    />
-                </div>
+            </div>
+            <div class="input-group mb-3">
+                <input
+                    id="SubCategories"
+                    name="subCategories[]"
+                    type="text"
+                    class="form-control"
+                    required
+                />
             </div>
 
             <div class="d-grid col-12 mx-auto">

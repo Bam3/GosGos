@@ -6,7 +6,9 @@
 
     <div class="col-md-12">
         <% for(let category of categories){ %>
-        <div><strong><%=category.name.toUpperCase()%></strong></div>
+        <div style="background-color: <%= category.color %>" class="p-2">
+            <strong><%=category.name.toUpperCase()%></strong>
+        </div>
         <hr />
         <% for(let subCategory of category.subCategories){ %>
         <div><%=subCategory.name%></div>

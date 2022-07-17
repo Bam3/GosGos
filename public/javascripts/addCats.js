@@ -22,7 +22,7 @@ addButton.addEventListener('click', (event) => {
 })
 deleteButton.addEventListener('click', (event) => {
     //zavarujemo elemente ki niso vnosna polja
-    if (body.children.length >= 5) {
+    if (body.children.length >= 4) {
         body.children[body.children.length - 1].remove()
     }
 })

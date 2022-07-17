@@ -1,7 +1,10 @@
 const Category = require('../models/category')
 
 module.exports.createCategory = async (category) => {
-    const categoryObject = new Category({ name: category.name })
+    const categoryObject = new Category({
+        name: category.name,
+        color: category.color,
+    })
     await categoryObject.save()
 
     category.subCategories.map(async (subCategory) => {
