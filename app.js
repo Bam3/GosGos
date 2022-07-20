@@ -225,6 +225,21 @@ app.get(
 )
 
 app.get(
+    '/categories/:id/edit',
+    catchAsync(async (req, res) => {
+        const id = req.params.id
+        const context = await getExpenseContext({ id })
+        const usersAndCategories = await getNewExpenseContext()
+        //console.log(expenses.expenses.category)
+        if (!context) {
+            req.flash('error', 'Iskanega stroška ni moč najti!')
+            return res.redirect('/expenses/new')
+        }
+        res.render('expenses/edit', { context, usersAndCategories })
+    })
+)
+
+app.get(
     '/categories',
     isLoggedIn,
     catchAsync(async (req, res) => {

@@ -3,17 +3,26 @@
     <div class="col-md-12 mb-3">
         <h1>Kategorije</h1>
     </div>
-
-    <div class="col-md-12">
-        <% for(let category of categories){ %>
-        <div style="background-color: <%= category.color %>" class="p-2">
-            <strong><%=category.name.toUpperCase()%></strong>
+    <div class="row">
+        <div class="col-md-12">
+            <% for(let category of categories){ %>
+            <div
+                class="d-grid p-2"
+                style="background-color: <%= category.color %>"
+            >
+                <strong><%=category.name.toUpperCase()%></strong>
+            </div>
+            <a
+                href="/categories/<%= category._id%>/edit"
+                class="btn btn-info col-12 ms-auto"
+                >Uredi
+            </a>
+            <hr />
+            <% for(let subCategory of category.subCategories){ %>
+            <div><%=subCategory.name%></div>
+            <% } %>
+            <div class="mb-4"></div>
+            <% } %>
         </div>
-        <hr />
-        <% for(let subCategory of category.subCategories){ %>
-        <div><%=subCategory.name%></div>
-        <% } %>
-        <div class="mb-4"></div>
-        <% } %>
     </div>
 </div>

@@ -9,6 +9,12 @@ parentCategoriesObject.forEach((category) => {
     inputDataCategories.push(category.payments)
 })
 
+//Users Pie Chart
+usersObject.forEach((user) => {
+    labelsUsers.push(user.name)
+    inputDataUsers.push(user.payments)
+})
+
 const dataCategories = {
     datasets: [
         {
@@ -30,12 +36,6 @@ const myChart = new Chart(
     document.getElementById('myChartCategories'),
     configCategories
 )
-
-//Users Pie Chart
-usersObject.forEach((user) => {
-    labelsUsers.push(user.name)
-    inputDataUsers.push(user.payments)
-})
 
 const dataUsers = {
     datasets: [
