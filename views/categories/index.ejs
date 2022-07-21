@@ -12,11 +12,7 @@
             >
                 <strong><%=category.name.toUpperCase()%></strong>
             </div>
-            <a
-                href="/categories/<%= category._id%>/edit"
-                class="btn btn-info col-12 ms-auto"
-                >Uredi
-            </a>
+
             <hr />
             <% for(let subCategory of category.subCategories){ %>
             <div><%=subCategory.name%></div>
