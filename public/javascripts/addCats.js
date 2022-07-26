@@ -18,7 +18,6 @@ addButton.addEventListener('click', (event) => {
     newInput.required = true
 
     newDiv.append(newInput)
-    //insertAfter(newDiv, body)
     body.append(newDiv)
 })
 deleteButton.addEventListener('click', (event) => {
