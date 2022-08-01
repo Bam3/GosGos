@@ -33,6 +33,7 @@ const {
     createCategory,
     getCategoriesContext,
 } = require('./controllers/categories')
+const { getWhiskeyContext } = require('./controllers/whiskey')
 const { isLoggedIn } = require('./middleware')
 
 //connect to DB
@@ -255,6 +256,15 @@ app.post(
         const newCategory = await createCategory(req.body)
         req.flash('success', 'Kategorija dodan in shranjen')
         res.redirect(`/categories/${newCategory._id}`)
+    })
+)
+
+app.get(
+    '/whiskies',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const context = await getWhiskeyContext()
+        res.render('whiskies/index', context)
     })
 )
 
