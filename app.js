@@ -252,7 +252,6 @@ app.post(
     '/categories',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        console.log(req.body)
         const newCategory = await createCategory(req.body)
         req.flash('success', 'Kategorija dodan in shranjen')
         res.redirect(`/categories/${newCategory._id}`)
