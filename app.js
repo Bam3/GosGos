@@ -33,7 +33,8 @@ const {
     createCategory,
     getCategoriesContext,
 } = require('./controllers/categories')
-const { getWhiskeyContext } = require('./controllers/whiskey')
+
+const { getWhiskeyContext, createWhiskey } = require('./controllers/whiskey')
 const { isLoggedIn } = require('./middleware')
 
 //connect to DB
@@ -265,6 +266,25 @@ app.get(
     catchAsync(async (req, res) => {
         const context = await getWhiskeyContext()
         res.render('whiskies/index', context)
+    })
+)
+
+
+app.get(
+    '/whiskies/new',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        res.render('whiskies/new')
+    })
+)
+
+app.post(
+    '/whiskies',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const newWhiskey = await createWhiskey(req.body)
+        req.flash('success', 'Viski dodan in shranjen!')
+        res.redirect(`/whiskies/${newWhiskey._id}`)
     })
 )
 

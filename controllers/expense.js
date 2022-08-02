@@ -26,7 +26,6 @@ module.exports.updateExpense = async (req, res) => {
 module.exports.createExpense = async (reqBody) => {
     const newExpense = new Expense({
         cost: reqBody.price,
-        //tukaj dodaj trenutno prijavljenega uporabnika, ko boš naredil uporabnike in session!
         payer: reqBody.user,
         payDate: new Date(reqBody.payDate),
         description: reqBody.description,

@@ -1,0 +1,106 @@
+<% layout('layouts/boilerplate')%>
+<div class="row">
+    <h1>Dodaj Whiskey</h1>
+    <div class="col-md-6">
+        <form
+            action="/whiskies"
+            class="validated-form"
+            method="POST"
+            id="addNewExpense"
+            novalidate
+        >
+            <div class="mb-3">
+                <label for="name" class="form-label">Ime</label>
+                <div class="input-group">
+                    <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        class="form-control"
+                        aria-label="Whiskey Name"
+                        required
+                    />
+                    <div class="invalid-feedback">Ime je obvezno.</div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="region" class="form-label">Regija - Država</label>
+                <div class="input-group">
+                    <input
+                        id="region"
+                        name="region"
+                        type="text"
+                        class="form-control"
+                        aria-label="Whiskey Region"
+                    />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="dateOfPurchase" class="form-label"
+                    >Dan Nakupa</label
+                >
+                <div class="input-group">
+                    <input
+                        id="dateOfPurchase"
+                        name="dateOfPurchase"
+                        type="date"
+                        class="form-control"
+                        autocomplete
+                        required
+                    />
+                    <div class="invalid-feedback">Dan nakupa je obvezen.</div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="price" class="form-label">Cena</label>
+                <div class="input-group">
+                    <input
+                        id="price"
+                        name="price"
+                        type="number"
+                        class="form-control"
+                        step=".01"
+                        aria-label="Amount"
+                        required
+                    />
+                    <span class="input-group-text">€</span>
+                    <div class="invalid-feedback">Cena je obvezna.</div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="age" class="form-label">Starost</label>
+                <div class="input-group">
+                    <input
+                        id="age"
+                        name="age"
+                        type="text"
+                        class="form-control"
+                        aria-label="Whiskey Age"
+                        required
+                    />
+                    <div class="invalid-feedback">Starost je obvezna.</div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="comment" class="form-label">Komentar</label>
+                <div class="input-group">
+                    <textarea
+                        id="comment"
+                        name="comment"
+                        type="text"
+                        class="form-control"
+                    ></textarea>
+                </div>
+            </div>
+
+            <div class="d-grid col-12 mx-auto">
+                <button class="btn btn-secondary">Dodaj</button>
+            </div>
+        </form>
+    </div>
+</div>
