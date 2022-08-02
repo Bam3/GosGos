@@ -7,3 +7,16 @@ module.exports.getWhiskeyContext = async () => {
 
     return { whiskies }
 }
+module.exports.createWhiskey = async (whiskey) => {
+    const newWhiskey = new Whiskey({
+        name: whiskey.name,
+        region: whiskey.region,
+        dateOfPurchase: new Date(whiskey.dateOfPurchase),
+        price: whiskey.price,
+        age: whiskey.age,
+        comment: whiskey.comment,
+    })
+    await newWhiskey.save()
+
+    return newWhiskey
+}
