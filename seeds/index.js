@@ -8,6 +8,7 @@ const mongoose = require('mongoose')
 const { seedCategories } = require('./category')
 const { seedExpenses } = require('./expense')
 const { seedUsers } = require('./user')
+const { seedWhiskies } = require('./whiskey')
 
 //local DB
 const dbUrl = 'mongodb://localhost:27017/gos-gos'
@@ -18,6 +19,7 @@ mongoose
         //await seedUsers()
         //await seedCategories()
         //await seedExpenses()
+        await seedWhiskies()
 
         await client.disconnect()
     })
