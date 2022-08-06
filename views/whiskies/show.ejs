@@ -1,0 +1,29 @@
+<% layout('layouts/boilerplate')%>
+<div class="card" style="width: auto">
+    <div class="card-body">
+        <h5 class="card-title"><%= whiskey.name%></h5>
+        <p class="card-text"><%= whiskey.region%></p>
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">Znesek: <%= whiskey.price%> €</li>
+        <li class="list-group-item">Starost: <%= whiskey.age%></li>
+        <li class="list-group-item">Komentar: <%= whiskey.comment%></li>
+        <li class="list-group-item">
+            Datum nakupa: <%= whiskey.dateOfPurchase.toLocaleDateString('sl-SI')
+            %>
+        </li>
+    </ul>
+    <div class="card-body">
+        <a href="/whiskies" class="btn btn-primary"> Nazaj </a>
+        <a href="/whiskies/<%= whiskey._id%>/edit" class="btn btn-info"
+            >Uredi
+        </a>
+        <form
+            class="d-inline"
+            action="/whiskies/<%=whiskey._id%>?_method=DELETE"
+            method="POST"
+        >
+            <button class="btn btn-danger">Izbriši</button>
+        </form>
+    </div>
+</div>

@@ -34,7 +34,12 @@ const {
     getCategoriesContext,
 } = require('./controllers/categories')
 
-const { getWhiskeyContext, createWhiskey } = require('./controllers/whiskey')
+const {
+    getWhiskeyContext,
+    createWhiskey,
+    updateWhiskey,
+    deleteWhiskey,
+} = require('./controllers/whiskey')
 const { isLoggedIn } = require('./middleware')
 
 //connect to DB
@@ -277,6 +282,35 @@ app.get(
     })
 )
 
+app.get(
+    '/whiskies/:id',
+    catchAsync(async (req, res) => {
+        const id = req.params.id
+        console.log(id)
+        const context = await getWhiskeyContext(id)
+        if (!context) {
+            req.flash('error', 'Iskanega viskija ni moč najti!')
+            return res.redirect('/whiskies')
+        }
+        console.log(context)
+        res.render('whiskies/show', context)
+    })
+)
+
+app.get(
+    '/whiskies/:id/edit',
+    catchAsync(async (req, res) => {
+        const id = req.params.id
+        const context = await getWhiskeyContext(id)
+        console.log(context)
+        if (!context) {
+            req.flash('error', 'Iskanega viskija ni moč najti!')
+            return res.redirect('/whiskies')
+        }
+        res.render('whiskies/edit', { context })
+    })
+)
+
 app.post(
     '/whiskies',
     isLoggedIn,
@@ -284,6 +318,22 @@ app.post(
         const newWhiskey = await createWhiskey(req.body)
         req.flash('success', 'Viski dodan in shranjen!')
         res.redirect(`/whiskies/${newWhiskey._id}`)
+    })
+)
+
+app.put(
+    '/whiskies/:id',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        updateWhiskey(req, res)
+    })
+)
+
+app.delete(
+    '/whiskies/:id',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        deleteWhiskey(req, res)
     })
 )
 
