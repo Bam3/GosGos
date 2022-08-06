@@ -17,6 +17,7 @@ const session = require('express-session')
 
 const Expense = require('./models/expense')
 const User = require('./models/user')
+
 const {
     getNewExpenseContext,
     createExpense,
@@ -24,11 +25,13 @@ const {
     updateExpense,
     deleteExpense,
 } = require('./controllers/expense')
+
 const {
     renderRegister,
     renderLogin,
     logoutUser,
 } = require('./controllers/users')
+
 const {
     createCategory,
     getCategoriesContext,
@@ -40,14 +43,15 @@ const {
     updateWhiskey,
     deleteWhiskey,
 } = require('./controllers/whiskey')
+const { createNote, getWishlistContext } = require('./controllers/wishlist')
 const { isLoggedIn } = require('./middleware')
 
 //connect to DB
 const MongoStore = require('connect-mongo')
 const { authenticate } = require('passport')
 
-//const dbUrl = process.env.DB_URL
-const dbUrl = 'mongodb://localhost:27017/gos-gos'
+const dbUrl = process.env.DB_URL
+//const dbUrl = 'mongodb://localhost:27017/gos-gos'
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
@@ -264,6 +268,33 @@ app.post(
         res.redirect(`/categories/${newCategory._id}`)
     })
 )
+app.get(
+    '/whiskies/wishlist',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const context = await getWishlistContext()
+        res.render('whiskies/wishlist/index', context)
+    })
+)
+
+app.get(
+    '/whiskies/wishlist/new',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        res.render('whiskies/wishlist/new')
+    })
+)
+
+app.post(
+    '/whiskies/wishlist',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const newNote = await createNote(req.body)
+
+        req.flash('success', 'Zapis dodan in shranjen!')
+        res.redirect(`/whiskies/wishlist`)
+    })
+)
 
 app.get(
     '/whiskies',
@@ -286,13 +317,11 @@ app.get(
     '/whiskies/:id',
     catchAsync(async (req, res) => {
         const id = req.params.id
-        console.log(id)
         const context = await getWhiskeyContext(id)
         if (!context) {
             req.flash('error', 'Iskanega viskija ni moč najti!')
             return res.redirect('/whiskies')
         }
-        console.log(context)
         res.render('whiskies/show', context)
     })
 )
@@ -302,7 +331,6 @@ app.get(
     catchAsync(async (req, res) => {
         const id = req.params.id
         const context = await getWhiskeyContext(id)
-        console.log(context)
         if (!context) {
             req.flash('error', 'Iskanega viskija ni moč najti!')
             return res.redirect('/whiskies')

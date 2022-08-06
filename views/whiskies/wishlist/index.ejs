@@ -1,0 +1,21 @@
+<% layout('layouts/boilerplate')%>
+<div class="row">
+    <div class="col-md-12">
+        <h1>My Whiskey WishList</h1>
+    </div>
+    <div class="col-md-12 mb-3">
+        <a href="/whiskies/wishlist/new" class="btn btn-primary"> + DODAJ </a>
+    </div>
+    <% for(let note of notes){ %>
+    <div class="list-group my-3">
+        <a href="#" class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1"><%=note.title %></h5>
+                <small class="text-muted"><%=note.dateOfCreation %> </small>
+            </div>
+            <p class="mb-1"><%=note.content %></p>
+            <small class="text-muted">...</small>
+        </a>
+    </div>
+    <% } %>
+</div>
