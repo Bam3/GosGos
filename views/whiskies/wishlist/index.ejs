@@ -7,11 +7,13 @@
         <a href="/whiskies/wishlist/new" class="btn btn-primary"> + DODAJ </a>
     </div>
     <% for(let note of notes){ %>
-    <div class="list-group my-3">
+    <div class="list-group px-3 mb-3">
         <a href="#" class="list-group-item list-group-item-action">
             <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1"><%=note.title %></h5>
-                <small class="text-muted"><%=note.dateOfCreation %> </small>
+                <small class="text-muted"
+                    ><%=note.dateOfCreation.toLocaleDateString('locales') %>
+                </small>
             </div>
             <p class="mb-1"><%=note.content %></p>
             <small class="text-muted">...</small>
