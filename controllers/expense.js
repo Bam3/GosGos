@@ -4,6 +4,7 @@ const User = require('../models/user')
 var _ = require('lodash')
 const userObject = require('../public/javascripts/Classes')
 const user = require('../models/user')
+const { populate } = require('../models/category')
 
 module.exports.getNewExpenseContext = async () => {
     const categories = await Category.find({}).populate('subCategories')
@@ -44,17 +45,62 @@ module.exports.createExpense = async (reqBody) => {
 module.exports.getExpenseContext = async (filter) => {
     let filterObject = {}
     let expenses = {}
+    let expensesAggregate = {}
     //če podamo filter datuma, od - do
     if (filter.from && filter.to) {
         filterObject = {
             payDate: {
-                $gte: new Date(filter.from).toISOString(),
-                $lte: new Date(filter.to).toISOString(),
+                $gte: new Date(filter.from),
+                $lte: new Date(filter.to),
             },
         }
+
+        expensesAggregate = await Expense.aggregate([
+            {
+                $match: {
+                    payDate: {
+                        $gte: new Date(filter.from),
+                        $lte: new Date(filter.to),
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: '$category',
+                    sum: { $sum: '$cost' },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'cat',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'cat[0].parentCategory',
+                    foreignField: '_id',
+                    as: 'ParentCat',
+                },
+            },
+        ])
+
+        console.log(expensesAggregate[1])
+
         expenses = await Expense.find(filterObject)
             .sort({ payDate: -1 })
-            .populate(['category', 'payer'])
+            .populate({
+                path: 'category',
+                populate: {
+                    path: 'parentCategory',
+                },
+            })
+            .populate('payer')
+
+        //console.log(expenses[0])
 
         await Promise.all(
             expenses.map(async (expense) => {
