@@ -1,7 +1,6 @@
 const User = require('../models/user')
 
-const users = [
-    {
+const users = [{
         username: 'Miha',
         email: 'bastasic.miha@gmail.com',
         password: 'miha123',
@@ -25,8 +24,17 @@ module.exports.seedUsers = async () => {
     await User.deleteMany({})
     await Promise.all(
         users.map(async (user) => {
-            const { email, username, password } = user
-            const userObject = new User({ email, username })
+            const {
+                email,
+                username,
+                password,
+                color
+            } = user
+            const userObject = new User({
+                email,
+                username,
+                color
+            })
             console.log(userObject)
             return await User.register(userObject, password)
         })
