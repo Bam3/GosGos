@@ -3,10 +3,7 @@ const Expense = require('../models/expense')
 const User = require('../models/user')
 var _ = require('lodash')
 const userObject = require('../public/javascripts/Classes')
-const user = require('../models/user')
-const {
-    populate
-} = require('../models/category')
+
 
 module.exports.getNewExpenseContext = async () => {
     const categories = await Category.find({}).populate('subCategories')
@@ -65,40 +62,48 @@ module.exports.getExpenseContext = async (filter) => {
         }
 
         expensesAggregate = await Expense.aggregate([{
+                $lookup: {
+                    from: 'categories',
+                    localField: 'category',
+                    foreignField: '_id',
+                    as: 'category',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'category.parentCategory',
+                    foreignField: '_id',
+                    as: 'parentCat',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'payer',
+                    foreignField: '_id',
+                    as: 'payer',
+                },
+            },
+            {
                 $match: {
-                    payDate: {
-                        $gte: new Date(filter.from),
-                        $lte: new Date(filter.to),
-                    },
-                },
-            },
-            {
-                $group: {
-                    _id: '$category',
-                    sum: {
-                        $sum: '$cost'
-                    },
-                },
-            },
-            {
-                $lookup: {
-                    from: 'categories',
-                    localField: '_id',
-                    foreignField: '_id',
-                    as: 'cat',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'categories',
-                    localField: 'cat[0].parentCategory',
-                    foreignField: '_id',
-                    as: 'ParentCat',
+                    $and: [{
+                        payDate: {
+                            $gte: new Date(filter.from),
+                            $lte: new Date(filter.to)
+                        }
+                    }, {
+                        'parentCat.name': {
+                            $eq: 'BMW'
+                        }
+                    }]
                 },
             },
         ])
 
-        console.log(expensesAggregate[1])
+
+
+        console.log(expensesAggregate)
 
         expenses = await Expense.find(filterObject)
             .sort({
@@ -112,7 +117,7 @@ module.exports.getExpenseContext = async (filter) => {
             })
             .populate('payer')
 
-        console.log(expenses[0])
+        //console.log(expenses[0])
 
         await Promise.all(
             expenses.map(async (expense) => {
@@ -120,7 +125,7 @@ module.exports.getExpenseContext = async (filter) => {
                 expense.categoryLabel = neki
             })
         )
-
+        //console.log(expenses[0])
         const sum = calculateSum(expenses)
         const comparison = calculateComparison(expenses)
         return {
@@ -131,10 +136,17 @@ module.exports.getExpenseContext = async (filter) => {
         }
         // če želimo filtriratio po id-ju
     } else if (filter.id) {
-        expenses = await Expense.findById(filter.id).populate([
-            'category',
-            'payer',
-        ])
+        expenses = await Expense.findById(filter.id)
+            .sort({
+                payDate: -1
+            })
+            .populate({
+                path: 'category',
+                populate: {
+                    path: 'parentCategory',
+                },
+            })
+            .populate('payer')
         if (expenses) {
             const neki = await generateCategoryLabel(expenses.category)
             expenses.categoryLabel = neki
