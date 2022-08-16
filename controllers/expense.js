@@ -4,7 +4,6 @@ const User = require('../models/user')
 var _ = require('lodash')
 const userObject = require('../public/javascripts/Classes')
 
-
 module.exports.getNewExpenseContext = async () => {
     const categories = await Category.find({}).populate('subCategories')
     const users = await User.find({})
@@ -14,21 +13,19 @@ module.exports.getNewExpenseContext = async () => {
 
     return {
         categories: parentCategories,
-        users
+        users,
     }
 }
 
 module.exports.updateExpense = async (req, res) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     console.log(req.body.expense)
     if (!req.body.expense.shared) {
         req.body.expense.shared = 'false'
         console.log(req.body.expense)
     }
     const expense = await Expense.findByIdAndUpdate(id, {
-        ...req.body.expense
+        ...req.body.expense,
     })
     req.flash('success', 'Uspešno posodobljen strošek!')
     res.redirect(`/expenses/${expense._id}`)
@@ -61,7 +58,8 @@ module.exports.getExpenseContext = async (filter) => {
             },
         }
 
-        expensesAggregate = await Expense.aggregate([{
+        expensesAggregate = await Expense.aggregate([
+            {
                 $lookup: {
                     from: 'categories',
                     localField: 'category',
@@ -87,27 +85,37 @@ module.exports.getExpenseContext = async (filter) => {
             },
             {
                 $match: {
-                    $and: [{
-                        payDate: {
-                            $gte: new Date(filter.from),
-                            $lte: new Date(filter.to)
-                        }
-                    }, {
-                        'parentCat.name': {
-                            $eq: 'BMW'
-                        }
-                    }]
+                    $and: [
+                        {
+                            payDate: {
+                                $gte: new Date(filter.from),
+                                $lte: new Date(filter.to),
+                            },
+                        },
+                        {
+                            $or: [
+                                {
+                                    'parentCat.name': {
+                                        $eq: 'Dom',
+                                    },
+                                },
+                                {
+                                    'parentCat.name': {
+                                        $eq: '',
+                                    },
+                                },
+                            ],
+                        },
+                    ],
                 },
             },
         ])
-
-
 
         console.log(expensesAggregate)
 
         expenses = await Expense.find(filterObject)
             .sort({
-                payDate: -1
+                payDate: -1,
             })
             .populate({
                 path: 'category',
@@ -132,13 +140,13 @@ module.exports.getExpenseContext = async (filter) => {
             expenses,
             sum,
             filter,
-            comparison
+            comparison,
         }
         // če želimo filtriratio po id-ju
     } else if (filter.id) {
         expenses = await Expense.findById(filter.id)
             .sort({
-                payDate: -1
+                payDate: -1,
             })
             .populate({
                 path: 'category',
@@ -151,7 +159,7 @@ module.exports.getExpenseContext = async (filter) => {
             const neki = await generateCategoryLabel(expenses.category)
             expenses.categoryLabel = neki
             return {
-                expenses
+                expenses,
             }
         } else {
             return undefined
@@ -160,9 +168,7 @@ module.exports.getExpenseContext = async (filter) => {
 }
 
 module.exports.deleteExpense = async (req, res) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     await Expense.findByIdAndDelete(id)
     req.flash('success', 'Uspešno izbrisan strošek!')
     res.redirect('/expenses')

@@ -5,7 +5,8 @@ var _ = require('lodash')
 
 module.exports.filterFunk = async () => {
     let expensesAggregate = {}
-    expensesAggregate = await Expense.aggregate([{
+    expensesAggregate = await Expense.aggregate([
+        {
             $match: {
                 payDate: {
                     $gte: new Date(filter.from),
@@ -41,7 +42,7 @@ module.exports.filterFunk = async () => {
             $group: {
                 _id: '$parentCat.name',
                 sum: {
-                    $sum: '$cost'
+                    $sum: '$cost',
                 },
             },
         },
@@ -50,8 +51,10 @@ module.exports.filterFunk = async () => {
 }
 
 module.exports.filterByCategoryAndDate = async (date, category) => {
-    const content = {}
-    content = await Expense.aggregate([{
+    let expenses = {}
+    console.log(date)
+    expenses = await Expense.aggregate([
+        {
             $lookup: {
                 from: 'categories',
                 localField: 'category',
@@ -77,19 +80,22 @@ module.exports.filterByCategoryAndDate = async (date, category) => {
         },
         {
             $match: {
-                $and: [{
-                    payDate: {
-                        $gte: new Date(date.from),
-                        $lte: new Date(date.to)
-                    }
-                }, {
-                    'parentCat.name': {
-                        $eq: category
-                    }
-                }]
+                $and: [
+                    {
+                        payDate: {
+                            $gte: new Date(date.dateFrom),
+                            $lte: new Date(date.dateTo),
+                        },
+                    },
+                    {
+                        'parentCat.name': {
+                            $eq: category,
+                        },
+                    },
+                ],
             },
         },
     ])
-    console.log(content)
-
+    console.log(expenses[0])
+    return { expenses }
 }

@@ -26,6 +26,8 @@ const {
     deleteExpense,
 } = require('./controllers/expense')
 
+const { filterByCategoryAndDate } = require('./controllers/filters')
+
 const {
     renderRegister,
     renderLogin,
@@ -179,6 +181,30 @@ app.get(
             const context = await getExpenseContext({ from, to })
             res.render('expenses/index', context)
         }
+    })
+)
+
+app.get(
+    '/search',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        from = `${new Date().toISOString().substring(0, 8)}01`
+        to = new Date().toISOString().substring(0, 10)
+        const context = await filterByCategoryAndDate({ from, to }, 'Dom')
+        console.log(context)
+        res.render('expenses/search', context)
+    })
+)
+
+app.post(
+    '/search',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const formData = req.body
+        const context = await filterByCategoryAndDate(formData, 'Dom')
+        console.log(formData)
+        console.log(context)
+        res.render('expenses/search', context)
     })
 )
 
