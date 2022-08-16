@@ -29,10 +29,10 @@ mongoose
         useUnifiedTopology: true
     })
     .then(async (client) => {
-        await seedUsers()
-        await seedCategories()
+        //await seedUsers()
+        //await seedCategories()
         await seedExpenses()
-        await seedWhiskies()
+        //await seedWhiskies()
 
         await client.disconnect()
     })
