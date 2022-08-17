@@ -3,35 +3,47 @@
     <div class="col-md-12">
         <h1>Iskanje</h1>
     </div>
-
     <div class="col-md-3 mb-4">
         <form action="/search" method="POST" id="addNewExpense">
-            <label for="dateFrom">Dan Plačila - od:</label>
+            <label for="dateFrom">Datum - od:</label>
             <div class="input-group mb-3">
-                <input
-                    id="dateFrom"
-                    name="dateFrom"
-                    type="date"
-                    class="form-control"
-                    autocomplete
-                    value="<%= new Date()%>"
-                />
+                <input id="dateFrom" name="dateFrom" type="date" class="form-control" autocomplete
+                    value="<%= from %>" />
             </div>
 
-            <label for="dateTo">Dan Plačila - do:</label>
+            <label for="dateTo">Datum - do:</label>
             <div class="input-group mb-3">
-                <input
-                    id="dateTo"
-                    name="dateTo"
-                    type="date"
-                    class="form-control"
-                    autocomplete
-                    value="<%= new Date() %>"
-                />
+                <input id="dateTo" name="dateTo" type="date" class="form-control" autocomplete value="<%= to %>" />
+            </div>
+
+            <div class="mb-3">
+                <label for="category" class="form-label">Kategorija</label>
+                <select class="form-select" id="category" name="category">
+                    <option selected disabled value="">Izberi...</option>
+                    <% for(let category of categoriesAndUsers.categories){ %>
+                    <option value="<%=category.name%>">
+                        <%=category.name%>
+                    </option>
+                    <% } %>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="subCategory" class="form-label">Podkategorija</label>
+                <select class="form-select" id="subCategory" name="subCategory">
+                    <option selected disabled value="">Izberi...</option>
+                    <% for(let category of categoriesAndUsers.categories){ %>
+                    <% for(let subCategory of category.subCategories){ %>
+                    <option value="<%=subCategory.name%>">
+                        <%=subCategory.name%>
+                    </option>
+                    <% } %>
+                    <% } %>
+                </select>
             </div>
 
             <div class="d-grid col-12 mx-auto">
-                <button class="btn btn-secondary">Filtriraj</button>
+                <button class="btn btn-secondary">Išči</button>
             </div>
         </form>
     </div>
@@ -47,19 +59,18 @@
                 </tr>
             </thead>
             <tbody>
-                <% for (let i = 0; i < expenses.length; i++) { %>
+                <% for (let i = 0; i < context.expenses.length; i++) { %>
                 <tr>
                     <th class="d-none d-sm-block" scope="row"><%= i+1 %></th>
                     <td>
-                        <a href="/expenses/<%= expenses[i].id %>">
-                            <%=expenses[i].payDate.toLocaleDateString('locales')
-                            %></a
-                        >
+                        <a href="/expenses/<%= context.expenses[i]._id %>">
+                            <%=context.expenses[i].payDate.toLocaleDateString('locales')
+                            %></a>
                     </td>
-                    <td><%=expenses[i].category[0].name %></td>
-                    <td><%=expenses[i].cost %> €</td>
+                    <td><%=context.expenses[i].category[0].name %></td>
+                    <td><%=context.expenses[i].cost %> €</td>
                     <td class="d-none d-sm-block">
-                        <%=expenses[i].payer[0].username %>
+                        <%=context.expenses[i].payer[0].username %>
                     </td>
                 </tr>
                 <% } %>

@@ -5,8 +5,7 @@ var _ = require('lodash')
 
 module.exports.filterFunk = async () => {
     let expensesAggregate = {}
-    expensesAggregate = await Expense.aggregate([
-        {
+    expensesAggregate = await Expense.aggregate([{
             $match: {
                 payDate: {
                     $gte: new Date(filter.from),
@@ -47,14 +46,27 @@ module.exports.filterFunk = async () => {
             },
         },
     ])
-    console.log(expensesAggregate)
 }
 
-module.exports.filterByCategoryAndDate = async (date, category) => {
+module.exports.filterByCategoryAndDate = async (date, category, subCategory) => {
     let expenses = {}
-    console.log(date)
-    expenses = await Expense.aggregate([
-        {
+    console.log(category, subCategory)
+    let filterBy = {}
+    if (!subCategory) {
+        filterBy = {
+            'parentCat.name': {
+                $eq: category,
+            },
+        }
+    } else {
+        filterBy = {
+            'category.name': {
+                $eq: subCategory,
+            },
+        }
+    }
+
+    expenses = await Expense.aggregate([{
             $lookup: {
                 from: 'categories',
                 localField: 'category',
@@ -80,22 +92,25 @@ module.exports.filterByCategoryAndDate = async (date, category) => {
         },
         {
             $match: {
-                $and: [
-                    {
+                $and: [{
                         payDate: {
                             $gte: new Date(date.dateFrom),
                             $lte: new Date(date.dateTo),
                         },
                     },
-                    {
-                        'parentCat.name': {
-                            $eq: category,
-                        },
-                    },
+                    filterBy,
                 ],
             },
         },
+        {
+            $sort: {
+                payDate: -1
+            }
+        },
+        
     ])
-    console.log(expenses[0])
-    return { expenses }
+    console.log(expenses)
+    return {
+        expenses
+    }
 }

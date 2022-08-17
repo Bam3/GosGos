@@ -16,8 +16,3 @@ module.exports.createCategory = async (category) => {
     })
     return categoryObject
 }
-
-module.exports.getCategoriesContext = async () => {
-    const categories = await Category.find({}).populate('parentCategory')
-    return { categories }
-}

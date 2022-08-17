@@ -19,14 +19,16 @@ const Expense = require('./models/expense')
 const User = require('./models/user')
 
 const {
-    getNewExpenseContext,
+    getAllCategoriesAndUsers,
     createExpense,
     getExpenseContext,
     updateExpense,
     deleteExpense,
 } = require('./controllers/expense')
 
-const { filterByCategoryAndDate } = require('./controllers/filters')
+const {
+    filterByCategoryAndDate
+} = require('./controllers/filters')
 
 const {
     renderRegister,
@@ -36,7 +38,6 @@ const {
 
 const {
     createCategory,
-    getCategoriesContext,
 } = require('./controllers/categories')
 
 const {
@@ -45,16 +46,26 @@ const {
     updateWhiskey,
     deleteWhiskey,
 } = require('./controllers/whiskey')
-const { createNote, getWishlistContext } = require('./controllers/wishlist')
-const { isLoggedIn } = require('./middleware')
+const {
+    createNote,
+    getWishlistContext
+} = require('./controllers/wishlist')
+const {
+    isLoggedIn
+} = require('./middleware')
 
 //connect to DB
 const MongoStore = require('connect-mongo')
-const { authenticate } = require('passport')
+const {
+    authenticate
+} = require('passport')
 
 //const dbUrl = process.env.DB_URL
 const dbUrl = 'mongodb://localhost:27017/gos-gos'
-mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(dbUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', () => {
@@ -102,7 +113,9 @@ app.set('contollers', path.join(__dirname, 'controllers'))
 app.set('public', path.join(__dirname, 'public'))
 app.use(flash())
 
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({
+    extended: true
+}))
 app.use(methodOverride('_method'))
 app.use(express.static('public'))
 
@@ -131,7 +144,7 @@ app.get(
     isLoggedIn,
     catchAsync(async (req, res) => {
         //get categories from DB for form
-        const context = await getNewExpenseContext()
+        const context = await getAllCategoriesAndUsers()
         res.render('expenses/new', context)
     })
 )
@@ -140,7 +153,9 @@ app.get(
     '/expenses/:id',
     catchAsync(async (req, res) => {
         const id = req.params.id
-        const context = await getExpenseContext({ id })
+        const context = await getExpenseContext({
+            id
+        })
         if (!context) {
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
@@ -153,14 +168,19 @@ app.get(
     '/expenses/:id/edit',
     catchAsync(async (req, res) => {
         const id = req.params.id
-        const context = await getExpenseContext({ id })
-        const usersAndCategories = await getNewExpenseContext()
+        const context = await getExpenseContext({
+            id
+        })
+        const usersAndCategories = await getAllCategoriesAndUsers()
         //console.log(expenses.expenses.category)
         if (!context) {
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
         }
-        res.render('expenses/edit', { context, usersAndCategories })
+        res.render('expenses/edit', {
+            context,
+            usersAndCategories
+        })
     })
 )
 
@@ -168,7 +188,10 @@ app.get(
     '/expenses',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        let { from, to } = req.query
+        let {
+            from,
+            to
+        } = req.query
         if (!from || !to) {
             from = `${new Date().toISOString().substring(0, 8)}01`
             to = new Date().toISOString().substring(0, 10)
@@ -178,7 +201,11 @@ app.get(
             req.flash('error', 'Začetni datum ne mora biti po končnem!')
             res.redirect('/expenses/new')
         } else {
-            const context = await getExpenseContext({ from, to })
+            const context = await getExpenseContext({
+                from,
+                to
+            })
+
             res.render('expenses/index', context)
         }
     })
@@ -190,9 +217,18 @@ app.get(
     catchAsync(async (req, res) => {
         from = `${new Date().toISOString().substring(0, 8)}01`
         to = new Date().toISOString().substring(0, 10)
-        const context = await filterByCategoryAndDate({ from, to }, 'Dom')
-        console.log(context)
-        res.render('expenses/search', context)
+        const date = {
+            from,
+            to
+        }
+        const categoriesAndUsers = await getAllCategoriesAndUsers()
+        const context = await filterByCategoryAndDate(date)
+        res.render('expenses/search', {
+            context,
+            categoriesAndUsers,
+            from,
+            to,
+        })
     })
 )
 
@@ -201,10 +237,13 @@ app.post(
     isLoggedIn,
     catchAsync(async (req, res) => {
         const formData = req.body
-        const context = await filterByCategoryAndDate(formData, 'Dom')
-        console.log(formData)
-        console.log(context)
-        res.render('expenses/search', context)
+        const context = await filterByCategoryAndDate(formData, req.body.category, req.body.subCategory)
+        const categoriesAndUsers = await getAllCategoriesAndUsers()
+
+        res.render('expenses/search', {
+            context,
+            categoriesAndUsers,
+        })
     })
 )
 
@@ -252,7 +291,9 @@ app.get(
     '/categories/:id',
     catchAsync(async (req, res) => {
         const id = req.params.id
-        const context = await getExpenseContext({ id })
+        const context = await getExpenseContext({
+            id
+        })
         if (!context) {
             req.flash('error', 'Iskane kategorije ni moč najti!')
             return res.redirect('/categories')
@@ -265,14 +306,19 @@ app.get(
     '/categories/:id/edit',
     catchAsync(async (req, res) => {
         const id = req.params.id
-        const context = await getExpenseContext({ id })
-        const usersAndCategories = await getNewExpenseContext()
+        const context = await getExpenseContext({
+            id
+        })
+        const usersAndCategories = await getAllCategoriesAndUsers()
         //console.log(expenses.expenses.category)
         if (!context) {
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
         }
-        res.render('expenses/edit', { context, usersAndCategories })
+        res.render('expenses/edit', {
+            context,
+            usersAndCategories
+        })
     })
 )
 
@@ -280,7 +326,7 @@ app.get(
     '/categories',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const context = await getNewExpenseContext()
+        const context = await getAllCategoriesAndUsers()
         res.render('categories/index', context)
     })
 )
@@ -361,7 +407,9 @@ app.get(
             req.flash('error', 'Iskanega viskija ni moč najti!')
             return res.redirect('/whiskies')
         }
-        res.render('whiskies/edit', { context })
+        res.render('whiskies/edit', {
+            context
+        })
     })
 )
 
@@ -411,8 +459,15 @@ app.post(
 
 app.post('/register', async (req, res) => {
     try {
-        const { email, username, password } = req.body
-        const user = new User({ email, username })
+        const {
+            email,
+            username,
+            password
+        } = req.body
+        const user = new User({
+            email,
+            username
+        })
         const registeredUser = await User.register(user, password)
         req.login(registeredUser, (err) => {
             if (err) return next(err)
@@ -431,9 +486,13 @@ app.all('*', (req, res, next) => {
 })
 //error Handler
 app.use((err, req, res, next) => {
-    const { statusCode = 500 } = err
+    const {
+        statusCode = 500
+    } = err
     if (!err.message) err.message = 'Oh No, Something went wrong!'
-    res.status(statusCode).render('error', { err })
+    res.status(statusCode).render('error', {
+        err
+    })
 })
 //open port&listen
 const port = process.env.PORT || 3000

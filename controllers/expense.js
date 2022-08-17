@@ -4,7 +4,7 @@ const User = require('../models/user')
 var _ = require('lodash')
 const userObject = require('../public/javascripts/Classes')
 
-module.exports.getNewExpenseContext = async () => {
+module.exports.getAllCategoriesAndUsers = async () => {
     const categories = await Category.find({}).populate('subCategories')
     const users = await User.find({})
     const parentCategories = categories.filter(
@@ -18,11 +18,11 @@ module.exports.getNewExpenseContext = async () => {
 }
 
 module.exports.updateExpense = async (req, res) => {
-    const { id } = req.params
-    console.log(req.body.expense)
+    const {
+        id
+    } = req.params
     if (!req.body.expense.shared) {
         req.body.expense.shared = 'false'
-        console.log(req.body.expense)
     }
     const expense = await Expense.findByIdAndUpdate(id, {
         ...req.body.expense,
@@ -58,8 +58,7 @@ module.exports.getExpenseContext = async (filter) => {
             },
         }
 
-        expensesAggregate = await Expense.aggregate([
-            {
+        expensesAggregate = await Expense.aggregate([{
                 $lookup: {
                     from: 'categories',
                     localField: 'category',
@@ -85,16 +84,14 @@ module.exports.getExpenseContext = async (filter) => {
             },
             {
                 $match: {
-                    $and: [
-                        {
+                    $and: [{
                             payDate: {
                                 $gte: new Date(filter.from),
                                 $lte: new Date(filter.to),
                             },
                         },
                         {
-                            $or: [
-                                {
+                            $or: [{
                                     'parentCat.name': {
                                         $eq: 'Dom',
                                     },
@@ -110,8 +107,6 @@ module.exports.getExpenseContext = async (filter) => {
                 },
             },
         ])
-
-        console.log(expensesAggregate)
 
         expenses = await Expense.find(filterObject)
             .sort({
@@ -168,7 +163,9 @@ module.exports.getExpenseContext = async (filter) => {
 }
 
 module.exports.deleteExpense = async (req, res) => {
-    const { id } = req.params
+    const {
+        id
+    } = req.params
     await Expense.findByIdAndDelete(id)
     req.flash('success', 'Uspešno izbrisan strošek!')
     res.redirect('/expenses')

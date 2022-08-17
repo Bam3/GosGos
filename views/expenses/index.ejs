@@ -8,26 +8,14 @@
         <form action="/expenses/filter" method="POST" id="addNewExpense">
             <label for="dateFrom">Dan Plačila - od:</label>
             <div class="input-group mb-3">
-                <input
-                    id="dateFrom"
-                    name="dateFrom"
-                    type="date"
-                    class="form-control"
-                    autocomplete
-                    value="<%= filter.from %>"
-                />
+                <input id="dateFrom" name="dateFrom" type="date" class="form-control" autocomplete
+                    value="<%= filter.from %>" />
             </div>
 
             <label for="dateTo">Dan Plačila - do:</label>
             <div class="input-group mb-3">
-                <input
-                    id="dateTo"
-                    name="dateTo"
-                    type="date"
-                    class="form-control"
-                    autocomplete
-                    value="<%= filter.to %>"
-                />
+                <input id="dateTo" name="dateTo" type="date" class="form-control" autocomplete
+                    value="<%= filter.to %>" />
             </div>
 
             <div class="d-grid col-12 mx-auto">
@@ -84,8 +72,7 @@
                     <td>
                         <a href="/expenses/<%= expenses[i].id %>">
                             <%=expenses[i].payDate.toLocaleDateString('locales')
-                            %></a
-                        >
+                            %></a>
                     </td>
                     <td><%=expenses[i].categoryLabel %></td>
                     <td><%=expenses[i].cost %> €</td>
