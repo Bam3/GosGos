@@ -47,21 +47,21 @@
             </div>
         </form>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-12 table-responsive">
         <table class="table table-hover">
             <thead class="table-light">
                 <tr>
-                    <th class="d-none d-sm-block" scope="col">#</th>
+                    <th class="col" scope="col">#</th>
                     <th scope="col">Datum</th>
                     <th scope="col">Kategorija</th>
                     <th scope="col">Strošek</th>
-                    <th class="d-none d-sm-block" scope="col">Plačnik</th>
+                    <th class="col" scope="col">Plačnik</th>
                 </tr>
             </thead>
             <tbody>
                 <% for (let i = 0; i < context.expenses.length; i++) { %>
                 <tr>
-                    <th class="d-none d-sm-block" scope="row"><%= i+1 %></th>
+                    <td class="col" scope="row"><%= i+1 %></th>
                     <td>
                         <a href="/expenses/<%= context.expenses[i]._id %>">
                             <%=context.expenses[i].payDate.toLocaleDateString('locales')
@@ -69,7 +69,7 @@
                     </td>
                     <td><%=context.expenses[i].category[0].name %></td>
                     <td><%=context.expenses[i].cost %> €</td>
-                    <td class="d-none d-sm-block">
+                    <td class="col">
                         <%=context.expenses[i].payer[0].username %>
                     </td>
                 </tr>
