@@ -5,18 +5,50 @@
     </div>
     <div class="col-md-3 mb-4">
         <form action="/search" method="POST" id="addNewExpense">
-            <label for="dateFrom">Datum - od:</label>
-            <div class="input-group mb-3">
-                <input id="dateFrom" name="dateFrom" type="date" class="form-control" autocomplete
-                    value="<%= from %>" />
-            </div>
+            <input
+                type="checkbox"
+                class="btn-check d-grid col-12 mx-auto"
+                id="btn-check"
+                autocomplete="off"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseDate"
+                aria-expanded="false"
+                aria-controls="collapseDate"
+                name="filterByDate"
+            />
+            <label
+                class="btn btn-secondary d-grid col-12 mx-auto"
+                for="btn-check"
+                >Izberi obdobje</label
+            >
+            <div class="collapse mt-3" id="collapseDate">
+                <div class="card card-body">
+                    <label for="dateFrom">Datum - od:</label>
+                    <div class="input-group mb-3">
+                        <input
+                            id="dateFrom"
+                            name="dateFrom"
+                            type="date"
+                            class="form-control"
+                            autocomplete
+                            value="<%= from %>"
+                        />
+                    </div>
 
-            <label for="dateTo">Datum - do:</label>
-            <div class="input-group mb-3">
-                <input id="dateTo" name="dateTo" type="date" class="form-control" autocomplete value="<%= to %>" />
+                    <label for="dateTo">Datum - do:</label>
+                    <div class="input-group mb-3">
+                        <input
+                            id="dateTo"
+                            name="dateTo"
+                            type="date"
+                            class="form-control"
+                            autocomplete
+                            value="<%= to %>"
+                        />
+                    </div>
+                </div>
             </div>
-
-            <div class="mb-3">
+            <div class="my-3">
                 <label for="category" class="form-label">Kategorija</label>
                 <select class="form-select" id="category" name="category">
                     <option selected disabled value="">Izberi...</option>
@@ -29,16 +61,17 @@
             </div>
 
             <div class="mb-3">
-                <label for="subCategory" class="form-label">Podkategorija</label>
+                <label for="subCategory" class="form-label"
+                    >Podkategorija</label
+                >
                 <select class="form-select" id="subCategory" name="subCategory">
                     <option selected disabled value="">Izberi...</option>
-                    <% for(let category of categoriesAndUsers.categories){ %>
-                    <% for(let subCategory of category.subCategories){ %>
+                    <% for(let category of categoriesAndUsers.categories){ %> <%
+                    for(let subCategory of category.subCategories){ %>
                     <option value="<%=subCategory.name%>">
                         <%=subCategory.name%>
                     </option>
-                    <% } %>
-                    <% } %>
+                    <% } %> <% } %>
                 </select>
             </div>
 
@@ -65,7 +98,8 @@
                     <td>
                         <a href="/expenses/<%= context.expenses[i]._id %>">
                             <%=context.expenses[i].payDate.toLocaleDateString('locales')
-                            %></a>
+                            %></a
+                        >
                     </td>
                     <td><%=context.expenses[i].category[0].name %></td>
                     <td><%=context.expenses[i].cost %> €</td>

@@ -18,9 +18,7 @@ module.exports.getAllCategoriesAndUsers = async () => {
 }
 
 module.exports.updateExpense = async (req, res) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     if (!req.body.expense.shared) {
         req.body.expense.shared = 'false'
     }
@@ -58,7 +56,8 @@ module.exports.getExpenseContext = async (filter) => {
             },
         }
 
-        expensesAggregate = await Expense.aggregate([{
+        expensesAggregate = await Expense.aggregate([
+            {
                 $lookup: {
                     from: 'categories',
                     localField: 'category',
@@ -84,14 +83,16 @@ module.exports.getExpenseContext = async (filter) => {
             },
             {
                 $match: {
-                    $and: [{
+                    $and: [
+                        {
                             payDate: {
                                 $gte: new Date(filter.from),
                                 $lte: new Date(filter.to),
                             },
                         },
                         {
-                            $or: [{
+                            $or: [
+                                {
                                     'parentCat.name': {
                                         $eq: 'Dom',
                                     },
@@ -163,9 +164,7 @@ module.exports.getExpenseContext = async (filter) => {
 }
 
 module.exports.deleteExpense = async (req, res) => {
-    const {
-        id
-    } = req.params
+    const { id } = req.params
     await Expense.findByIdAndDelete(id)
     req.flash('success', 'Uspešno izbrisan strošek!')
     res.redirect('/expenses')

@@ -26,9 +26,7 @@ const {
     deleteExpense,
 } = require('./controllers/expense')
 
-const {
-    filterByCategoryAndDate
-} = require('./controllers/filters')
+const { filterByCategoryAndDate } = require('./controllers/filters')
 
 const {
     renderRegister,
@@ -36,9 +34,7 @@ const {
     logoutUser,
 } = require('./controllers/users')
 
-const {
-    createCategory,
-} = require('./controllers/categories')
+const { createCategory } = require('./controllers/categories')
 
 const {
     getWhiskeyContext,
@@ -46,25 +42,18 @@ const {
     updateWhiskey,
     deleteWhiskey,
 } = require('./controllers/whiskey')
-const {
-    createNote,
-    getWishlistContext
-} = require('./controllers/wishlist')
-const {
-    isLoggedIn
-} = require('./middleware')
+const { createNote, getWishlistContext } = require('./controllers/wishlist')
+const { isLoggedIn } = require('./middleware')
 
 //connect to DB
 const MongoStore = require('connect-mongo')
-const {
-    authenticate
-} = require('passport')
+const { authenticate } = require('passport')
 
 //const dbUrl = process.env.DB_URL
 const dbUrl = 'mongodb://localhost:27017/gos-gos'
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
 })
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
@@ -113,9 +102,11 @@ app.set('contollers', path.join(__dirname, 'controllers'))
 app.set('public', path.join(__dirname, 'public'))
 app.use(flash())
 
-app.use(express.urlencoded({
-    extended: true
-}))
+app.use(
+    express.urlencoded({
+        extended: true,
+    })
+)
 app.use(methodOverride('_method'))
 app.use(express.static('public'))
 
@@ -154,7 +145,7 @@ app.get(
     catchAsync(async (req, res) => {
         const id = req.params.id
         const context = await getExpenseContext({
-            id
+            id,
         })
         if (!context) {
             req.flash('error', 'Iskanega stroška ni moč najti!')
@@ -169,7 +160,7 @@ app.get(
     catchAsync(async (req, res) => {
         const id = req.params.id
         const context = await getExpenseContext({
-            id
+            id,
         })
         const usersAndCategories = await getAllCategoriesAndUsers()
         //console.log(expenses.expenses.category)
@@ -179,7 +170,7 @@ app.get(
         }
         res.render('expenses/edit', {
             context,
-            usersAndCategories
+            usersAndCategories,
         })
     })
 )
@@ -188,10 +179,7 @@ app.get(
     '/expenses',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        let {
-            from,
-            to
-        } = req.query
+        let { from, to } = req.query
         if (!from || !to) {
             from = `${new Date().toISOString().substring(0, 8)}01`
             to = new Date().toISOString().substring(0, 10)
@@ -203,7 +191,7 @@ app.get(
         } else {
             const context = await getExpenseContext({
                 from,
-                to
+                to,
             })
 
             res.render('expenses/index', context)
@@ -219,7 +207,7 @@ app.get(
         to = new Date().toISOString().substring(0, 10)
         const date = {
             from,
-            to
+            to,
         }
         const categoriesAndUsers = await getAllCategoriesAndUsers()
         const context = await filterByCategoryAndDate(date)
@@ -236,8 +224,13 @@ app.post(
     '/search',
     isLoggedIn,
     catchAsync(async (req, res) => {
+        console.log(req.body)
         const formData = req.body
-        const context = await filterByCategoryAndDate(formData, req.body.category, req.body.subCategory)
+        const context = await filterByCategoryAndDate(
+            formData,
+            req.body.category,
+            req.body.subCategory
+        )
         const categoriesAndUsers = await getAllCategoriesAndUsers()
 
         res.render('expenses/search', {
@@ -292,7 +285,7 @@ app.get(
     catchAsync(async (req, res) => {
         const id = req.params.id
         const context = await getExpenseContext({
-            id
+            id,
         })
         if (!context) {
             req.flash('error', 'Iskane kategorije ni moč najti!')
@@ -307,7 +300,7 @@ app.get(
     catchAsync(async (req, res) => {
         const id = req.params.id
         const context = await getExpenseContext({
-            id
+            id,
         })
         const usersAndCategories = await getAllCategoriesAndUsers()
         //console.log(expenses.expenses.category)
@@ -317,7 +310,7 @@ app.get(
         }
         res.render('expenses/edit', {
             context,
-            usersAndCategories
+            usersAndCategories,
         })
     })
 )
@@ -408,7 +401,7 @@ app.get(
             return res.redirect('/whiskies')
         }
         res.render('whiskies/edit', {
-            context
+            context,
         })
     })
 )
@@ -459,14 +452,10 @@ app.post(
 
 app.post('/register', async (req, res) => {
     try {
-        const {
-            email,
-            username,
-            password
-        } = req.body
+        const { email, username, password } = req.body
         const user = new User({
             email,
-            username
+            username,
         })
         const registeredUser = await User.register(user, password)
         req.login(registeredUser, (err) => {
@@ -486,12 +475,10 @@ app.all('*', (req, res, next) => {
 })
 //error Handler
 app.use((err, req, res, next) => {
-    const {
-        statusCode = 500
-    } = err
+    const { statusCode = 500 } = err
     if (!err.message) err.message = 'Oh No, Something went wrong!'
     res.status(statusCode).render('error', {
-        err
+        err,
     })
 })
 //open port&listen
