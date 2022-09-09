@@ -10,7 +10,6 @@ module.exports.getAllCategoriesAndUsers = async () => {
     const parentCategories = categories.filter(
         (category) => category.parentCategory === undefined
     )
-
     return {
         categories: parentCategories,
         users,

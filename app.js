@@ -15,7 +15,6 @@ const LocalStrategy = require('passport-local')
 const flash = require('connect-flash')
 const session = require('express-session')
 
-const Expense = require('./models/expense')
 const User = require('./models/user')
 
 const {
@@ -68,7 +67,7 @@ const secret = process.env.SECRET || 'skrivnost'
 const store = new MongoStore({
     mongoUrl: dbUrl,
     secret,
-    //v sekundah.
+    //in seconds
     touchAfter: 24 * 3600,
 })
 
@@ -144,9 +143,7 @@ app.get(
     '/expenses/:id',
     catchAsync(async (req, res) => {
         const id = req.params.id
-        const context = await getExpenseContext({
-            id,
-        })
+        const context = await getExpenseContext({ id })
         if (!context) {
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
