@@ -221,7 +221,7 @@ app.post(
     '/search',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        console.log(req.body)
+        console.log(req.body, 'Mihec')
         const formData = req.body
         const context = await filterByCategoryAndDate(
             formData,

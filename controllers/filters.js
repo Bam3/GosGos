@@ -8,87 +8,81 @@ module.exports.filterByCategoryAndDate = async (
     category,
     subCategory
 ) => {
-    let datasets = []
-    const subCatColors = [
-        'red',
-        'blue',
-        'yellow',
-        'green',
-        'white',
-        'pink',
-        'purple',
-    ]
     let expenses = {}
-    console.log(category, subCategory)
-    let filterBy = {}
+    let filterByCat = {}
+    let filterByDate = {}
+    let matchFilter = {}
+    //Sort by cat
     if (!subCategory) {
-        filterBy = {
+        filterByCat = {
             'parentCat.name': {
                 $eq: category,
             },
         }
     } else {
-        filterBy = {
+        filterByCat = {
             'category.name': {
                 $eq: subCategory,
             },
         }
     }
-
-    expenses = await Expense.aggregate([
-        {
-            $lookup: {
-                from: 'categories',
-                localField: 'category',
-                foreignField: '_id',
-                as: 'category',
+    //Sort by date
+    if (!date.filterByDate) {
+        matchFilter = {
+            $match: filterByCat,
+        }
+    } else {
+        filterByDate = {
+            payDate: {
+                $gte: new Date(date.dateFrom),
+                $lte: new Date(date.dateTo),
             },
-        },
-        {
-            $lookup: {
-                from: 'categories',
-                localField: 'category.parentCategory',
-                foreignField: '_id',
-                as: 'parentCat',
-            },
-        },
-        {
-            $lookup: {
-                from: 'users',
-                localField: 'payer',
-                foreignField: '_id',
-                as: 'payer',
-            },
-        },
-        {
+        }
+        matchFilter = {
             $match: {
-                $and: [
-                    {
-                        payDate: {
-                            $gte: new Date(date.dateFrom),
-                            $lte: new Date(date.dateTo),
-                        },
-                    },
-                    filterBy,
-                ],
+                $and: [filterByDate, filterByCat],
             },
-        },
-        {
-            $sort: {
-                payDate: -1,
-            },
-        },
-    ])
-    for (let i = 0; i < expenses.length; i++) {
-        datasets[i] = {
-            label: expenses[i].category[0].name,
-            data: expenses[i].cost,
-            backgroundColor: subCatColors[i],
-            stack: 'Stack 0',
         }
     }
-    console.log(datasets)
-    return {
-        expenses,
+    if (!category && !subCategory) {
+        return {
+            expenses,
+        }
+    } else {
+        expenses = await Expense.aggregate([
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'category',
+                    foreignField: '_id',
+                    as: 'category',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'category.parentCategory',
+                    foreignField: '_id',
+                    as: 'parentCat',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'payer',
+                    foreignField: '_id',
+                    as: 'payer',
+                },
+            },
+            matchFilter,
+            {
+                $sort: {
+                    payDate: -1,
+                },
+            },
+        ])
+        return {
+            expenses,
+        }
     }
 }
