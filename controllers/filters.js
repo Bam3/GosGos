@@ -1,6 +1,4 @@
-const Category = require('../models/category')
 const Expense = require('../models/expense')
-const User = require('../models/user')
 var _ = require('lodash')
 
 module.exports.filterByCategoryAndDate = async (
@@ -14,23 +12,13 @@ module.exports.filterByCategoryAndDate = async (
     let matchFilter = {}
     //Sort by cat
     if (!subCategory) {
-        filterByCat = {
-            'parentCat.name': {
-                $eq: category,
-            },
-        }
+        filterByCat = { 'parentCat.name': { $eq: category } }
     } else {
-        filterByCat = {
-            'category.name': {
-                $eq: subCategory,
-            },
-        }
+        filterByCat = { 'category.name': { $eq: subCategory } }
     }
     //Sort by date
     if (!date.filterByDate) {
-        matchFilter = {
-            $match: filterByCat,
-        }
+        matchFilter = { $match: filterByCat }
     } else {
         filterByDate = {
             payDate: {
