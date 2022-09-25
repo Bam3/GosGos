@@ -64,14 +64,14 @@
                 <label for="subCategory" class="form-label"
                     >Podkategorija</label
                 >
-                <select class="form-select" id="subCategory" name="subCategory">
-                    <option selected disabled value="">Izberi...</option>
-                    <% for(let category of categoriesAndUsers.categories){ %> <%
-                    for(let subCategory of category.subCategories){ %>
-                    <option value="<%=subCategory.name%>">
-                        <%=subCategory.name%>
-                    </option>
-                    <% } %> <% } %>
+                <select multiple size ="5" class="form-select" id="subCategory" name="subCategory[]">
+                    <% for(let category of categoriesAndUsers.categories){ %> 
+                        <% for(let subCategory of category.subCategories){ %>
+                            <option value="<%=subCategory.name%>">
+                                <%=subCategory.name%>
+                            </option>
+                        <% } %> 
+                    <% } %>
                 </select>
             </div>
 
@@ -112,3 +112,7 @@
         </table>
     </div>
 </div>
+    <script>
+        const categories = <%- JSON.stringify(categoriesAndUsers.categories) %>
+    </script>
+<script src="/javascripts/searchSubCats.js"></script>

@@ -11,10 +11,32 @@ module.exports.filterByCategoryAndDate = async (
     let filterByDate = {}
     let matchFilter = {}
     //Sort by cat
-    if (!subCategory) {
+    if (!subCategory && category) {
         filterByCat = { 'parentCat.name': { $eq: category } }
-    } else {
-        filterByCat = { 'category.name': { $eq: subCategory } }
+    }
+    if (subCategory && !category) {
+        filterByCat = { 'category.name': { $eq: subCategory[0] } }
+    }
+    if (subCategory && category) {
+        if (subCategory.length === 1) {
+            filterByCat = {
+                $and: [
+                    { 'parentCat.name': { $eq: category } },
+                    { 'category.name': { $eq: subCategory[0] } },
+                ],
+            }
+        } else {
+            filterByCat = {
+                $and: [
+                    { 'parentCat.name': { $eq: category } },
+                    {
+                        $or: [
+                            `{ 'category.name': { $eq: ${subCategory[i]} } }`,
+                        ],
+                    },
+                ],
+            }
+        }
     }
     //Sort by date
     if (!date.filterByDate) {
