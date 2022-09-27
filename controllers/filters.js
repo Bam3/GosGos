@@ -14,9 +14,11 @@ module.exports.filterByCategoryAndDate = async (
     if (!subCategory && category) {
         filterByCat = { 'parentCat.name': { $eq: category } }
     }
+    //Sort by sub category
     if (subCategory && !category) {
         filterByCat = { 'category.name': { $eq: subCategory[0] } }
     }
+    //Sort by category and sub category
     if (subCategory && category) {
         if (subCategory.length === 1) {
             filterByCat = {
@@ -26,22 +28,24 @@ module.exports.filterByCategoryAndDate = async (
                 ],
             }
         } else {
+            const multiSubCats = []
+            //Get multiple sub categories
+            subCategory.forEach((category) => {
+                multiSubCats.push({ 'category.name': { $eq: `${category}` } })
+            })
             filterByCat = {
                 $and: [
                     { 'parentCat.name': { $eq: category } },
-                    {
-                        $or: [
-                            `{ 'category.name': { $eq: ${subCategory[i]} } }`,
-                        ],
-                    },
+                    { $or: multiSubCats },
                 ],
             }
         }
     }
-    //Sort by date
+    //Sort only by categories
     if (!date.filterByDate) {
         matchFilter = { $match: filterByCat }
     } else {
+        //Sort by date and categories
         filterByDate = {
             payDate: {
                 $gte: new Date(date.dateFrom),
