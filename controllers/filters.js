@@ -95,6 +95,7 @@ module.exports.filterByCategoryAndDate = async (
                 },
             },
         ])
+
         return {
             expenses,
         }
