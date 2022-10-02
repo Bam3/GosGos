@@ -48,8 +48,8 @@ const { isLoggedIn } = require('./middleware')
 const MongoStore = require('connect-mongo')
 const { authenticate } = require('passport')
 
-//const dbUrl = process.env.DB_URL
-const dbUrl = 'mongodb://localhost:27017/gos-gos'
+const dbUrl = process.env.DB_URL
+//const dbUrl = 'mongodb://localhost:27017/gos-gos'
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
