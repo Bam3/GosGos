@@ -59,9 +59,7 @@ module.exports.filterByCategoryAndDate = async (
         }
     }
     if (!category && !subCategory) {
-        return {
-            expenses,
-        }
+        return { expenses }
     } else {
         expenses = await Expense.aggregate([
             {
@@ -90,12 +88,10 @@ module.exports.filterByCategoryAndDate = async (
             },
             matchFilter,
             {
-                $sort: {
-                    payDate: -1,
-                },
+                $sort: { payDate: -1 },
             },
         ])
-
+        //console.log(expenses[0])
         return {
             expenses,
         }

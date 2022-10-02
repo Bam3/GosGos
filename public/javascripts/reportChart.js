@@ -22,7 +22,8 @@ const labels = [
     'december',
 ]
 let datasets = []
-
+console.log(expenses, 'Inside expenses')
+console.log(context, 'Inside context')
 for (let i = 0; i < expenses.length; i++) {
     datasets[i] = {
         label: expenses[i].category[0].name,
@@ -36,9 +37,9 @@ const data = {
     labels: labels,
     datasets: [
         {
-            label: expenses[i].category.name,
-            data: expenses[i].cost,
-            backgroundColor: subCatColors[i],
+            label: expenses[0].category.name,
+            data: expenses[0].cost,
+            backgroundColor: subCatColors[0],
             stack: 'Stack 0',
         },
     ],

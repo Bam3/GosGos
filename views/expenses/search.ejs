@@ -112,7 +112,10 @@
         </table>
     </div>
 </div>
-    <script>
-        const categories = <%- JSON.stringify(categoriesAndUsers.categories) %>
-    </script>
+<script>
+    const categories = <%- JSON.stringify(categoriesAndUsers.categories) %>
+    const expenses = <%- JSON.stringify(context.expenses) %>
+    const context = <%- JSON.stringify(context) %>
+</script>
 <script src="/javascripts/searchSubCats.js"></script>
+<script src="/javascripts/reportChart.js"></script>

@@ -1,9 +1,10 @@
 class UserObject {
-    constructor(name, payments, inCalculation = true, color) {
+    constructor(name, payments, inCalculation = true, color, numberOfPayments) {
         this.name = name
         this.payments = payments
         this.inCalculation = inCalculation
         this.color = color
+        this.numberOfPayments = numberOfPayments
     }
     get sumOfExpenses() {
         return roundToTwo(this.sumPayments())

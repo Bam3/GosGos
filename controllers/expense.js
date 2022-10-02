@@ -45,7 +45,6 @@ module.exports.createExpense = async (reqBody) => {
 module.exports.getExpenseContext = async (filter) => {
     let filterObject = {}
     let expenses = {}
-    let expensesAggregate = {}
     //če podamo filter datuma, od - do
     if (filter.from && filter.to) {
         filterObject = {
@@ -54,60 +53,6 @@ module.exports.getExpenseContext = async (filter) => {
                 $lte: new Date(filter.to),
             },
         }
-
-        expensesAggregate = await Expense.aggregate([
-            {
-                $lookup: {
-                    from: 'categories',
-                    localField: 'category',
-                    foreignField: '_id',
-                    as: 'category',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'categories',
-                    localField: 'category.parentCategory',
-                    foreignField: '_id',
-                    as: 'parentCat',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: 'payer',
-                    foreignField: '_id',
-                    as: 'payer',
-                },
-            },
-            {
-                $match: {
-                    $and: [
-                        {
-                            payDate: {
-                                $gte: new Date(filter.from),
-                                $lte: new Date(filter.to),
-                            },
-                        },
-                        {
-                            $or: [
-                                {
-                                    'parentCat.name': {
-                                        $eq: 'Dom',
-                                    },
-                                },
-                                {
-                                    'parentCat.name': {
-                                        $eq: '',
-                                    },
-                                },
-                            ],
-                        },
-                    ],
-                },
-            },
-        ])
-
         expenses = await Expense.find(filterObject)
             .sort({
                 payDate: -1,
@@ -233,7 +178,6 @@ const calculateComparison = (expenses) => {
             parentCategoriesObject,
             'category.parentCategory.name'
         )
-
         //vsem zapišem kaj so plačali
         updateUserClass(expenses, usersObject, 'payer.username')
 
@@ -310,6 +254,9 @@ function updateUserClass(expenses, usersObject, property) {
         })
     })
     usersObject.forEach(function (user) {
+        user.numberOfPayments = user.numberOfExpenses
         user.payments = [user.sumOfExpenses]
     })
+    // sort by numberOfPayments
+    usersObject.sort((a, b) => b.numberOfPayments - a.numberOfPayments)
 }
