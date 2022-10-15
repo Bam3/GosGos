@@ -1,5 +1,10 @@
 const Expense = require('../models/expense')
 var _ = require('lodash')
+const {
+    extractFrom,
+    calculateSum,
+    roundToTwo,
+} = require('../public/javascripts/pureFunctions')
 
 module.exports.filterByCategoryAndDate = async (
     date,
@@ -92,8 +97,14 @@ module.exports.filterByCategoryAndDate = async (
             },
         ])
         //console.log(expenses[0])
+        let sum = calculateSum(expenses)
+        sum = roundToTwo(sum)
         return {
             expenses,
+            sum,
+            category,
+            subCategory,
+            date,
         }
     }
 }

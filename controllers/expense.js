@@ -1,8 +1,14 @@
 const Category = require('../models/category')
 const Expense = require('../models/expense')
 const User = require('../models/user')
-var _ = require('lodash')
 const userObject = require('../public/javascripts/Classes')
+const {
+    calculateSum,
+    roundToTwo,
+    extractFrom,
+    updateUserClass,
+    generateCategoryLabel,
+} = require('../public/javascripts/pureFunctions')
 
 module.exports.getAllCategoriesAndUsers = async () => {
     const categories = await Category.find({}).populate('subCategories')
@@ -65,16 +71,15 @@ module.exports.getExpenseContext = async (filter) => {
             })
             .populate('payer')
 
-        //console.log(expenses[0])
-
         await Promise.all(
             expenses.map(async (expense) => {
                 const neki = await generateCategoryLabel(expense.category)
                 expense.categoryLabel = neki
             })
         )
-        //console.log(expenses[0])
-        const sum = calculateSum(expenses)
+
+        let sum = calculateSum(expenses)
+        sum = roundToTwo(sum)
         const comparison = calculateComparison(expenses)
         return {
             expenses,
@@ -112,25 +117,6 @@ module.exports.deleteExpense = async (req, res) => {
     await Expense.findByIdAndDelete(id)
     req.flash('success', 'Uspešno izbrisan strošek!')
     res.redirect('/expenses')
-}
-
-const generateCategoryLabel = async (category) => {
-    if (category.parentCategory) {
-        await category.populate('parentCategory')
-        return `${category.parentCategory.name} - ${category.name}`
-    } else {
-        return category.name
-    }
-}
-
-const calculateSum = (expenses) => {
-    sum = 0
-    for (const expense of expenses) {
-        if (expense.shared) {
-            sum = sum + expense.cost
-        }
-    }
-    return roundToTwo(sum)
 }
 
 const calculateComparison = (expenses) => {
@@ -227,36 +213,4 @@ const calculateComparison = (expenses) => {
         usersColor,
         categoriesColor,
     }
-}
-
-function roundToTwo(num) {
-    return Number(Math.round(num + 'e2') + 'e-2')
-}
-
-//funkcija prečisti array tako da ostanejo samo unikati,
-//argumenta sta array objektov in properti katerega iščemo.
-function extractFrom(arrayOfObjects, property) {
-    let output = []
-    arrayOfObjects.map((object) => {
-        output.push(_.get(object, property))
-    })
-    return [...new Set(output)]
-}
-
-function updateUserClass(expenses, usersObject, property) {
-    expenses.forEach(function (expense) {
-        usersObject.forEach(function (user) {
-            if (expense.shared) {
-                if (_.get(expense, property) === user.name) {
-                    user.payments.push(expense.cost)
-                }
-            }
-        })
-    })
-    usersObject.forEach(function (user) {
-        user.numberOfPayments = user.numberOfExpenses
-        user.payments = [user.sumOfExpenses]
-    })
-    // sort by numberOfPayments
-    usersObject.sort((a, b) => b.numberOfPayments - a.numberOfPayments)
 }

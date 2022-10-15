@@ -80,6 +80,21 @@
             </div>
         </form>
     </div>
+    <div class="col-md-3 mb-4">
+    <% if (context.filterByDate === 'on') { %> 
+        <h4><%=`${context.date} - ${context.date}`%></h4>
+    <% } %> 
+    <% if (context.category && context.subCategory) { %> 
+        <h4><%=`${context.category} - ${context.subCategory}`%></h4>
+    <% }else if (context.category && !context.subCategory) { %> 
+        <h4><%=`${context.category}`%></h4>
+    <% }else if (!context.category && context.subCategory) {%>
+        <h4><%=`${context.subCategory}`%></h4>
+    <% } %>  
+    <% if (context.sum) { %> 
+        <h4 class="mb-3">SUM: <%= context.sum %> €</h4>
+    <% } %> 
+    </div>
     <div class="col-md-12 table-responsive">
         <table class="table table-hover">
             <thead class="table-light">
@@ -92,22 +107,24 @@
                 </tr>
             </thead>
             <tbody>
-                <% for (let i = 0; i < context.expenses.length; i++) { %>
-                <tr>
-                    <td class="col" scope="row"><%= i+1 %></th>
-                    <td>
-                        <a href="/expenses/<%= context.expenses[i]._id %>">
-                            <%=context.expenses[i].payDate.toLocaleDateString('locales')
-                            %></a
-                        >
-                    </td>
-                    <td><%=context.expenses[i].category[0].name %></td>
-                    <td><%=context.expenses[i].cost %> €</td>
-                    <td class="col">
-                        <%=context.expenses[i].payer[0].username %>
-                    </td>
-                </tr>
-                <% } %>
+                <% if (true) { %> 
+                    <% for (let i = 0; i < context.expenses.length; i++) { %>
+                    <tr>
+                        <td class="col" scope="row"><%= i+1 %></th>
+                        <td>
+                            <a href="/expenses/<%= context.expenses[i]._id %>">
+                                <%=context.expenses[i].payDate.toLocaleDateString('locales')
+                                %></a
+                            >
+                        </td>
+                        <td><%=context.expenses[i].category[0].name %></td>
+                        <td><%=context.expenses[i].cost %> €</td>
+                        <td class="col">
+                            <%=context.expenses[i].payer[0].username %>
+                        </td>
+                    </tr>
+                    <% } %>
+                <% } %> 
             </tbody>
         </table>
     </div>

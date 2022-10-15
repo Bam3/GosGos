@@ -47,6 +47,8 @@ const { isLoggedIn } = require('./middleware')
 //connect to DB
 const MongoStore = require('connect-mongo')
 const { authenticate } = require('passport')
+const { emitKeypressEvents } = require('readline')
+const { isEmpty } = require('lodash')
 
 const dbUrl = process.env.DB_URL
 //const dbUrl = 'mongodb://localhost:27017/gos-gos'
@@ -191,6 +193,7 @@ app.get(
                 to,
             })
             console.log(
+                context,
                 context.comparison.parentCategoriesObject,
                 context.comparison.usersObject
             )
@@ -211,11 +214,10 @@ app.get(
         }
         const categoriesAndUsers = await getAllCategoriesAndUsers()
         const context = await filterByCategoryAndDate(date)
+        console.log(context.date, 'GET')
         res.render('expenses/search', {
-            context,
             categoriesAndUsers,
-            from,
-            to,
+            context,
         })
     })
 )
@@ -224,7 +226,6 @@ app.post(
     '/search',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        console.log(req.body, 'Mihec')
         const formData = req.body
         const context = await filterByCategoryAndDate(
             formData,
@@ -232,7 +233,7 @@ app.post(
             req.body.subCategory
         )
         const categoriesAndUsers = await getAllCategoriesAndUsers()
-
+        console.log(context.date, 'POST')
         res.render('expenses/search', {
             context,
             categoriesAndUsers,
