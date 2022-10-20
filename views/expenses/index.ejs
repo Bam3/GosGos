@@ -5,35 +5,39 @@
     </div>
 
     <div class="col-md-3 mb-4">
-        <form action="/expenses/filter" method="POST" id="addNewExpense">
-            <label for="dateFrom">Dan Plačila - od:</label>
-            <div class="input-group mb-3">
-                <input
-                    id="dateFrom"
-                    name="dateFrom"
-                    type="date"
-                    class="form-control"
-                    autocomplete
-                    value="<%= filter.from %>"
-                />
-            </div>
+        <div class="card">
+            <div class="card-body"> 
+                <form action="/expenses/filter" method="POST" id="addNewExpense">
+                    <label for="dateFrom">Dan Plačila - od:</label>
+                    <div class="input-group mb-3">
+                        <input
+                            id="dateFrom"
+                            name="dateFrom"
+                            type="date"
+                            class="form-control"
+                            autocomplete
+                            value="<%= filter.from %>"
+                        />
+                    </div>
 
-            <label for="dateTo">Dan Plačila - do:</label>
-            <div class="input-group mb-3">
-                <input
-                    id="dateTo"
-                    name="dateTo"
-                    type="date"
-                    class="form-control"
-                    autocomplete
-                    value="<%= filter.to %>"
-                />
-            </div>
+                    <label for="dateTo">Dan Plačila - do:</label>
+                    <div class="input-group mb-3">
+                        <input
+                            id="dateTo"
+                            name="dateTo"
+                            type="date"
+                            class="form-control"
+                            autocomplete
+                            value="<%= filter.to %>"
+                        />
+                    </div>
 
-            <div class="d-grid col-12 mx-auto">
-                <button class="btn btn-secondary">Filtriraj</button>
+                    <div class="d-grid col-12 mx-auto">
+                        <button class="btn btn-secondary">Filtriraj</button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 
     <div class="col-md-3 mb-4">
@@ -71,10 +75,10 @@
         <table class="table table-hover">
             <thead class="table-light">
                 <tr>
-                    <th scope="col" scope="col">Datum</th>
-                    <th scope="col"><%= parentCategory.name %></th>
-                    <th scope="col">Strošek</th>
-                    <th class="col" scope="col">Plačnik</th>
+                    <th scope="col" scope="col"><%=parentCategory.name.toUpperCase()%></th>
+                    <th scope="col"></th>
+                    <th scope="col"><%=parentCategory.payments[0]%></th>
+                    <th class="col" scope="col">€</th>
                 </tr>
             </thead>
             <tbody>
@@ -83,10 +87,7 @@
                 { %>
                 <tr>
                     <td>
-                        <a href="/expenses/<%= expense.id %>">
-                            <%=expense.payDate.toLocaleDateString('locales')
-                            %></a
-                        >
+                        <a href="/expenses/<%= expense.id %>"><%=expense.payDate.toLocaleDateString()%></a>
                     </td>
                     <td><%=expense.category.name %></td>
                     <td><%=expense.cost %> €</td>
