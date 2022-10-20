@@ -7,7 +7,9 @@ const {
 } = require('../public/javascripts/pureFunctions')
 
 module.exports.filterByCategoryAndDate = async (
-    date,
+    filteredByDate,
+    dateFrom,
+    dateTo,
     category,
     subCategory
 ) => {
@@ -47,14 +49,14 @@ module.exports.filterByCategoryAndDate = async (
         }
     }
     //Sort only by categories
-    if (!date.filterByDate) {
+    if (filteredByDate === undefined) {
         matchFilter = { $match: filterByCat }
     } else {
         //Sort by date and categories
         filterByDate = {
             payDate: {
-                $gte: new Date(date.dateFrom),
-                $lte: new Date(date.dateTo),
+                $gte: new Date(dateFrom),
+                $lte: new Date(dateTo),
             },
         }
         matchFilter = {
@@ -96,7 +98,6 @@ module.exports.filterByCategoryAndDate = async (
                 $sort: { payDate: -1 },
             },
         ])
-        //console.log(expenses[0])
         let sum = calculateSum(expenses)
         sum = roundToTwo(sum)
         return {
@@ -104,7 +105,11 @@ module.exports.filterByCategoryAndDate = async (
             sum,
             category,
             subCategory,
-            date,
+            date: {
+                filteredByDate,
+                dateFrom,
+                dateTo,
+            },
         }
     }
 }

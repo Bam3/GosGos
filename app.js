@@ -204,16 +204,14 @@ app.get(
     catchAsync(async (req, res) => {
         from = `${new Date().toISOString().substring(0, 8)}01`
         to = new Date().toISOString().substring(0, 10)
-        const date = {
-            from,
-            to,
-        }
         const categoriesAndUsers = await getAllCategoriesAndUsers()
-        const context = await filterByCategoryAndDate(date)
-        console.log(context.date, 'GET')
+        const context = await filterByCategoryAndDate()
+        console.log(context, 'GET')
         res.render('expenses/search', {
             categoriesAndUsers,
             context,
+            from,
+            to,
         })
     })
 )
@@ -222,14 +220,17 @@ app.post(
     '/search',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const formData = req.body
+        const dataFromForm = req.body
+        console.log(req.body, 'REQ.BODY??')
         const context = await filterByCategoryAndDate(
-            formData,
+            req.body.filteredByDate,
+            req.body.dateFrom,
+            req.body.dateTo,
             req.body.category,
             req.body.subCategory
         )
         const categoriesAndUsers = await getAllCategoriesAndUsers()
-        console.log(context.date, 'POST')
+        console.log(context, 'POST')
         res.render('expenses/search', {
             context,
             categoriesAndUsers,

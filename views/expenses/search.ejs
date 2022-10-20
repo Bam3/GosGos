@@ -14,7 +14,7 @@
                 data-bs-target="#collapseDate"
                 aria-expanded="false"
                 aria-controls="collapseDate"
-                name="filterByDate"
+                name="filteredByDate"
             />
             <label
                 class="btn btn-secondary d-grid col-12 mx-auto"
@@ -80,25 +80,28 @@
             </div>
         </form>
     </div>
+    <% if (context.date) { %> 
     <div class="col-md-3 mb-4">
         <div class="card">
             <div class="card-body">
-                <% if (context.filterByDate === 'on') { %> 
-                    <h4><%=`${context.date} - ${context.date}`%></h4>
-                <% } %> 
-                <% if (context.category && context.subCategory) { %> 
-                    <h4><%=`${context.category} - ${context.subCategory}`%></h4>
-                <% }else if (context.category && !context.subCategory) { %> 
-                    <h4><%=`${context.category}`%></h4>
-                <% }else if (!context.category && context.subCategory) {%>
-                    <h4><%=`${context.subCategory}`%></h4>
-                <% } %>  
+                <div>
+                    <% if (context.category && context.subCategory) { %> 
+                    <p class="display-6 lead "><%=`${context.category} - ${context.subCategory}`%></p>
+                    <% }else if (context.category && !context.subCategory) { %> 
+                    <p class="display-6 lead"><%=`${context.category}`%></p>
+                    <% }else if (!context.category && context.subCategory) {%>
+                    <p class="display-6 lead"><%=`${context.subCategory}`%></p>
+                    <% } %>
+                    <p class="display-7">Od: <b><%=`${context.date.dateFrom}`%></b></p>
+                    <p class="display-7">Do: <b><%=`${context.date.dateTo}`%></b></p>
+                </div>
                 <% if (context.sum) { %> 
-                    <h4 class="mb-3">SUM: <%= context.sum %> €</h4>
+                <h4>SUM: <%= context.sum %> €</h4>
                 <% } %> 
-            </div>
+            </div>        
         </div>
     </div>
+    <% } %> 
     <div class="col-md-12 table-responsive">
         <table class="table table-hover">
             <thead class="table-light">
