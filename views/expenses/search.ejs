@@ -86,15 +86,22 @@
             <div class="card-body">
                 <div>
                     <% if (context.category && context.subCategory) { %> 
-                    <p class="display-6 lead "><%=`${context.category} - ${context.subCategory}`%></p>
+                    <p class="display-6 lead "><kbd><%=context.category%></kbd></p> 
+                    <p class="display-7 lead "><var><%=context.subCategory%></var></p>
                     <% }else if (context.category && !context.subCategory) { %> 
-                    <p class="display-6 lead"><%=`${context.category}`%></p>
+                    <p class="display-6 lead"><kbd><%=context.category%></kbd></p>
                     <% }else if (!context.category && context.subCategory) {%>
-                    <p class="display-6 lead"><%=`${context.subCategory}`%></p>
+                    <p class="display-6 lead"><kbd><var><%=context.subCategory%></var></kbd></p>
                     <% } %>
+                    <hr>
+                    <% if(context.date.filteredByDate === undefined) {%>
+                    <p class="display-7">Celotno časovno obdobje</b></p>
+                    <%}else{ %> 
                     <p class="display-7">Od: <b><%=`${context.date.dateFrom}`%></b></p>
                     <p class="display-7">Do: <b><%=`${context.date.dateTo}`%></b></p>
+                    <% } %> 
                 </div>
+                <hr>
                 <% if (context.sum) { %> 
                 <h4><b>SUM: <%= context.sum %> €</b></h4>
                 <% } %> 
@@ -102,6 +109,7 @@
         </div>
     </div>
     <% } %> 
+    <% if(context.expenses.length > 0) { %> 
     <div class="col-md-12 table-responsive">
         <table class="table table-hover">
             <thead class="table-light">
@@ -135,6 +143,7 @@
             </tbody>
         </table>
     </div>
+    <% } %> 
 </div>
 <script>
     const categories = <%- JSON.stringify(categoriesAndUsers.categories) %>
