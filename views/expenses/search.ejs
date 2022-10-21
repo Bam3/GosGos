@@ -3,7 +3,7 @@
     <div class="col-md-12">
         <h1>Iskanje</h1>
     </div>
-    <div class="col-md-3 mb-4">
+    <div class="col-md-2 mb-4">
         <form action="/search" method="POST" id="addNewExpense">
             <input
                 type="checkbox"
@@ -17,7 +17,7 @@
                 name="filteredByDate"
             />
             <label
-                class="btn btn-secondary d-grid col-12 mx-auto"
+                class="btn btn-outline-secondary d-grid col-12 mx-auto my-3"
                 for="btn-check"
                 >Izberi obdobje</label
             >
@@ -48,35 +48,54 @@
                     </div>
                 </div>
             </div>
-            <div class="my-3">
-                <label for="category" class="form-label">Kategorija</label>
-                <select class="form-select" id="category" name="category">
-                    <option selected disabled value="">Izberi...</option>
-                    <% for(let category of categoriesAndUsers.categories){ %>
-                    <option value="<%=category.name%>">
-                        <%=category.name%>
-                    </option>
-                    <% } %>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="subCategory" class="form-label"
-                    >Podkategorija</label
-                >
-                <select multiple size ="5" class="form-select" id="subCategory" name="subCategory[]">
-                    <% for(let category of categoriesAndUsers.categories){ %> 
-                        <% for(let subCategory of category.subCategories){ %>
-                            <option value="<%=subCategory.name%>">
-                                <%=subCategory.name%>
+            <input
+                type="checkbox"
+                class="btn-check d-grid col-12 mx-auto"
+                id="btn-check1"
+                autocomplete="off"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseCategories"
+                aria-expanded="false"
+                aria-controls="collapseCategories"
+                name="filteredByCategory"
+            />
+            <label
+                class="btn btn-outline-secondary d-grid col-12 mx-auto my-3"
+                for="btn-check1"
+                >Izberi kategorijo</label
+            >
+            <div class="collapse my-3" id="collapseCategories">
+                <div class="card card-body">
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Kategorija</label>
+                        <select class="form-select" id="category" name="category">
+                            <option selected disabled value="">Izberi...</option>
+                            <% for(let category of categoriesAndUsers.categories){ %>
+                            <option value="<%=category.name%>">
+                                <%=category.name%>
                             </option>
-                        <% } %> 
-                    <% } %>
-                </select>
-            </div>
+                            <% } %>
+                        </select>
+                    </div>
 
+                    <div class="mb-3">
+                        <label for="subCategory" class="form-label"
+                            >Podkategorija</label
+                        >
+                        <select multiple size ="5" class="form-select" id="subCategory" name="subCategory[]">
+                            <% for(let category of categoriesAndUsers.categories){ %> 
+                                <% for(let subCategory of category.subCategories){ %>
+                                    <option value="<%=subCategory.name%>">
+                                        <%=subCategory.name%>
+                                    </option>
+                                <% } %> 
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+            </div>
             <div class="d-grid col-12 mx-auto">
-                <button class="btn btn-secondary">Išči</button>
+                <button class="btn btn-outline-success">Išči</button>
             </div>
         </form>
     </div>

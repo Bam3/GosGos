@@ -5,7 +5,6 @@ const selectSubCategory = document.querySelector('#subCategory')
 selectedCategory.addEventListener('change', (event) => {
     //Delete all sub categories before loading new
     if (selectSubCategory.children.length > 1) {
-        console.log(selectSubCategory.children.length)
         while (selectSubCategory.children.length > 0) {
             selectSubCategory.lastChild.remove()
         }
@@ -16,7 +15,6 @@ selectedCategory.addEventListener('change', (event) => {
         //Check category name and draw all sub categories
         if (category.name === selectedCategoryName) {
             for (const subCategory of category.subCategories) {
-                console.log(subCategory.name)
                 const newOption = document.createElement('option')
                 newOption.value = subCategory.name
                 newOption.innerHTML = subCategory.name
