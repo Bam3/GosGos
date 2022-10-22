@@ -106,7 +106,9 @@
                 <div>
                     <% if (context.category && context.subCategory) { %> 
                     <p class="display-6 lead "><kbd><%=context.category%></kbd></p> 
-                    <p class="display-7 lead "><var><%=context.subCategory%></var></p>
+                    <% for (category of context.subCategory) {%> 
+                    <p class="display-7 ">- <%=category%></p>
+                    <% } %> 
                     <% }else if (context.category && !context.subCategory) { %> 
                     <p class="display-6 lead"><kbd><%=context.category%></kbd></p>
                     <% }else if (!context.category && context.subCategory) {%>
