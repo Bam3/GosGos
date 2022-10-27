@@ -130,10 +130,15 @@ const calculateComparison = (expenses) => {
     let perUser = 0
     let parentCategories = []
     let categoriesColor = []
-
+    console.log(
+        expenses[0].category.parentCategory.name,
+        expenses[0].category.parentCategory.color,
+        'BAAAAAM'
+    )
     //pojdem čez stroške in izločim vse glavne kategorije
     parentCategories = extractFrom(expenses, 'category.parentCategory.name')
     categoriesColor = extractFrom(expenses, 'category.parentCategory.color')
+    console.log(parentCategories)
 
     //ustvarimo kategorije glede na filtriranje zgoraj
     parentCategories.forEach(function (category) {
