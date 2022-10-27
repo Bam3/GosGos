@@ -1,7 +1,7 @@
 const Category = require('../models/category')
 const Expense = require('../models/expense')
 const User = require('../models/user')
-const userObject = require('../public/javascripts/Classes')
+const UserOrCategoryObject = require('../public/javascripts/Classes')
 const {
     calculateSum,
     roundToTwo,
@@ -121,46 +121,46 @@ module.exports.deleteExpense = async (req, res) => {
 
 const calculateComparison = (expenses) => {
     let users = []
-    let usersColor = []
     let textOutput = ''
     let usersObject = []
     let parentCategoriesObject = []
     let sumForCalculation = 0
     let activeUsers = []
     let perUser = 0
-    let parentCategories = []
-    let categoriesColor = []
-    console.log(
-        expenses[0].category.parentCategory.name,
-        expenses[0].category.parentCategory.color,
-        'BAAAAAM'
-    )
+    let parentCategoriesColors = []
+
     //pojdem čez stroške in izločim vse glavne kategorije
-    parentCategories = extractFrom(expenses, 'category.parentCategory.name')
-    categoriesColor = extractFrom(expenses, 'category.parentCategory.color')
-    console.log(parentCategories)
+    parentCategoriesColors = extractFrom(
+        expenses,
+        'category.parentCategory.name',
+        'category.parentCategory.color'
+    )
 
     //ustvarimo kategorije glede na filtriranje zgoraj
-    parentCategories.forEach(function (category) {
-        let newCategory = []
-        newCategory = new userObject(category, [], false)
+    parentCategoriesColors.forEach(function (category) {
+        let newCategory = new UserOrCategoryObject(
+            category.name,
+            [],
+            false,
+            category.color
+        )
         parentCategoriesObject.push(newCategory)
     })
 
     //pojdem čez vse stroške in izločim vse uporabnike
-    users = extractFrom(expenses, 'payer.username')
-    usersColor = extractFrom(expenses, 'payer.color')
+    users = extractFrom(expenses, 'payer.username', 'payer.color')
 
     //Ustvarim uporabnike glede na zbrane zgoraj
     users.forEach(function (user) {
         let newUser = []
         if (user === 'Revolut') {
-            newUser = new userObject(user, [], false)
+            newUser = new UserOrCategoryObject(user.name, [], false, user.color)
         } else {
-            newUser = new userObject(user, [], true)
+            newUser = new UserOrCategoryObject(user.name, [], true, user.color)
         }
         usersObject.push(newUser)
     })
+
     // če so users prazni pomeni, da nimamo izračuna, ker ni stroškov
     if (usersObject.length !== 0) {
         // za vse parent kategorije zapišemo koliko je vosta stroškov
@@ -210,12 +210,9 @@ const calculateComparison = (expenses) => {
         }
     }
     return {
-        users,
         perUser,
         textOutput,
         usersObject,
         parentCategoriesObject,
-        usersColor,
-        categoriesColor,
     }
 }

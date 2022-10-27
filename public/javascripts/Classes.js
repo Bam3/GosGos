@@ -1,4 +1,4 @@
-class UserObject {
+class UserOrCategoryObject {
     constructor(name, payments, inCalculation = true, color, numberOfPayments) {
         this.name = name
         this.payments = payments
@@ -23,4 +23,4 @@ class UserObject {
 function roundToTwo(num) {
     return Number(Math.round(num + 'e2') + 'e-2')
 }
-module.exports = UserObject
+module.exports = UserOrCategoryObject
