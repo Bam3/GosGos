@@ -25,6 +25,7 @@ module.exports.extractFrom = (arrayOfObjects, propertyName, propertyColor) => {
         allNamesAndColors.push(nameAndColor)
         nameAndColor = {}
     })
+    //get unique
     var resArr = []
     allNamesAndColors.filter(function (item) {
         var i = resArr.findIndex(
