@@ -16,7 +16,11 @@ module.exports.roundToTwo = (num) => {
 
 //funkcija prečisti array tako da ostanejo samo unikati,
 //argumenta sta array objektov in properti katerega iščemo.
-module.exports.extractFrom = (arrayOfObjects, propertyName, propertyColor) => {
+module.exports.extractNameAndColor = (
+    arrayOfObjects,
+    propertyName,
+    propertyColor
+) => {
     let nameAndColor = {}
     let allNamesAndColors = []
     arrayOfObjects.map((object) => {
@@ -39,7 +43,11 @@ module.exports.extractFrom = (arrayOfObjects, propertyName, propertyColor) => {
     return resArr
 }
 
-module.exports.updateUserClass = (expenses, usersObject, property) => {
+module.exports.updateUserOrCategoryClass = (
+    expenses,
+    usersObject,
+    property
+) => {
     expenses.forEach(function (expense) {
         usersObject.forEach(function (user) {
             if (expense.shared) {
