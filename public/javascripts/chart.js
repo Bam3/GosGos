@@ -1,30 +1,27 @@
-const labelsCategories = []
-const inputDataCategories = []
-const labelsUsers = []
-const inputDataUsers = []
+const categoriesLabels = []
+const categoriesInputData = []
+const usersLabels = []
+const usersInputData = []
+const usersColor = []
+const categoriesColor = []
 
 //Categories Pie Chart
 parentCategoriesObject.forEach((category) => {
-    labelsCategories.push(category.name)
-    inputDataCategories.push(category.payments)
-})
-
-//Users Pie Chart
-usersObject.forEach((user) => {
-    labelsUsers.push(user.name)
-    inputDataUsers.push(user.payments)
+    categoriesLabels.push(category.name)
+    categoriesInputData.push(category.payments)
+    categoriesColor.push(category.color)
 })
 
 const dataCategories = {
     datasets: [
         {
-            data: inputDataCategories,
+            data: categoriesInputData,
             backgroundColor: categoriesColor,
             hoverOffset: 4,
         },
     ],
 
-    labels: labelsCategories,
+    labels: categoriesLabels,
 }
 
 const configCategories = {
@@ -37,16 +34,23 @@ const myChart = new Chart(
     configCategories
 )
 
+//Users Pie Chart
+usersObject.forEach((user) => {
+    usersLabels.push(user.name)
+    usersInputData.push(user.payments)
+    usersColor.push(user.color)
+})
+
 const dataUsers = {
     datasets: [
         {
-            data: inputDataUsers,
+            data: usersInputData,
             backgroundColor: usersColor,
             hoverOffset: 4,
         },
     ],
 
-    labels: labelsUsers,
+    labels: usersLabels,
 }
 
 const configUsers = {

@@ -59,7 +59,7 @@
                 <hr />
                 <h4>Skupaj: <%= sum %> €</h4>
 
-                <h3 class="lead text-success"><%= comparison.textOutput%></h3>
+                <h3 class="lead text-success"><%= comparison.message%></h3>
             </div>
         </div>
     </div>
@@ -85,8 +85,8 @@
                     <th scope="col" scope="col">
                         <%=parentCategory.name.toUpperCase()%>
                     </th>
-                    <th scope="col"></th>
                     <th scope="col"><%=parentCategory.payments[0]%> €</th>
+                    <th scope="col"></th>
                     <th class="col" scope="col"></th>
                 </tr>
             </thead>
@@ -114,7 +114,5 @@
     const expenses = <%- JSON.stringify(expenses) %>
     const parentCategoriesObject = <%- JSON.stringify(comparison.parentCategoriesObject) %>
     const usersObject = <%- JSON.stringify(comparison.usersObject) %>
-    const usersColor = <%- JSON.stringify(comparison.usersColor) %>
-    const categoriesColor = <%- JSON.stringify(comparison.categoriesColor) %>
 </script>
 <script src="/javascripts/chart.js"></script>

@@ -16,15 +16,38 @@ module.exports.roundToTwo = (num) => {
 
 //funkcija prečisti array tako da ostanejo samo unikati,
 //argumenta sta array objektov in properti katerega iščemo.
-module.exports.extractFrom = (arrayOfObjects, property) => {
-    let output = []
+module.exports.extractNameAndColor = (
+    arrayOfObjects,
+    propertyName,
+    propertyColor
+) => {
+    let nameAndColor = {}
+    let allNamesAndColors = []
     arrayOfObjects.map((object) => {
-        output.push(_.get(object, property))
+        nameAndColor.name = _.get(object, propertyName)
+        nameAndColor.color = _.get(object, propertyColor)
+        allNamesAndColors.push(nameAndColor)
+        nameAndColor = {}
     })
-    return [...new Set(output)]
+    //get unique
+    var resArr = []
+    allNamesAndColors.filter(function (item) {
+        var i = resArr.findIndex(
+            (x) => x.name == item.name && x.color == item.color
+        )
+        if (i <= -1) {
+            resArr.push(item)
+        }
+        return null
+    })
+    return resArr
 }
 
-module.exports.updateUserClass = (expenses, usersObject, property) => {
+module.exports.updateUserOrCategoryClass = (
+    expenses,
+    usersObject,
+    property
+) => {
     expenses.forEach(function (expense) {
         usersObject.forEach(function (user) {
             if (expense.shared) {
