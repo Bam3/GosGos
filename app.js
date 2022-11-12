@@ -331,6 +331,14 @@ app.post(
         res.redirect(`/categories/${newCategory._id}`)
     })
 )
+
+app.get(
+    '/camera',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        res.render('expenses/camera')
+    })
+)
 app.get(
     '/whiskies/wishlist',
     isLoggedIn,
