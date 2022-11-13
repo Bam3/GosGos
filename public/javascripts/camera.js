@@ -6,7 +6,7 @@ let streaming = false
 let video = null
 let canvas = null
 let startbutton = null
-let photo = null
+//let photo = null
 let dataOut = null
 
 const worker = Tesseract.createWorker({
@@ -30,7 +30,7 @@ function startup() {
     video = document.getElementById('video')
     canvas = document.getElementById('canvas')
     startbutton = document.getElementById('startbutton')
-    photo = document.getElementById('photo')
+    //photo = document.getElementById('photo')
     dataOut = document.getElementById('data-output')
 }
 startup()
@@ -86,7 +86,7 @@ function takepicture() {
         context.drawImage(video, 0, 0, width, height)
 
         const data = canvas.toDataURL('image/jpg')
-        photo.setAttribute('src', data)
+        //photo.setAttribute('src', data)
         return data
     } else {
         clearphoto()
