@@ -2,7 +2,7 @@
     border: 1px solid black;
     box-shadow: 2px 2px 3px black;
     width: 380px;
-    height: 640px;
+    height: 620px;
 }
 
 #canvas {
@@ -13,6 +13,6 @@
     border: 1px solid black;
     box-shadow: 2px 2px 3px black;
     width: 380px;
-    height: 640px;
+    height: 620px;
     display: inline-block;
 }
