@@ -7,12 +7,31 @@ let video = null
 let canvas = null
 let startbutton = null
 let photo = null
+let dataOut = null
+
+const worker = Tesseract.createWorker({
+    logger: (m) => console.log(m), // Add logger here
+})
+
+async function readPicture(data) {
+    await worker.load()
+    await worker.loadLanguage('slv')
+    await worker.initialize('slv')
+    const {
+        data: { text, paragraphs },
+    } = await worker.recognize(data)
+    console.log(text, 'inside Tesseract')
+    console.log(data, 'inside app')
+    dataOut.innerText = text
+    await worker.terminate()
+}
 
 function startup() {
     video = document.getElementById('video')
     canvas = document.getElementById('canvas')
     startbutton = document.getElementById('startbutton')
     photo = document.getElementById('photo')
+    dataOut = document.getElementById('data-output')
 }
 startup()
 const constraints = {
@@ -37,11 +56,7 @@ video.addEventListener(
     'canplay',
     (ev) => {
         console.log(video.videoHeight, video.videoWidth, 'inside Canplay')
-        //cameraWidth.innerText = '1280 -Camera Width:' + video.videoWidth
-        //cameraHeight.innerText = '720 -Camera Height:' + video.videoHeight
         if (!streaming) {
-            //height = (video.videoHeight / video.videoWidth) * width;
-
             video.setAttribute('width', width)
             video.setAttribute('height', height)
             canvas.setAttribute('width', width)
@@ -56,7 +71,7 @@ startbutton.addEventListener(
     (ev) => {
         data = takepicture()
         console.log('inside eventlistener', data)
-        //readPicture(data)
+        readPicture(data)
         //ev.preventDefault();
     },
     false
