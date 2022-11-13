@@ -5,6 +5,13 @@
     height: 620px;
 }
 
+#photo {
+    border: 1px solid black;
+    box-shadow: 2px 2px 3px black;
+    width: 620px;
+    height: 380px;
+}
+
 #canvas {
     display: none;
 }
