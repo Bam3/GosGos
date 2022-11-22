@@ -25,6 +25,8 @@ const {
     deleteExpense,
 } = require('./controllers/expense')
 
+const { readPicture } = require('./controllers/camera')
+
 const { filterByCategoryAndDate } = require('./controllers/filters')
 
 const {
@@ -336,7 +338,18 @@ app.get(
     '/camera',
     isLoggedIn,
     catchAsync(async (req, res) => {
+        //readPicture()
+        //console.log(sessionStorage)
         res.render('expenses/camera')
+    })
+)
+app.get(
+    '/camera/photo',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const picture = req.body
+        console.log(picture, 'a je slika kle?')
+        res.redirect('/expenses/new')
     })
 )
 app.get(

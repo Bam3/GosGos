@@ -4,7 +4,11 @@
         <div class="camera">
             <video id="video"></video>
             <div class="d-grid col-12 mx-auto">
-                <button id="startbutton" class="btn btn btn-outline-secondary">
+                <a
+                    id="startbutton"
+                    href="/camera/photo"
+                    class="btn btn btn-outline-secondary"
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="32"
@@ -20,10 +24,10 @@
                             d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"
                         />
                     </svg>
-                </button>
+                </a>
             </div>
         </div>
-        <canvas id="canvas"></canvas>
+        <canvas name="pictureUrl" id="canvas"></canvas>
     </div>
     <div class="row">
         <p id="data-output"></p>
