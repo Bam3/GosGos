@@ -36,7 +36,6 @@ navigator.mediaDevices
 video.addEventListener(
     'canplay',
     (ev) => {
-        console.log(video.videoHeight, video.videoWidth, 'inside Canplay')
         if (!streaming) {
             video.setAttribute('width', width)
             video.setAttribute('height', height)
@@ -53,7 +52,6 @@ startbutton.addEventListener(
         data = takepicture()
         sessionStorage.clear()
         sessionStorage.setItem('pictureUrl', JSON.stringify(data))
-        console.log(sessionStorage.getItem('pictureUrl'))
     },
     false
 )
@@ -63,7 +61,6 @@ function takepicture() {
     if (width && height) {
         canvas.width = width
         canvas.height = height
-        console.log('inside takepicture', width, height)
         context.drawImage(video, 0, 0, width, height)
         const data = canvas.toDataURL('image/jpg')
         return data

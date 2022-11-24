@@ -338,8 +338,6 @@ app.get(
     '/camera',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        //readPicture()
-        //console.log(sessionStorage)
         res.render('expenses/camera')
     })
 )
@@ -347,8 +345,7 @@ app.get(
     '/camera/photo',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const picture = req.body
-        console.log(picture, 'a je slika kle?')
+        console.log('od tukaj lahko ddobiš kategorije in vse iz baze!')
         res.redirect('/expenses/new')
     })
 )
