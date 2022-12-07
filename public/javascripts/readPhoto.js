@@ -58,6 +58,7 @@ let dataFromPictureRaw = null
 let inputDate = document.getElementById('date')
 let inputPrice = document.getElementById('price')
 let inputCategory = document.getElementById('categoryOption')
+let inputDescription = document.getElementById('description')
 
 //if no picture in sessionStorage then hide progress bar
 if (getPictureFromSessionStorage('pictureUrl')) {
@@ -88,7 +89,9 @@ if (getPictureFromSessionStorage('pictureUrl')) {
         //console.log(dataFromPicture, categories)
         readDateFromData(context.text)
         readPriceFromData(context.text)
+        inputDescription.innerText = context.text
     })
 } else {
     toastLive.setAttribute('class', 'toast fade hide')
+    inputDescription.innerText = 'Ni slike'
 }
