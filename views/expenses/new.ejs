@@ -21,7 +21,10 @@
                     <% for(let category of categories){ %>
                     <optgroup label="<%=category.name%>">
                         <% for(let subCategory of category.subCategories){ %>
-                        <option value="<%=subCategory._id%>">
+                        <option
+                            id="categoryOption"
+                            value="<%=subCategory._id%>"
+                        >
                             <%=subCategory.name%>
                         </option>
                         <% } %>
@@ -157,4 +160,7 @@
         </div>
     </div>
 </div>
+<script>
+    const categories = <%- JSON.stringify(categories) %>
+</script>
 <script src="/javascripts/readPhoto.js"></script>

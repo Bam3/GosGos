@@ -345,8 +345,8 @@ app.get(
     '/camera/photo',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        console.log('od tukaj lahko ddobiš kategorije in vse iz baze!')
-        res.redirect('/expenses/new')
+        const categories = await getAllCategoriesAndUsers()
+        res.render('expenses/new', categories)
     })
 )
 app.get(
