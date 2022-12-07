@@ -3,7 +3,7 @@ function getPictureFromSessionStorage(name) {
     return JSON.parse(sessionStorage.getItem(name))
 }
 function clearSessionStorage() {
-    sessionStorage.clear()
+    window.sessionStorage.clear()
 }
 function readDateFromData(data) {
     let res = data.match(

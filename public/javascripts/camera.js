@@ -51,8 +51,8 @@ startbutton.addEventListener(
     'click',
     (ev) => {
         data = takepicture()
-        sessionStorage.clear()
-        sessionStorage.setItem('pictureUrl', JSON.stringify(data))
+        window.sessionStorage.clear()
+        window.sessionStorage.setItem('pictureUrl', JSON.stringify(data))
     },
     false
 )
