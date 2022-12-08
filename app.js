@@ -351,7 +351,7 @@ app.post(
         const { picture } = req.files
         const categories = await getAllCategoriesAndUsers()
         const context = await readPicture(picture.data)
-        console.log(context.text)
+        console.log(context.worker.logger)
         res.render('expenses/new', categories)
     })
 )

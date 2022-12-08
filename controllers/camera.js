@@ -1,6 +1,6 @@
 const { createWorker } = require('tesseract.js')
 const worker = createWorker({
-    logger: (m) => console.log(m, 'Miha!!!'), // Add logger here
+    logger: (m) => m, //console.log(m, 'Miha!!!'), // Add logger here
 })
 
 module.exports.readPicture = async (picture) => {
@@ -9,5 +9,5 @@ module.exports.readPicture = async (picture) => {
     await worker.initialize('slv')
     const { data: data } = await worker.recognize(picture)
     await worker.terminate()
-    return data
+    return { data }
 }
