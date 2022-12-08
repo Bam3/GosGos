@@ -109,12 +109,30 @@
                 <div class="d-grid col-8 mx-auto">
                     <button class="btn btn-secondary">Dodaj</button>
                 </div>
-                <div class="d-grid col-4 mx-auto">
-                    <a
-                        id="startbutton"
-                        href="/camera"
-                        class="btn btn btn-outline-secondary"
-                    >
+            </div>
+        </form>
+        <form
+            action="/camera/photo"
+            method="POST"
+            id="addNewPhoto"
+            enctype="multipart/form-data"
+        >
+            <div class="d-grid col-4 mx-auto">
+                <a
+                    id="startbutton"
+                    href="/camera/photo"
+                    class="btn btn btn-outline-secondary"
+                >
+                    <input
+                        id="take-picture"
+                        type="file"
+                        name="picture"
+                        accept="image/*"
+                        capture="user"
+                        hidden
+                        onchange="form.submit()"
+                    />
+                    <label for="take-picture">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="32"
@@ -130,8 +148,8 @@
                                 d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"
                             />
                         </svg>
-                    </a>
-                </div>
+                    </label>
+                </a>
             </div>
         </form>
     </div>

@@ -14,6 +14,7 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local')
 const flash = require('connect-flash')
 const session = require('express-session')
+const fileUpload = require('express-fileupload')
 
 const User = require('./models/user')
 
@@ -105,6 +106,8 @@ app.set('contollers', path.join(__dirname, 'controllers'))
 app.set('public', path.join(__dirname, 'public'))
 app.use(flash())
 
+// Use the express-fileupload middleware
+app.use(fileUpload())
 app.use(
     express.urlencoded({
         extended: true,
@@ -341,11 +344,14 @@ app.get(
         res.render('expenses/camera')
     })
 )
-app.get(
+app.post(
     '/camera/photo',
     isLoggedIn,
     catchAsync(async (req, res) => {
+        const { picture } = req.files
         const categories = await getAllCategoriesAndUsers()
+        const context = await readPicture(picture.data)
+        console.log(context.text)
         res.render('expenses/new', categories)
     })
 )

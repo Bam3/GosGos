@@ -1,9 +1,7 @@
-//client side storage
-function getPictureFromSessionStorage(name) {
-    return JSON.parse(sessionStorage.getItem(name))
-}
-function clearSessionStorage() {
-    window.sessionStorage.clear()
+function submitPic() {
+    let form = document.getElementById('addNewPhoto')
+    console.log(form)
+    form.submit()
 }
 function readDateFromData(data) {
     let res = data.match(
@@ -61,37 +59,37 @@ let inputCategory = document.getElementById('categoryOption')
 let inputDescription = document.getElementById('description')
 
 //if no picture in sessionStorage then hide progress bar
-if (getPictureFromSessionStorage('pictureUrl')) {
-    toastLive.setAttribute('class', 'toast fade show')
-    const worker = Tesseract.createWorker({
-        logger: (m) => {
-            //console.log(m, 'a to uporabim?'), console.log(m.progress)
-            progressBar.setAttribute('style', `width: ${m.progress * 100}%`)
-            progressTitle.innerText = m.status.toUpperCase()
-            //when over hide progress bar
-            if (m.progress === 1 && m.status === 'recognizing text')
-                toastLive.setAttribute('class', 'toast fade hide')
-        },
-    })
+//if (true) {
+//     toastLive.setAttribute('class', 'toast fade show')
+//     const worker = Tesseract.createWorker({
+//         logger: (m) => {
+//             //console.log(m, 'a to uporabim?'), console.log(m.progress)
+//             progressBar.setAttribute('style', `width: ${m.progress * 100}%`)
+//             progressTitle.innerText = m.status.toUpperCase()
+//             //when over hide progress bar
+//             if (m.progress === 1 && m.status === 'recognizing text')
+//                 toastLive.setAttribute('class', 'toast fade hide')
+//         },
+//     })
 
-    async function readPicture(picture) {
-        await worker.load()
-        await worker.loadLanguage('slv')
-        await worker.initialize('slv')
-        const { data: data } = await worker.recognize(picture)
-        await worker.terminate()
-        return data
-    }
+// async function readPicture(picture) {
+//     await worker.load()
+//     await worker.loadLanguage('slv')
+//     await worker.initialize('slv')
+//     const { data: data } = await worker.recognize(picture)
+//     await worker.terminate()
+//     return data
+// }
 
-    readPicture(getPictureFromSessionStorage('pictureUrl')).then((context) => {
-        clearSessionStorage()
-        //console.log(context.text)
-        //console.log(dataFromPicture, categories)
-        readDateFromData(context.text)
-        readPriceFromData(context.text)
-        inputDescription.innerText = context.text
-    })
-} else {
-    toastLive.setAttribute('class', 'toast fade hide')
-    inputDescription.innerText = 'Ni slike'
-}
+// readPicture(getPictureFromSessionStorage('pictureUrl')).then((context) => {
+//     clearSessionStorage()
+//     //console.log(context.text)
+//     //console.log(dataFromPicture, categories)
+//     readDateFromData(context.text)
+//     readPriceFromData(context.text)
+//     inputDescription.innerText = context.text
+// })
+// } else {
+//     toastLive.setAttribute('class', 'toast fade hide')
+//     inputDescription.innerText = '...'
+// }
