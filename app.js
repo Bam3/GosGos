@@ -337,13 +337,6 @@ app.post(
     })
 )
 
-app.get(
-    '/camera',
-    isLoggedIn,
-    catchAsync(async (req, res) => {
-        res.render('expenses/camera')
-    })
-)
 app.post(
     '/camera/photo',
     isLoggedIn,
