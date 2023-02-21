@@ -52,9 +52,10 @@ const MongoStore = require('connect-mongo')
 const { authenticate } = require('passport')
 const { emitKeypressEvents } = require('readline')
 const { isEmpty } = require('lodash')
+const user = require('./models/user')
 
-const dbUrl = process.env.DB_URL
-//const dbUrl = 'mongodb://localhost:27017/gos-gos'
+//const dbUrl = process.env.DB_URL
+const dbUrl = 'mongodb://localhost:27017/gos-gos'
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -459,8 +460,14 @@ app.post(
     }),
     (req, res) => {
         const redirectUrl = req.session.returnTo || '/expenses/new'
+        //req.session.currentUser = req.body.username
         delete req.session.returnTo
-        req.flash('success', 'Pozdravljen v GosGos!')
+        req.flash(
+            'success',
+            `${req.session.passport.user}, pozdravljen v GosGos!`
+        )
+        console.log(req.session.passport, 'TO JE SESSION')
+        console.log(req.session, 'TO JE SESSION')
         res.redirect(redirectUrl)
     }
 )

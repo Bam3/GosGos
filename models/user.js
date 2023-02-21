@@ -12,10 +12,10 @@ const UserSchema = new Schema({
         type: String,
         required: true,
     },
-    // shared: {
-    //     type: Boolean,
-    //     default: false,
-    // },
+    household: {
+        type: Schema.Types.ObjectId,
+        ref: 'Household',
+    },
 })
 //ta passpor-local-mongoose nam na našo schemo doda username,
 //salt, hash itd...

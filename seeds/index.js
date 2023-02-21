@@ -7,13 +7,17 @@ const { request } = require('express')
 const mongoose = require('mongoose')
 const { seedCategories } = require('./category')
 const { seedExpenses } = require('./expense')
-const { seedHouseholds } = require('./household')
+const {
+    seedHouseholds,
+    cosnoleAllHouses,
+    changeAllUsers,
+} = require('./household')
 const { seedUsers } = require('./user')
 const { seedWhiskies } = require('./whiskey')
 
 //local DB
-//const dbUrl = 'mongodb://localhost:27017/gos-gos'
-const dbUrl = process.env.DB_URL
+const dbUrl = 'mongodb://localhost:27017/gos-gos'
+//const dbUrl = process.env.DB_URL
 mongoose
     .connect(dbUrl, {
         useNewUrlParser: true,
@@ -25,6 +29,8 @@ mongoose
         //await seedExpenses()
         //await seedWhiskies()
         await seedHouseholds()
+        await cosnoleAllHouses()
+        await changeAllUsers()
 
         await client.disconnect()
     })
