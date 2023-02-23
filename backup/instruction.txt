@@ -1,0 +1,15 @@
+Install mongoexport tool: https://www.mongodb.com/try/download/database-tools2
+(page: https://dotnettutorials.net/lesson/how-to-install-mongoimport-and-mongoexport/)
+
+Use next commands in terminal not in mongo cli:
+mongoexport --uri="mongodb+srv://BaM:<pass-look-at-env>@cluster0.xihwr.mongodb.net/test" --collection=users --out=gosgosUsers<date-of-backup>.json
+
+mongoexport --uri="mongodb+srv://BaM:<pass-look-at-env>@cluster0.xihwr.mongodb.net/test" --collection=categories --out=gosgosCategories<date-of-backup>.json
+
+mongoexport --uri="mongodb+srv://BaM:<pass-look-at-env>@cluster0.xihwr.mongodb.net/test" --collection=expenses --out=gosgosExpenses<date-of-backup>.json
+
+mongoexport --uri="mongodb+srv://BaM:<pass-look-at-env>@cluster0.xihwr.mongodb.net/test" --collection=households --out=gosgosHouseholds<date-of-backup>.json
+
+mongoexport --uri="mongodb+srv://BaM:<pass-look-at-env>@cluster0.xihwr.mongodb.net/test" --collection=notes --out=gosgosNotes<date-of-backup>.json
+
+mongoexport --uri="mongodb+srv://BaM:<pass-look-at-env>@cluster0.xihwr.mongodb.net/test" --collection=whiskeys --out=gosgosWhiskeys<date-of-backup>.json
