@@ -16,6 +16,12 @@ const UserSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Household',
     },
+    nickName: {
+        type: String,
+    },
+    roll: {
+        type: String,
+    },
 })
 //ta passpor-local-mongoose nam na našo schemo doda username,
 //salt, hash itd...
