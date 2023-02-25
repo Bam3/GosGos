@@ -16,3 +16,8 @@ module.exports.logoutUser = (req, res, next) => {
         res.redirect('/')
     })
 }
+
+module.exports.getUserOnLogin = async (req, res) => {
+    const logedinUser = await User.find({ username: req.session.passport.user })
+    return logedinUser[0].household
+}

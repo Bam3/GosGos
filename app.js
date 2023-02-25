@@ -34,6 +34,7 @@ const {
     renderRegister,
     renderLogin,
     logoutUser,
+    getUserOnLogin,
 } = require('./controllers/users')
 
 const { createCategory } = require('./controllers/categories')
@@ -458,7 +459,7 @@ app.post(
         failureFlash: true,
         failureRedirect: '/login',
     }),
-    (req, res) => {
+    async (req, res) => {
         const redirectUrl = req.session.returnTo || '/expenses/new'
         //req.session.currentUser = req.body.username
         delete req.session.returnTo
@@ -466,8 +467,9 @@ app.post(
             'success',
             `${req.session.passport.user}, pozdravljen v GosGos!`
         )
-        console.log(req.session.passport, 'TO JE SESSION')
-        console.log(req.session, 'TO JE SESSION')
+        //on login get users household and save it in session
+        const household = await getUserOnLogin(req, res)
+        req.session.household = household
         res.redirect(redirectUrl)
     }
 )
