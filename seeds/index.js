@@ -26,11 +26,11 @@ mongoose
     .then(async (client) => {
         //await seedUsers()
         //await seedCategories()
-        //await seedExpenses()
+        await seedExpenses()
         //await seedWhiskies()
-        await seedHouseholds()
-        await cosnoleAllHouses()
-        await changeAllUsers()
+        //await seedHouseholds()
+        //await cosnoleAllHouses()
+        //await changeAllUsers()
 
         await client.disconnect()
     })

@@ -21,17 +21,19 @@ module.exports.seedExpenses = async () => {
                 subCategory.subCategories.forEach(async (subCatName) => {
                     if (subCatName.name === expense.subCategory) {
                         if (expense.payer === 'Miha') {
-                            payerID = '62fb6e6ee913b9e44643769c' //production user id: '62b0220d04b744701a0bab83' 
+                            payerID = '63f542caa32f470814a243cc' //production user id: '62b0220d04b744701a0bab83'
                         } else if (expense.payer === 'Nataša') {
-                            payerID = '62fb6e6ee913b9e44643769d' //production user id: '62b021f604b744701a0bab7a'
+                            payerID = '63f542caa32f470814a243cd' //production user id: '62b021f604b744701a0bab7a'
                         } else {
-                            payerID = '62fb6e6ee913b9e44643769e' //production user id: '62ba152107ee0fb001590933'
+                            payerID = '63f542caa32f470814a243ce' //production user id: '62ba152107ee0fb001590933'
                         }
                         const newExpense = new Expense({
-                            cost: typeof expense.cost == 'string' ?
-                                (expense.cost = Number(
-                                    expense.cost.replace(',', '.')
-                                )) : expense.cost,
+                            cost:
+                                typeof expense.cost == 'string'
+                                    ? (expense.cost = Number(
+                                          expense.cost.replace(',', '.')
+                                      ))
+                                    : expense.cost,
                             payer: payerID,
                             payDate: new Date(expense.payDate),
                             description: expense.description,
