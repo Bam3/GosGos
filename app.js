@@ -199,7 +199,6 @@ app.get(
                 from,
                 to,
             })
-            console.log(context.comparison.parentCategoriesObject[0])
             res.render('expenses/index', context)
         }
     })

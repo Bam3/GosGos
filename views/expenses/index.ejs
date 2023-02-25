@@ -52,12 +52,12 @@
                 <% for (user of comparison.usersObject) { %>
                 <div>
                     <h5 class="lead">
-                        <b><%= user.name %></b>: <%= user.payments%> €
+                        <b><%= user.name %></b>: €<%= user.payments%>
                     </h5>
                 </div>
                 <% } %>
                 <hr />
-                <h4>Skupaj: <%= sum %> €</h4>
+                <h4>Skupaj: €<%= sum.toFixed(2) %></h4>
 
                 <h3 class="lead text-success"><%= comparison.message%></h3>
             </div>
@@ -78,16 +78,17 @@
         </div>
     </div>
     <% for (parentCategory of comparison.parentCategoriesObject) { %>
-    <div class="col-md-3 table-responsive">
+    <div class="col-md-4 table-responsive">
         <table class="table table-hover">
             <thead class="table-light">
                 <tr>
-                    <th scope="col" scope="col">
+                    <th colspan="2" class="text-left">
                         <%=parentCategory.name.toUpperCase()%>
                     </th>
-                    <th scope="col"><%=parentCategory.payments[0]%> €</th>
-                    <th scope="col"></th>
-                    <th class="col" scope="col"></th>
+
+                    <th colspan="2" class="text-right">
+                        €<%=parentCategory.payments[0].toFixed(2)%>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -95,14 +96,17 @@
                 if(expense.category.parentCategory.name === parentCategory.name)
                 { %>
                 <tr>
-                    <td>
-                        <a href="/expenses/<%= expense.id %>"
-                            ><%=expense.payDate.toLocaleDateString()%></a
-                        >
+                    <td scope="row">
+                        <%=expense.payDate.toLocaleDateString('de-CH',{year:"2-digit",
+                        month: "2-digit", day:"2-digit"})%>
                     </td>
                     <td><%=expense.category.name %></td>
-                    <td><%=expense.cost %> €</td>
-                    <td class="col"><%=expense.payer.username %></td>
+                    <td>
+                        <a href="/expenses/<%= expense.id %>"
+                            >€<%=expense.cost.toFixed(2) %></a
+                        >
+                    </td>
+                    <td class="col"><%=expense.payer.nickName %></td>
                 </tr>
                 <% } %> <% } %>
             </tbody>

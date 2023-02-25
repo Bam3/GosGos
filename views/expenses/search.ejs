@@ -147,17 +147,14 @@
                     <% for (let i = 0; i < context.expenses.length; i++) { %>
                     <tr>
                         <td class="col" scope="row"><%= i+1 %></th>
-                        <td>
-                            <a href="/expenses/<%= context.expenses[i]._id %>">
-                                <%=context.expenses[i].payDate.toLocaleDateString('locales')
-                                %></a
-                            >
-                        </td>
+                        <td><%=context.expenses[i].payDate.toLocaleDateString('de-CH',{year:"2-digit",month: "2-digit", day:"2-digit"})%></td>
                         <td><%=context.expenses[i].category[0].name %></td>
-                        <td><%=context.expenses[i].cost %> €</td>
-                        <td class="col">
-                            <%=context.expenses[i].payer[0].username %>
-                        </td>
+                        <td>
+                            <a href="/expenses/<%= context.expenses[i]._id %>"
+                                >€<%=context.expenses[i].cost.toFixed(2) %></a
+                                >
+                            </td>
+                        <td class="col"><%=context.expenses[i].payer[0].nickName %></td>
                     </tr>
                     <% } %>
                 <% } %> 

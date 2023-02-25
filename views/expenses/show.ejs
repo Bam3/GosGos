@@ -5,10 +5,12 @@
         <p class="card-text"><%= expenses.description%></p>
     </div>
     <ul class="list-group list-group-flush">
-        <li class="list-group-item">Znesek: <%= expenses.cost%> €</li>
+        <li class="list-group-item">Znesek: €<%= expenses.cost.toFixed(2)%></li>
         <li class="list-group-item">Plačnik: <%= expenses.payer.username%></li>
         <li class="list-group-item">
-            Dan nakupa: <%= expenses.payDate.toLocaleDateString('sl-SI') %>
+            Dan nakupa: <%=
+            expenses.payDate.toLocaleDateString('de-CH',{year:"2-digit", month:
+            "2-digit", day:"2-digit"}) %>
         </li>
         <li class="list-group-item">
             Strošek deljen: <%= expenses.shared ? "DA":"NE"%>
