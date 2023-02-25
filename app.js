@@ -460,7 +460,6 @@ app.post(
     }),
     async (req, res) => {
         const redirectUrl = req.session.returnTo || '/expenses/new'
-        //req.session.currentUser = req.body.username
         delete req.session.returnTo
         req.flash(
             'success',
