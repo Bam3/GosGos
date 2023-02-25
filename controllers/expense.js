@@ -34,14 +34,15 @@ module.exports.updateExpense = async (req, res) => {
     res.redirect(`/expenses/${expense._id}`)
 }
 
-module.exports.createExpense = async (reqBody) => {
+module.exports.createExpense = async (req, res) => {
     const newExpense = new Expense({
-        cost: reqBody.price,
-        payer: reqBody.user,
-        payDate: new Date(reqBody.payDate),
-        description: reqBody.description,
-        category: reqBody.category,
-        shared: Boolean(reqBody.shared),
+        cost: req.body.price,
+        payer: req.body.user,
+        payDate: new Date(req.body.payDate),
+        description: req.body.description,
+        category: req.body.category,
+        shared: Boolean(req.body.shared),
+        household: req.session.household,
     })
     await newExpense.save()
 

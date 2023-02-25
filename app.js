@@ -34,7 +34,7 @@ const {
     renderRegister,
     renderLogin,
     logoutUser,
-    getUserOnLogin,
+    getUsersHouseholdOnLogin,
 } = require('./controllers/users')
 
 const { createCategory } = require('./controllers/categories')
@@ -249,7 +249,7 @@ app.post(
     '/expenses',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const newExpense = await createExpense(req.body)
+        const newExpense = await createExpense(req, res)
         req.flash('success', 'Strošek dodan in shranjen')
         res.redirect(`/expenses/${newExpense._id}`)
     })
@@ -468,7 +468,7 @@ app.post(
             `${req.session.passport.user}, pozdravljen v GosGos!`
         )
         //on login get users household and save it in session
-        const household = await getUserOnLogin(req, res)
+        const household = await getUsersHouseholdOnLogin(req, res)
         req.session.household = household
         res.redirect(redirectUrl)
     }

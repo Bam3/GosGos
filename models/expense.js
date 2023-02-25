@@ -31,5 +31,9 @@ const expenseSchema = new Schema({
         type: Boolean,
         required: true,
     },
+    household: {
+        type: Schema.Types.ObjectId,
+        ref: 'Household',
+    },
 })
 module.exports = mongoose.model('Expense', expenseSchema)
