@@ -333,7 +333,7 @@ app.post(
     '/categories',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const newCategory = await createCategory(req.body)
+        const newCategory = await createCategory(req)
         req.flash('success', 'Kategorija dodan in shranjen')
         res.redirect(`/categories/${newCategory._id}`)
     })
