@@ -1,6 +1,5 @@
 function submitPic() {
     let form = document.getElementById('addNewPhoto')
-    console.log(form)
     form.submit()
 }
 function readDateFromData(data) {

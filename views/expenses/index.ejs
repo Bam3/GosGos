@@ -106,7 +106,15 @@
                             >€<%=expense.cost.toFixed(2) %></a
                         >
                     </td>
-                    <td class="col"><%=expense.payer.nickName %></td>
+                    <td
+                        class="text-center"
+                        style="
+                            background-color: <%=expense.payer.color %>;
+                            border-radius: 100px 20px 100px 20px;
+                        "
+                    >
+                        <%=expense.payer.nickName %>
+                    </td>
                 </tr>
                 <% } %> <% } %>
             </tbody>

@@ -1,5 +1,6 @@
 const Expense = require('../models/expense')
 var _ = require('lodash')
+const mongoose = require('mongoose')
 const {
     extractFrom,
     calculateSum,
@@ -7,6 +8,8 @@ const {
 } = require('../public/javascripts/pureFunctions')
 
 module.exports.filterByCategoryAndDate = async (
+    req,
+    res,
     filteredByDate,
     dateFrom,
     dateTo,
@@ -16,7 +19,12 @@ module.exports.filterByCategoryAndDate = async (
     let expenses = {}
     let filterByCat = {}
     let filterByDate = {}
+    let filterHousehold = {}
     let matchFilter = {}
+
+    filterHousehold = {
+        household: { $eq: mongoose.Types.ObjectId(req.session.household) },
+    }
     //Sort by cat
     if (!subCategory && category) {
         filterByCat = { 'parentCat.name': { $eq: category } }
@@ -50,7 +58,11 @@ module.exports.filterByCategoryAndDate = async (
     }
     //Sort only by categories
     if (filteredByDate === undefined) {
-        matchFilter = { $match: filterByCat }
+        matchFilter = {
+            $match: {
+                $and: [filterByCat, filterHousehold],
+            },
+        }
     } else {
         //Sort by date and categories
         filterByDate = {
@@ -61,7 +73,7 @@ module.exports.filterByCategoryAndDate = async (
         }
         matchFilter = {
             $match: {
-                $and: [filterByDate, filterByCat],
+                $and: [filterByDate, filterByCat, filterHousehold],
             },
         }
     }

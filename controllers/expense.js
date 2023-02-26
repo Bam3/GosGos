@@ -10,9 +10,11 @@ const {
     generateCategoryLabel,
 } = require('../public/javascripts/pureFunctions')
 
-module.exports.getAllCategoriesAndUsers = async () => {
-    const categories = await Category.find({}).populate('subCategories')
-    const users = await User.find({})
+module.exports.getAllCategoriesAndUsers = async (req, res) => {
+    const categories = await Category.find({
+        household: req.session.household,
+    }).populate('subCategories')
+    const users = await User.find({ household: req.session.household })
     const parentCategories = categories.filter(
         (category) => category.parentCategory === undefined
     )
@@ -49,12 +51,13 @@ module.exports.createExpense = async (req, res) => {
     return newExpense
 }
 
-module.exports.getExpenseContext = async (filter) => {
+module.exports.getExpenseContext = async (req, res, filter) => {
     let filterObject = {}
     let expenses = {}
     //če podamo filter datuma, od - do
-    if (filter.from && filter.to) {
+    if (filter !== undefined) {
         filterObject = {
+            household: req.session.household,
             payDate: {
                 $gte: new Date(filter.from),
                 $lte: new Date(filter.to),
@@ -89,8 +92,8 @@ module.exports.getExpenseContext = async (filter) => {
             comparison,
         }
         // če želimo filtriratio po id-ju
-    } else if (filter.id) {
-        expenses = await Expense.findById(filter.id)
+    } else if (req.params.id) {
+        expenses = await Expense.findById(req.params.id)
             .sort({
                 payDate: -1,
             })
@@ -186,25 +189,31 @@ const calculateComparison = (expenses) => {
             if (activeUsers[0].sumOfExpenses - perUser >= 0) {
                 message = `${
                     activeUsers[1].name
-                } dolguje ${activeUsers[0].name.replace(/.$/, 'i')}: ${Math.abs(
+                } dolguje ${activeUsers[0].name.replace(
+                    /.$/,
+                    'i'
+                )}: €${Math.abs(
                     roundToTwo(activeUsers[0].sumOfExpenses - perUser)
-                )} €`
+                )}`
             } else {
                 message = `${
                     activeUsers[0].name
-                } dolguje ${activeUsers[1].name.replace(/.$/, 'i')}: ${Math.abs(
+                } dolguje ${activeUsers[1].name.replace(
+                    /.$/,
+                    'i'
+                )}: €${Math.abs(
                     roundToTwo(activeUsers[0].sumOfExpenses - perUser)
-                )} €`
+                )}`
             }
         } else if (activeUsers.length === 1) {
             if (activeUsers.name === 'Miha') {
-                message = `Nataša dolguje Mihi: ${Math.abs(
+                message = `Nataša dolguje Mihi: €${Math.abs(
                     roundToTwo(activeUsers[0].sumOfExpenses - perUser)
-                )} €`
+                )}`
             } else {
-                message = `Miha dolguje Nataši: ${Math.abs(
+                message = `Miha dolguje Nataši: €${Math.abs(
                     roundToTwo(activeUsers[0].sumOfExpenses - perUser)
-                )} €`
+                )}`
             }
         } else {
             message = 'Stroški poravnani!'

@@ -22,8 +22,6 @@ const labels = [
     'december',
 ]
 let datasets = []
-console.log(expenses, 'Inside expenses')
-console.log(context, 'Inside context')
 for (let i = 0; i < expenses.length; i++) {
     datasets[i] = {
         label: expenses[i].category[0].name,
