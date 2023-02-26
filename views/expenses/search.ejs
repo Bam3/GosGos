@@ -139,7 +139,7 @@
                     <th scope="col">Datum</th>
                     <th scope="col">Kategorija</th>
                     <th scope="col">Strošek</th>
-                    <th class="col" scope="col">Plačnik</th>
+                    <th class="text-center" scope="col">Plačnik</th>
                 </tr>
             </thead>
             <tbody>
@@ -154,8 +154,12 @@
                                 >€<%=context.expenses[i].cost.toFixed(2) %></a
                                 >
                             </td>
-                        <td class="col"><%=context.expenses[i].payer[0].nickName %></td>
-                    </tr>
+                        <td 
+                        class="text-center" 
+                        style="background-color: <%=context.expenses[i].payer[0].color %>;
+                        border-radius: 100px 20px 100px 20px;">
+                        <%=context.expenses[i].payer[0].nickName %>
+                        </td>
                     <% } %>
                 <% } %> 
             </tbody>
