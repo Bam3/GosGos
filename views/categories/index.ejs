@@ -11,8 +11,8 @@
                 style="background-color: <%= category.color %>"
             >
                 <strong><%=category.name.toUpperCase()%></strong>
+                <a href="/categories/<%= category.id %>/edit">Link</a>
             </div>
-
             <hr />
             <% for(let subCategory of category.subCategories){ %>
             <div><%=subCategory.name%></div>

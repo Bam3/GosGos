@@ -37,7 +37,7 @@ const {
     getUsersHouseholdOnLogin,
 } = require('./controllers/users')
 
-const { createCategory } = require('./controllers/categories')
+const { createCategory, getCategory } = require('./controllers/categories')
 
 const {
     getWhiskeyContext,
@@ -279,27 +279,16 @@ app.get('/categories/new', isLoggedIn, (req, res) => {
 })
 
 app.get(
-    '/categories/:id',
-    catchAsync(async (req, res) => {
-        const context = await getExpenseContext(req, res)
-        if (!context) {
-            req.flash('error', 'Iskane kategorije ni moč najti!')
-            return res.redirect('/categories')
-        }
-        res.render('expenses/show', context)
-    })
-)
-
-app.get(
     '/categories/:id/edit',
     catchAsync(async (req, res) => {
+        getCategory(req, res)
         const context = await getExpenseContext(req, res)
         const usersAndCategories = await getAllCategoriesAndUsers(req, res)
         if (!context) {
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
         }
-        res.render('expenses/edit', {
+        res.render('categories/edit', {
             context,
             usersAndCategories,
         })

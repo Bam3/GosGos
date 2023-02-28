@@ -19,3 +19,8 @@ module.exports.createCategory = async (req) => {
     })
     return categoryObject
 }
+
+module.exports.getCategory = async (req, res) => {
+    const { id } = req.params
+    console.log(id)
+}
