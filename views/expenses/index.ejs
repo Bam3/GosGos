@@ -91,26 +91,34 @@
                     </th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="">
                 <% for (expense of expenses) { %> <%
                 if(expense.category.parentCategory.name === parentCategory.name)
                 { %>
                 <tr>
-                    <td scope="row">
-                        <%=expense.payDate.toLocaleDateString('de-CH',{year:"2-digit",
-                        month: "2-digit", day:"2-digit"})%>
+                    <td class="align-middle" scope="row">
+                        <div>
+                            <%=expense.payDate.toLocaleDateString('de-CH',{year:"2-digit",
+                            month: "2-digit", day:"2-digit"})%>
+                        </div>
                     </td>
-                    <td><%=expense.category.name %></td>
-                    <td>
-                        <a href="/expenses/<%= expense.id %>"
-                            >€<%=expense.cost.toFixed(2) %></a
+                    <td class="align-middle">
+                        <div><%=expense.category.name %></div>
+                    </td>
+                    <td class="align-middle">
+                        <div>
+                            <a href="/expenses/<%= expense.id %>"
+                                >€<%=expense.cost.toFixed(2) %></a
+                            >
+                        </div>
+                    </td>
+                    <td class="p-1 d-flex justify-content-center">
+                        <div
+                            class="name-tag"
+                            style="background-color: <%=expense.payer.color %>"
                         >
-                    </td>
-                    <td
-                        class="name-tag"
-                        style="background-color: <%=expense.payer.color %>"
-                    >
-                        <%=expense.payer.nickName %>
+                            <%=expense.payer.nickName %>
+                        </div>
                     </td>
                 </tr>
                 <% } %> <% } %>
