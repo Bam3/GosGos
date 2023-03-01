@@ -285,7 +285,7 @@ app.get(
         const context = await getExpenseContext(req, res)
         const usersAndCategories = await getAllCategoriesAndUsers(req, res)
         if (!context) {
-            req.flash('error', 'Iskanega stroška ni moč najti!')
+            req.flash('error', 'Iskane kategorije ni moč najti!')
             return res.redirect('/expenses/new')
         }
         res.render('categories/edit', {

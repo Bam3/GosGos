@@ -7,11 +7,15 @@
         <div class="col-md-12">
             <% for(let category of categories){ %>
             <div
-                class="d-grid p-2"
+                class="d-flex p-2 align-items-center justify-content-between"
                 style="background-color: <%= category.color %>"
             >
                 <strong><%=category.name.toUpperCase()%></strong>
-                <a href="/categories/<%= category.id %>/edit">Link</a>
+                <a
+                    class="btn btn-dark btn-sm"
+                    href="/categories/<%= category.id %>/edit"
+                    >Uredi</a
+                >
             </div>
             <hr />
             <% for(let subCategory of category.subCategories){ %>
