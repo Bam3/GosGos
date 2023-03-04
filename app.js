@@ -220,7 +220,6 @@ app.post(
     '/search',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const dataFromForm = req.body
         const context = await filterByCategoryAndDate(
             req,
             res,
@@ -281,16 +280,15 @@ app.get('/categories/new', isLoggedIn, (req, res) => {
 app.get(
     '/categories/:id/edit',
     catchAsync(async (req, res) => {
-        getCategory(req, res)
-        const context = await getExpenseContext(req, res)
-        const usersAndCategories = await getAllCategoriesAndUsers(req, res)
-        if (!context) {
+        const { id } = req.params
+        const categories = await getCategory(req, res, id)
+        if (!categories) {
             req.flash('error', 'Iskane kategorije ni moč najti!')
-            return res.redirect('/expenses/new')
+            return res.redirect('/categories')
         }
         res.render('categories/edit', {
-            context,
-            usersAndCategories,
+            categories,
+            id,
         })
     })
 )
