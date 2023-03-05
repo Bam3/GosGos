@@ -311,7 +311,25 @@ app.post(
         res.redirect(`/categories/${newCategory._id}`)
     })
 )
+app.put(
+    '/categories/:id',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        let catss = {}
+        for (let i = 0; i < req.body.subCategories.length; i++) {
+            let name = req.body.subCategories[i]
+            catss = { name: req.body.subCategoriesId[i] }
+        }
+        let categoryPackeg = {
+            parentCategory: req.body.name,
+            parentId: req.body.id,
+            subCats: catss,
+        }
 
+        console.log(categoryPackeg)
+        res.redirect('/categories')
+    })
+)
 app.post(
     '/camera/photo',
     isLoggedIn,
