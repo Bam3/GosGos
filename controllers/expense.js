@@ -62,6 +62,7 @@ module.exports.getExpenseContext = async (req, res, filter) => {
                 $gte: new Date(filter.from),
                 $lte: new Date(filter.to),
             },
+            shared: true,
         }
         expenses = await Expense.find(filterObject)
             .sort({
@@ -84,7 +85,7 @@ module.exports.getExpenseContext = async (req, res, filter) => {
 
         let sum = calculateSum(expenses)
         sum = roundToTwo(sum)
-        const comparison = calculateComparison(expenses)
+        const comparison = calculateComparison(req, expenses)
         return {
             expenses,
             sum,
@@ -123,7 +124,7 @@ module.exports.deleteExpense = async (req, res) => {
     res.redirect('/expenses')
 }
 
-const calculateComparison = (expenses) => {
+const calculateComparison = (req, expenses) => {
     let usersColors = []
     let message = ''
     let usersObject = []
@@ -187,36 +188,31 @@ const calculateComparison = (expenses) => {
 
         if (activeUsers.length > 1) {
             if (activeUsers[0].sumOfExpenses - perUser >= 0) {
-                message = `${
-                    activeUsers[1].name
-                } dolguje ${activeUsers[0].name.replace(
-                    /.$/,
-                    'i'
-                )}: €${Math.abs(
+                message = `${activeUsers[1].name} owes ${
+                    activeUsers[0].name
+                }: €${Math.abs(
                     roundToTwo(activeUsers[0].sumOfExpenses - perUser)
                 )}`
             } else {
-                message = `${
-                    activeUsers[0].name
-                } dolguje ${activeUsers[1].name.replace(
-                    /.$/,
-                    'i'
-                )}: €${Math.abs(
+                message = `${activeUsers[0].name} owes ${
+                    activeUsers[1].name
+                }: €${Math.abs(
                     roundToTwo(activeUsers[0].sumOfExpenses - perUser)
                 )}`
             }
         } else if (activeUsers.length === 1) {
-            if (activeUsers.name === 'Miha') {
-                message = `Nataša dolguje Mihi: €${Math.abs(
+            if (activeUsers[0].name === req.session.passport.user) {
+                message = `Owes you: €${Math.abs(
                     roundToTwo(activeUsers[0].sumOfExpenses - perUser)
                 )}`
             } else {
-                message = `Miha dolguje Nataši: €${Math.abs(
+                message = `You owes: €${Math.abs(
                     roundToTwo(activeUsers[0].sumOfExpenses - perUser)
                 )}`
+                console.log(activeUsers[0].name, req.session.passport.user)
             }
         } else {
-            message = 'Stroški poravnani!'
+            message = 'Fair and square!'
         }
     }
     return {
