@@ -37,7 +37,12 @@ const {
     getUsersHouseholdOnLogin,
 } = require('./controllers/users')
 
-const { createCategory, getCategory } = require('./controllers/categories')
+const {
+    createCategory,
+    getCategory,
+    getCategoriesToEdit,
+    updateCategoriesOrCreate,
+} = require('./controllers/categories')
 
 const {
     getWhiskeyContext,
@@ -308,25 +313,14 @@ app.post(
     catchAsync(async (req, res) => {
         const newCategory = await createCategory(req)
         req.flash('success', 'Kategorija dodan in shranjen')
-        res.redirect(`/categories/${newCategory._id}`)
+        res.redirect(`/categories/${newCategory._id}/edit`)
     })
 )
 app.put(
     '/categories/:id',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        let catss = {}
-        for (let i = 0; i < req.body.subCategories.length; i++) {
-            let name = req.body.subCategories[i]
-            catss = { name: req.body.subCategoriesId[i] }
-        }
-        let categoryPackeg = {
-            parentCategory: req.body.name,
-            parentId: req.body.id,
-            subCats: catss,
-        }
-
-        console.log(categoryPackeg)
+        await updateCategoriesOrCreate(req, res, getCategoriesToEdit(req, res))
         res.redirect('/categories')
     })
 )

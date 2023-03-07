@@ -154,11 +154,11 @@
                                 >€<%=context.expenses[i].cost.toFixed(2) %></a
                                 >
                             </td>
-                        <td 
-                        class="text-center" 
-                        style="background-color: <%=context.expenses[i].payer[0].color %>;
-                        border-radius: 100px 20px 100px 20px;">
-                        <%=context.expenses[i].payer[0].nickName %>
+                        <td class="p-1 d-flex justify-content-center">
+                            <div class="name-tag"
+                            style="background-color: <%=context.expenses[i].payer[0].color %>">
+                                <%=context.expenses[i].payer[0].nickName %>
+                            </div>   
                         </td>
                     <% } %>
                 <% } %> 
