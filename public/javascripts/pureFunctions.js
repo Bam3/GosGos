@@ -1,10 +1,16 @@
 var _ = require('lodash')
 
-module.exports.calculateSum = (expenses) => {
+module.exports.calculateSum = (expenses, shared = true) => {
     sum = 0
     for (const expense of expenses) {
-        if (expense.shared) {
-            sum = sum + expense.cost
+        if (shared) {
+            if (expense.shared) {
+                sum = sum + expense.cost
+            }
+        } else {
+            if (!expense.shared) {
+                sum = sum + expense.cost
+            }
         }
     }
     return sum
