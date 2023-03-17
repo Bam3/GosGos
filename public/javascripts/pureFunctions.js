@@ -25,13 +25,15 @@ module.exports.roundToTwo = (num) => {
 module.exports.extractNameAndColor = (
     arrayOfObjects,
     propertyName,
-    propertyColor
+    propertyColor,
+    propertyRoll
 ) => {
     let nameAndColor = {}
     let allNamesAndColors = []
     arrayOfObjects.map((object) => {
         nameAndColor.name = _.get(object, propertyName)
         nameAndColor.color = _.get(object, propertyColor)
+        nameAndColor.roll = _.get(object, propertyRoll)
         allNamesAndColors.push(nameAndColor)
         nameAndColor = {}
     })
@@ -39,7 +41,10 @@ module.exports.extractNameAndColor = (
     var resArr = []
     allNamesAndColors.filter(function (item) {
         var i = resArr.findIndex(
-            (x) => x.name == item.name && x.color == item.color
+            (x) =>
+                x.name == item.name &&
+                x.color == item.color &&
+                x.roll == item.roll
         )
         if (i <= -1) {
             resArr.push(item)

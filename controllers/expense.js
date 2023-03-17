@@ -153,19 +153,22 @@ const calculateComparison = (req, expenses) => {
     })
 
     //pojdem čez vse stroške in izločim vse uporabnike
-    usersColors = extractNameAndColor(expenses, 'payer.username', 'payer.color')
-
+    usersColors = extractNameAndColor(
+        expenses,
+        'payer.username',
+        'payer.color',
+        'payer.roll'
+    )
     //Ustvarim uporabnike glede na zbrane zgoraj
     usersColors.forEach(function (user) {
         let newUser = []
-        if (user === 'Revolut') {
+        if (user.roll === 'shared') {
             newUser = new UserOrCategoryObject(user.name, [], false, user.color)
         } else {
             newUser = new UserOrCategoryObject(user.name, [], true, user.color)
         }
         usersObject.push(newUser)
     })
-
     // če so users prazni pomeni, da nimamo izračuna, ker ni stroškov
     if (usersObject.length !== 0) {
         // za vse parent kategorije zapišemo koliko je vosta stroškov
@@ -179,11 +182,11 @@ const calculateComparison = (req, expenses) => {
 
         //seštejemo vse stroške po uporabnikih
         usersObject.forEach(function (user) {
-            if (user.name !== 'Revolut') {
+            if (user.inCalculation) {
                 sumForCalculation += user.sumOfExpenses
             }
-            activeUsers = usersObject.filter((user) => user.name !== 'Revolut')
         })
+        activeUsers = usersObject.filter((user) => user.inCalculation)
         perUser = sumForCalculation / 2
 
         if (activeUsers.length > 1) {
