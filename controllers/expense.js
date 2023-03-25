@@ -62,8 +62,9 @@ module.exports.getExpenseContext = async (req, res, filter) => {
                 $gte: new Date(filter.from),
                 $lte: new Date(filter.to),
             },
-            shared: true,
+            shared: filter.share,
         }
+
         expenses = await Expense.find(filterObject)
             .sort({
                 payDate: -1,
@@ -82,8 +83,17 @@ module.exports.getExpenseContext = async (req, res, filter) => {
                 expense.categoryLabel = neki
             })
         )
-
-        let sum = calculateSum(expenses)
+        if (filter.share === 'false') {
+            for (const expense of expenses) {
+                if (expense.payer.username !== req.session.passport.user) {
+                    expenses.splice(expenses.indexOf(expense), 1)
+                }
+            }
+        }
+        let sum = calculateSum(
+            expenses,
+            String(filter.share).toLowerCase() === 'true'
+        )
         sum = roundToTwo(sum)
         const comparison = calculateComparison(req, expenses)
         return {

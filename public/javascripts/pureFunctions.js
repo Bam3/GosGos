@@ -61,10 +61,8 @@ module.exports.updateUserOrCategoryClass = (
 ) => {
     expenses.forEach(function (expense) {
         usersObject.forEach(function (user) {
-            if (expense.shared) {
-                if (_.get(expense, property) === user.name) {
-                    user.payments.push(expense.cost)
-                }
+            if (_.get(expense, property) === user.name) {
+                user.payments.push(expense.cost)
             }
         })
     })

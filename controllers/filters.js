@@ -19,12 +19,11 @@ module.exports.filterByCategoryAndDate = async (
     let expenses = {}
     let filterByCat = {}
     let filterByDate = {}
-    let filterHousehold = {}
     let matchFilter = {}
-
-    filterHousehold = {
+    let filterHousehold = {
         household: { $eq: mongoose.Types.ObjectId(req.session.household) },
     }
+    let filterSharedExpenses = { shared: true }
     //Sort by cat
     if (!subCategory && category) {
         filterByCat = { 'parentCat.name': { $eq: category } }
@@ -60,7 +59,7 @@ module.exports.filterByCategoryAndDate = async (
     if (filteredByDate === undefined) {
         matchFilter = {
             $match: {
-                $and: [filterByCat, filterHousehold],
+                $and: [filterByCat, filterHousehold, filterSharedExpenses],
             },
         }
     } else {
@@ -73,7 +72,12 @@ module.exports.filterByCategoryAndDate = async (
         }
         matchFilter = {
             $match: {
-                $and: [filterByDate, filterByCat, filterHousehold],
+                $and: [
+                    filterByDate,
+                    filterByCat,
+                    filterHousehold,
+                    filterSharedExpenses,
+                ],
             },
         }
     }

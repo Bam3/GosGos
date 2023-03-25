@@ -182,14 +182,23 @@ app.get(
 )
 
 app.get(
+    '/myexpenses',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const from = `${new Date().toISOString().substring(0, 8)}01`
+        const to = new Date().toISOString().substring(0, 10)
+        return res.redirect(`/expenses?from=${from}&to=${to}&share=${false}`)
+    })
+)
+app.get(
     '/expenses',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        let { from, to } = req.query
+        let { from, to, share } = req.query
         if (!from || !to) {
             from = `${new Date().toISOString().substring(0, 8)}01`
             to = new Date().toISOString().substring(0, 10)
-            return res.redirect(`/expenses?from=${from}&to=${to}`)
+            return res.redirect(`/expenses?from=${from}&to=${to}&share=${true}`)
         }
         if (from > to) {
             req.flash('error', 'Začetni datum ne mora biti po končnem!')
@@ -198,6 +207,7 @@ app.get(
             const context = await getExpenseContext(req, res, {
                 from,
                 to,
+                share,
             })
             res.render('expenses/index', context)
         }
@@ -257,7 +267,7 @@ app.post(
     catchAsync(async (req, res) => {
         const formData = req.body
         res.redirect(
-            `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}`
+            `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}&share=${formData.share}`
         )
     })
 )

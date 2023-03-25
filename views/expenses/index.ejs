@@ -1,7 +1,10 @@
 <% layout('layouts/boilerplate')%>
 <div class="row">
     <div class="col-md-12">
-        <h1>Skupni stroški</h1>
+        <h1>
+            <%= String(filter.share).toLowerCase() === 'true'? "Skupni " :
+            "Moji"%> stroški
+        </h1>
     </div>
 
     <div class="col-md-3 mb-4">
@@ -34,6 +37,13 @@
                             autocomplete
                             value="<%= filter.to %>"
                         />
+                        <input
+                            id="share"
+                            name="share"
+                            type="hidden"
+                            class="form-control"
+                            value="<%= filter.share %>"
+                        />
                     </div>
 
                     <div class="d-grid col-12 mx-auto">
@@ -55,11 +65,12 @@
                         <b><%= user.name %></b>: €<%= user.payments%>
                     </h5>
                 </div>
-                <% } %>
+                <% } %> <% if (String(filter.share).toLowerCase() === 'true') {
+                %>
                 <hr />
                 <h4>Skupaj: €<%= sum.toFixed(2) %></h4>
-
                 <h3 class="lead text-success"><%= comparison.message%></h3>
+                <% } %>
             </div>
         </div>
     </div>
@@ -70,6 +81,7 @@
             </div>
         </div>
     </div>
+    <% if (String(filter.share).toLowerCase() === 'true') { %>
     <div class="col-md-3 mb-4">
         <div class="card">
             <div class="card-body">
@@ -77,7 +89,7 @@
             </div>
         </div>
     </div>
-    <% for (parentCategory of comparison.parentCategoriesObject) { %>
+    <% } %> <% for (parentCategory of comparison.parentCategoriesObject) { %>
     <div class="col-md-4 table-responsive">
         <table class="table table-hover">
             <thead class="table-light">
