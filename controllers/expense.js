@@ -90,8 +90,6 @@ module.exports.getExpenseContext = async (req, res, filter) => {
                 req.session.passport.user
             )
         }
-        console.log(expenses, 'AFTER')
-        console.log(req.session, 'SESSION')
 
         let sum = calculateSum(
             expenses,
