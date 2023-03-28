@@ -8,6 +8,7 @@ const {
     extractNameAndColor,
     updateUserOrCategoryClass,
     generateCategoryLabel,
+    extractExpensesByUser,
 } = require('../public/javascripts/pureFunctions')
 
 module.exports.getAllCategoriesAndUsers = async (req, res) => {
@@ -84,12 +85,14 @@ module.exports.getExpenseContext = async (req, res, filter) => {
             })
         )
         if (filter.share === 'false') {
-            for (const expense of expenses) {
-                if (expense.payer.username !== req.session.passport.user) {
-                    expenses.splice(expenses.indexOf(expense), 1)
-                }
-            }
+            expenses = extractExpensesByUser(
+                expenses,
+                req.session.passport.user
+            )
         }
+        console.log(expenses, 'AFTER')
+        console.log(req.session, 'SESSION')
+
         let sum = calculateSum(
             expenses,
             String(filter.share).toLowerCase() === 'true'

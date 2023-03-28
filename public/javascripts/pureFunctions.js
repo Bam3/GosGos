@@ -82,3 +82,12 @@ module.exports.generateCategoryLabel = async (category) => {
         return category.name
     }
 }
+module.exports.extractExpensesByUser = (expenses, user) => {
+    let extrectedExpanses = []
+    expenses.forEach((expense) => {
+        if (expense.payer.username === user) {
+            extrectedExpanses.push(expense)
+        }
+    })
+    return extrectedExpanses
+}
