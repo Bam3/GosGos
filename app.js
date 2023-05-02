@@ -301,6 +301,7 @@ app.get(
             req.flash('error', 'Iskane kategorije ni moč najti!')
             return res.redirect('/categories')
         }
+        console.log(categories, 'KAJ JE TUKI')
         res.render('categories/edit', {
             categories,
             id,
@@ -313,6 +314,7 @@ app.get(
     isLoggedIn,
     catchAsync(async (req, res) => {
         const context = await getAllCategoriesAndUsers(req, res)
+        console.log(context, 'PREVERI KATEGORIJE')
         res.render('categories/index', context)
     })
 )
