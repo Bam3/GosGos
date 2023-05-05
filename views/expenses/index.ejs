@@ -89,7 +89,49 @@
             </div>
         </div>
     </div>
-    <% } %> <% for (parentCategory of comparison.parentCategoriesObject) { %>
+    <% } %> <% if (expenses.length >= 10) { %>
+    <div class="col-md-4 table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th colspan="4" class="text-center">ZADNJI VNEŠENI</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (let i = 0; i < 10; i++) { %>
+                <tr>
+                    <td class="align-middle" scope="row">
+                        <div>
+                            <%=expenses[i].payDate.toLocaleDateString('de-CH',{year:"2-digit",
+                            month: "2-digit", day:"2-digit"})%>
+                        </div>
+                    </td>
+                    <td class="align-middle">
+                        <div><%=expenses[i].category.name %></div>
+                    </td>
+                    <td class="align-middle">
+                        <div>
+                            <a href="/expenses/<%= expenses[i].id %>"
+                                >€<%=expenses[i].cost.toFixed(2) %></a
+                            >
+                        </div>
+                    </td>
+                    <td class="p-1 d-flex justify-content-center">
+                        <div
+                            class="name-tag"
+                            style="
+                                background-color: <%=expenses[i].payer.color %>;
+                            "
+                        >
+                            <%=expenses[i].payer.nickName %>
+                        </div>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+    <%}%> <% for (parentCategory of comparison.parentCategoriesObject) { %>
     <div class="col-md-4 table-responsive">
         <table class="table table-hover">
             <thead class="table-light">
