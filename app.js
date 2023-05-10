@@ -24,6 +24,7 @@ const {
     getExpenseContext,
     updateExpense,
     deleteExpense,
+    getLastExpanses,
 } = require('./controllers/expense')
 
 const { readPicture } = require('./controllers/camera')
@@ -149,7 +150,8 @@ app.get(
     catchAsync(async (req, res) => {
         //get categories from DB for form
         const context = await getAllCategoriesAndUsers(req, res)
-        res.render('expenses/new', context)
+        const expenses = await getLastExpanses(req, res)
+        res.render('expenses/new', { context, expenses })
     })
 )
 

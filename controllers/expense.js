@@ -235,3 +235,33 @@ const calculateComparison = (req, expenses) => {
         parentCategoriesObject,
     }
 }
+
+module.exports.getLastExpanses = async (req, res) => {
+    let expenses = {}
+    console.log(req.session.passport.user)
+    let filterObject = {
+        household: req.session.household,
+        username: req.session.passport.user,
+        shared: false,
+    }
+    expenses = await Expense.find(filterObject)
+        .sort({
+            payDate: -1,
+        })
+        .populate({
+            path: 'category',
+            populate: {
+                path: 'parentCategory',
+            },
+        })
+        .populate('payer')
+        .limit(10)
+
+    await Promise.all(
+        expenses.map(async (expense) => {
+            const neki = await generateCategoryLabel(expense.category)
+            expense.categoryLabel = neki
+        })
+    )
+    return expenses
+}

@@ -18,13 +18,10 @@
                     required
                 >
                     <option selected disabled value="">Izberi...</option>
-                    <% for(let category of categories){ %>
+                    <% for(let category of context.categories){ %>
                     <optgroup label="<%=category.name%>">
                         <% for(let subCategory of category.subCategories){ %>
-                        <option
-                            id="categoryOption"
-                            value="<%=subCategory._id%>"
-                        >
+                        <option id="Option" value="<%=subCategory._id%>">
                             <%=subCategory.name%>
                         </option>
                         <% } %>
@@ -83,7 +80,7 @@
                 <label for="user" class="form-label">Plačnik</label>
                 <select class="form-select" id="user" name="user" required>
                     <option selected disabled value>Izberi plačnika...</option>
-                    <% for(let user of users) { %>
+                    <% for(let user of context.users) { %>
                     <option value="<%=user._id%>"><%=user.username%></option>
                     <% } %>
                 </select>
@@ -106,12 +103,54 @@
                     >
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-4">
                 <div class="d-grid col-12 mx-auto">
                     <button class="btn btn-secondary">Dodaj</button>
                 </div>
             </div>
         </form>
+        <div class="col-md-12 table-responsive">
+            <table class="table table-hover table-borderless">
+                <thead class="table-light">
+                    <tr>
+                        <th colspan="4" class="text-center">ZADNJI VNEŠENI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (let i = 0; i < 10; i++) { %>
+                    <tr>
+                        <td class="align-middle" scope="row">
+                            <div>
+                                <%=expenses[i].payDate.toLocaleDateString('de-CH',{year:"2-digit",
+                                month: "2-digit", day:"2-digit"})%>
+                            </div>
+                        </td>
+                        <td class="align-middle">
+                            <div><%=expenses[i].category.name %></div>
+                        </td>
+                        <td class="align-middle">
+                            <div>
+                                <a href="/expenses/<%= expenses[i].id %>"
+                                    >€<%=expenses[i].cost.toFixed(2) %></a
+                                >
+                            </div>
+                        </td>
+                        <td class="p-1 d-flex justify-content-center">
+                            <div
+                                class="name-tag"
+                                style="
+                                    background-color: <%=expenses[i].payer.color
+                                        %>;
+                                "
+                            >
+                                <%=expenses[i].payer.nickName %>
+                            </div>
+                        </td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
         <!-- <form
             action="/camera/photo"
             method="POST"
@@ -181,6 +220,6 @@
 </div>
 
 <script>
-    const categories = <%- JSON.stringify(categories) %>
+    const categories = <%- JSON.stringify(context.categories) %>
 </script>
 <script src="/javascripts/readPhoto.js"></script>
