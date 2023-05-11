@@ -237,14 +237,27 @@ const calculateComparison = (req, expenses) => {
 }
 
 module.exports.getLastExpanses = async (req, res) => {
-    let expenses = {}
-    console.log(req.session.passport.user)
+    let currentUser = await User.find({
+        username: req.session.passport.user,
+        household: req.session.household,
+    })
     let filterObject = {
         household: req.session.household,
-        username: req.session.passport.user,
-        shared: false,
+        shared: true,
     }
-    expenses = await Expense.find(filterObject)
+    let filterObjectUser = {
+        household: req.session.household,
+        shared: false,
+        payer: currentUser[0].id,
+    }
+    let sharedExpenses = await filterLastExpanses(filterObject, 10)
+    let usersExpenses = await filterLastExpanses(filterObjectUser, 5)
+
+    return { sharedExpenses, usersExpenses }
+}
+
+const filterLastExpanses = async (filterObject, limit = 10) => {
+    let expenses = await Expense.find(filterObject)
         .sort({
             payDate: -1,
         })
@@ -255,7 +268,7 @@ module.exports.getLastExpanses = async (req, res) => {
             },
         })
         .populate('payer')
-        .limit(10)
+        .limit(limit)
 
     await Promise.all(
         expenses.map(async (expense) => {

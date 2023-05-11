@@ -148,7 +148,6 @@ app.get(
     '/expenses/new',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        //get categories from DB for form
         const context = await getAllCategoriesAndUsers(req, res)
         const expenses = await getLastExpanses(req, res)
         res.render('expenses/new', { context, expenses })

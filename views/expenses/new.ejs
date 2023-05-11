@@ -113,25 +113,32 @@
             <table class="table table-hover table-borderless">
                 <thead class="table-light">
                     <tr>
-                        <th colspan="4" class="text-center">ZADNJI VNEŠENI</th>
+                        <th colspan="4" class="text-center">
+                            ZADNJI VNEŠENI - SKUPNI
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% for (let i = 0; i < 10; i++) { %>
+                    <% for (let i = 0; i < expenses.sharedExpenses.length; i++)
+                    { %>
                     <tr>
                         <td class="align-middle" scope="row">
                             <div>
-                                <%=expenses[i].payDate.toLocaleDateString('de-CH',{year:"2-digit",
+                                <%=expenses.sharedExpenses[i].payDate.toLocaleDateString('de-CH',{year:"2-digit",
                                 month: "2-digit", day:"2-digit"})%>
                             </div>
                         </td>
                         <td class="align-middle">
-                            <div><%=expenses[i].category.name %></div>
+                            <div>
+                                <%=expenses.sharedExpenses[i].category.name %>
+                            </div>
                         </td>
                         <td class="align-middle">
                             <div>
-                                <a href="/expenses/<%= expenses[i].id %>"
-                                    >€<%=expenses[i].cost.toFixed(2) %></a
+                                <a
+                                    href="/expenses/<%= expenses.sharedExpenses[i].id %>"
+                                    >€<%=expenses.sharedExpenses[i].cost.toFixed(2)
+                                    %></a
                                 >
                             </div>
                         </td>
@@ -139,11 +146,11 @@
                             <div
                                 class="name-tag"
                                 style="
-                                    background-color: <%=expenses[i].payer.color
+                                    background-color: <%=expenses.sharedExpenses[i].payer.color
                                         %>;
                                 "
                             >
-                                <%=expenses[i].payer.nickName %>
+                                <%=expenses.sharedExpenses[i].payer.nickName %>
                             </div>
                         </td>
                     </tr>
@@ -151,6 +158,57 @@
                 </tbody>
             </table>
         </div>
+        <%if (expenses.usersExpenses.length > 0) {%>
+        <div class="col-md-12 table-responsive">
+            <table class="table table-hover table-borderless">
+                <thead class="table-light">
+                    <tr>
+                        <th colspan="4" class="text-center">
+                            ZADNJI VNEŠENI - MOJI
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (let i = 0; i < expenses.usersExpenses.length; i++) {
+                    %>
+                    <tr>
+                        <td class="align-middle" scope="row">
+                            <div>
+                                <%=expenses.usersExpenses[i].payDate.toLocaleDateString('de-CH',{year:"2-digit",
+                                month: "2-digit", day:"2-digit"})%>
+                            </div>
+                        </td>
+                        <td class="align-middle">
+                            <div>
+                                <%=expenses.usersExpenses[i].category.name %>
+                            </div>
+                        </td>
+                        <td class="align-middle">
+                            <div>
+                                <a
+                                    href="/expenses/<%= expenses.usersExpenses[i].id %>"
+                                    >€<%=expenses.usersExpenses[i].cost.toFixed(2)
+                                    %></a
+                                >
+                            </div>
+                        </td>
+                        <td class="p-1 d-flex justify-content-center">
+                            <div
+                                class="name-tag"
+                                style="
+                                    background-color: <%=expenses.usersExpenses[i].payer.color
+                                        %>;
+                                "
+                            >
+                                <%=expenses.usersExpenses[i].payer.nickName %>
+                            </div>
+                        </td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+        <%}%>
         <!-- <form
             action="/camera/photo"
             method="POST"
