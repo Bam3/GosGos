@@ -1,4 +1,5 @@
 const User = require('../models/user')
+const Household = require('../models/household')
 
 module.exports.renderRegister = (req, res) => {
     res.render('users/register')
@@ -17,7 +18,9 @@ module.exports.logoutUser = (req, res, next) => {
     })
 }
 
-module.exports.getUsersHouseholdOnLogin = async (req, res) => {
-    const logedinUser = await User.find({ username: req.session.passport.user })
-    return logedinUser[0].household
+module.exports.getLoggedinUser = async (req, res) => {
+    const loggedinUser = await User.find({
+        username: req.session.passport.user,
+    }).populate('household')
+    return loggedinUser
 }

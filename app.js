@@ -35,7 +35,7 @@ const {
     renderRegister,
     renderLogin,
     logoutUser,
-    getUsersHouseholdOnLogin,
+    getLoggedinUser,
 } = require('./controllers/users')
 
 const {
@@ -453,7 +453,8 @@ app.get(
     '/settings',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        res.render('users/settings')
+        const loggedinUser = await getLoggedinUser(req, res)
+        res.render('users/settings', loggedinUser)
     })
 )
 
@@ -471,8 +472,8 @@ app.post(
             `${req.session.passport.user}, pozdravljen v GosGos!`
         )
         //on login get users household and save it in session
-        const household = await getUsersHouseholdOnLogin(req, res)
-        req.session.household = household
+        const loggedinUser = await getLoggedinUser(req, res)
+        req.session.household = loggedinUser[0].household._id
         res.redirect(redirectUrl)
     }
 )
