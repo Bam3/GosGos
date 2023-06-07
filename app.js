@@ -345,6 +345,13 @@ app.post(
         res.render('expenses/new', categories)
     })
 )
+
+app.get(
+    '/debits',
+    isLoggedIn,
+    catchAsync(async (req, res) => {})
+)
+
 app.get(
     '/whiskies/wishlist',
     isLoggedIn,
