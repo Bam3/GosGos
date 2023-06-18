@@ -45,13 +45,14 @@ const {
     updateCategoriesOrCreate,
 } = require('./controllers/categories')
 
-const {
-    getWhiskeyContext,
-    createWhiskey,
-    updateWhiskey,
-    deleteWhiskey,
-} = require('./controllers/whiskey')
-const { createNote, getWishlistContext } = require('./controllers/wishlist')
+const { getAllDebites } = require('./controllers/debit')
+// const {
+//     getWhiskeyContext,
+//     createWhiskey,
+//     updateWhiskey,
+//     deleteWhiskey,
+// } = require('./controllers/whiskey')
+// const { createNote, getWishlistContext } = require('./controllers/wishlist')
 const { isLoggedIn } = require('./middleware')
 
 //connect to DB
@@ -349,107 +350,115 @@ app.post(
 app.get(
     '/debits',
     isLoggedIn,
-    catchAsync(async (req, res) => {})
-)
-
-app.get(
-    '/whiskies/wishlist',
-    isLoggedIn,
     catchAsync(async (req, res) => {
-        const context = await getWishlistContext()
-        res.render('whiskies/wishlist/index', context)
+        const debits = await getAllDebites(req, res)
+        console.log(debits, 'TUKAJ JE TRANJIN')
+        res.render('debits/index', debits)
     })
 )
 
-app.get(
-    '/whiskies/wishlist/new',
-    isLoggedIn,
-    catchAsync(async (req, res) => {
-        res.render('whiskies/wishlist/new')
-    })
-)
+app.get('/debits/new', isLoggedIn, (req, res) => {
+    res.render('debits/new')
+})
 
-app.post(
-    '/whiskies/wishlist',
-    isLoggedIn,
-    catchAsync(async (req, res) => {
-        const newNote = await createNote(req.body)
+// app.get(
+//     '/whiskies/wishlist',
+//     isLoggedIn,
+//     catchAsync(async (req, res) => {
+//         const context = await getWishlistContext()
+//         res.render('whiskies/wishlist/index', context)
+//     })
+// )
 
-        req.flash('success', 'Zapis dodan in shranjen!')
-        res.redirect(`/whiskies/wishlist`)
-    })
-)
+// app.get(
+//     '/whiskies/wishlist/new',
+//     isLoggedIn,
+//     catchAsync(async (req, res) => {
+//         res.render('whiskies/wishlist/new')
+//     })
+// )
 
-app.get(
-    '/whiskies',
-    isLoggedIn,
-    catchAsync(async (req, res) => {
-        const context = await getWhiskeyContext()
-        res.render('whiskies/index', context)
-    })
-)
+// app.post(
+//     '/whiskies/wishlist',
+//     isLoggedIn,
+//     catchAsync(async (req, res) => {
+//         const newNote = await createNote(req.body)
 
-app.get(
-    '/whiskies/new',
-    isLoggedIn,
-    catchAsync(async (req, res) => {
-        res.render('whiskies/new')
-    })
-)
+//         req.flash('success', 'Zapis dodan in shranjen!')
+//         res.redirect(`/whiskies/wishlist`)
+//     })
+// )
 
-app.get(
-    '/whiskies/:id',
-    catchAsync(async (req, res) => {
-        const id = req.params.id
-        const context = await getWhiskeyContext(id)
-        if (!context) {
-            req.flash('error', 'Iskanega viskija ni moč najti!')
-            return res.redirect('/whiskies')
-        }
-        res.render('whiskies/show', context)
-    })
-)
+// app.get(
+//     '/whiskies',
+//     isLoggedIn,
+//     catchAsync(async (req, res) => {
+//         const context = await getWhiskeyContext()
+//         res.render('whiskies/index', context)
+//     })
+// )
 
-app.get(
-    '/whiskies/:id/edit',
-    catchAsync(async (req, res) => {
-        const id = req.params.id
-        const context = await getWhiskeyContext(id)
-        if (!context) {
-            req.flash('error', 'Iskanega viskija ni moč najti!')
-            return res.redirect('/whiskies')
-        }
-        res.render('whiskies/edit', {
-            context,
-        })
-    })
-)
+// app.get(
+//     '/whiskies/new',
+//     isLoggedIn,
+//     catchAsync(async (req, res) => {
+//         res.render('whiskies/new')
+//     })
+// )
 
-app.post(
-    '/whiskies',
-    isLoggedIn,
-    catchAsync(async (req, res) => {
-        const newWhiskey = await createWhiskey(req.body)
-        req.flash('success', 'Viski dodan in shranjen!')
-        res.redirect(`/whiskies/${newWhiskey._id}`)
-    })
-)
+// app.get(
+//     '/whiskies/:id',
+//     catchAsync(async (req, res) => {
+//         const id = req.params.id
+//         const context = await getWhiskeyContext(id)
+//         if (!context) {
+//             req.flash('error', 'Iskanega viskija ni moč najti!')
+//             return res.redirect('/whiskies')
+//         }
+//         res.render('whiskies/show', context)
+//     })
+// )
 
-app.put(
-    '/whiskies/:id',
-    isLoggedIn,
-    catchAsync(async (req, res) => {
-        updateWhiskey(req, res)
-    })
-)
+// app.get(
+//     '/whiskies/:id/edit',
+//     catchAsync(async (req, res) => {
+//         const id = req.params.id
+//         const context = await getWhiskeyContext(id)
+//         if (!context) {
+//             req.flash('error', 'Iskanega viskija ni moč najti!')
+//             return res.redirect('/whiskies')
+//         }
+//         res.render('whiskies/edit', {
+//             context,
+//         })
+//     })
+// )
 
-app.delete(
-    '/whiskies/:id',
-    isLoggedIn,
-    catchAsync(async (req, res) => {
-        deleteWhiskey(req, res)
-    })
-)
+// app.post(
+//     '/whiskies',
+//     isLoggedIn,
+//     catchAsync(async (req, res) => {
+//         const newWhiskey = await createWhiskey(req.body)
+//         req.flash('success', 'Viski dodan in shranjen!')
+//         res.redirect(`/whiskies/${newWhiskey._id}`)
+//     })
+// )
+
+// app.put(
+//     '/whiskies/:id',
+//     isLoggedIn,
+//     catchAsync(async (req, res) => {
+//         updateWhiskey(req, res)
+//     })
+// )
+
+// app.delete(
+//     '/whiskies/:id',
+//     isLoggedIn,
+//     catchAsync(async (req, res) => {
+//         deleteWhiskey(req, res)
+//     })
+// )
 
 app.get('/register', renderRegister)
 app.get('/login', renderLogin)
@@ -479,6 +488,7 @@ app.post(
         //on login get users household and save it in session
         const loggedinUser = await getLoggedinUser(req, res)
         req.session.household = loggedinUser[0].household._id
+        req.session.usersID = loggedinUser[0]._id
         res.redirect(redirectUrl)
     }
 )

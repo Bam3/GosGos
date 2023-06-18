@@ -2,21 +2,13 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const debiteSchema = new Schema({
-    cost: {
-        type: Number,
-        required: true,
-    },
-    payer: {
+    debitOwner: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
-    inputDate: {
-        type: Date,
-        default: new Date(),
-    },
-    payDate: {
-        type: Date,
+    cost: {
+        type: Number,
         required: true,
     },
     description: {
@@ -35,16 +27,12 @@ const debiteSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Household',
     },
-    scheduled: {
+    enable: {
         type: Boolean,
         required: true,
     },
     debitInputDayInMonth: {
         type: Number,
-        required: true,
-    },
-    debitInputMonthsInYear: {
-        type: Array,
         required: true,
     },
 })
