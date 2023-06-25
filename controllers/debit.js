@@ -42,3 +42,19 @@ module.exports.getAllDebites = async (req, res) => {
         })
     return { debits }
 }
+
+module.exports.createDebit = async (req, res) => {
+    const newDebit = new Debit({
+        debitOwner: req.session.usersID,
+        cost: req.body.price,
+        description: req.body.description,
+        category: req.body.category,
+        shared: Boolean(req.body.shared),
+        household: req.session.household,
+        enable: Boolean(req.body.enable),
+        debitInputDayInMonth: req.body.payDay,
+    })
+    await newDebit.save()
+
+    return newDebit
+}

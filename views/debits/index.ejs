@@ -5,21 +5,14 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <% for(let debit of debits){ %>
-            <div class="<%= debit.enable ? "bg-success":"bg-light" %> card <%= debit.enable ? "text-white":"" %> mb-3" style="max-width: 18rem;">
-                <div class="d-flex p-2 align-items-center justify-content-between card-header">Trajnik <%= debit.enable ? "aktiven":"pasiven"%>            <a
-                class="btn btn-light btn-sm"
-                href="/debits/<%= debit.id %>/edit"
-                >Uredi</a
-            ></div>
-                <div class="card-body">
-                    <h5 class="card-title"><%=`${debit.category.parentCategory.name} -
-                        ${debit.category.name}`%></h5>
-                    <p class="card-text"><%=`Trajnik v višini ${debit.cost} €. Izvede se vsakega ${debit.debitInputDayInMonth}. v mescu. `%></p>
-                </div>
-            </div>
-            <div class="mb-4"></div>
-            <% } %>
+            <ul class="list-group">
+                <% for(let debit of debits){ %>
+                    <li class="list-group-item <%= debit.enable ? "list-group-item-success":"list-group-item-secondary" %> d-flex align-items-center justify-content-between">
+                        <%=`${debit.category.parentCategory.name} - ${debit.category.name}`%>
+                        <a class="btn btn-light btn-sm" href="/debits/<%= debit.id %>/edit">Uredi</a>
+                    </li>
+                <% } %>
+            </ul>
         </div>
     </div>
 </div>

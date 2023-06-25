@@ -45,7 +45,7 @@ const {
     updateCategoriesOrCreate,
 } = require('./controllers/categories')
 
-const { getAllDebites } = require('./controllers/debit')
+const { getAllDebites, createDebit } = require('./controllers/debit')
 // const {
 //     getWhiskeyContext,
 //     createWhiskey,
@@ -357,10 +357,24 @@ app.get(
     })
 )
 
-app.get('/debits/new', isLoggedIn, (req, res) => {
-    res.render('debits/new')
-})
+app.get(
+    '/debits/new',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const context = await getAllCategoriesAndUsers(req, res)
+        res.render('debits/new', { context })
+    })
+)
 
+app.post(
+    '/debits',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const newDebit = await createDebit(req, res)
+        req.flash('success', 'Trajnik dodan in shranjen')
+        res.redirect(`/debits`)
+    })
+)
 // app.get(
 //     '/whiskies/wishlist',
 //     isLoggedIn,
