@@ -18,7 +18,7 @@
                             name="name"
                             type="text"
                             class="form-control"
-                            value="<%=categories[0].name%>"
+                            value="<%=categories.parentCategory[0].name%>"
                             required
                         />
                         <div class="invalid-feedback">
@@ -34,7 +34,7 @@
                         type="color"
                         class="form-control form-control-color"
                         id="exampleColorInput"
-                        value="<%= categories[0].color %>"
+                        value="<%= categories.parentCategory[0].color %>"
                         title="Izberi barvo kategorije"
                         name="color"
                         required
@@ -43,7 +43,7 @@
                         type="hidden"
                         class="form-control form-control-color"
                         id="exampleColorInput"
-                        value="<%= categories[0].id %>"
+                        value="<%= categories.parentCategory[0].id %>"
                         title="Izberi barvo kategorije"
                         name="id"
                         required
@@ -72,7 +72,7 @@
                 >
                     <b>-</b>
                 </button>
-                <% for (let i = 1; i < categories.length; i++) {%>
+                <% for (let i = 0; i < categories.categories.length; i++) {%>
 
                 <div class="input-group my-3">
                     <input
@@ -80,7 +80,7 @@
                         name="subCategories[]"
                         type="text"
                         class="form-control"
-                        value="<%= categories[i].name %>"
+                        value="<%= categories.categories[i].name %>"
                         required
                     />
                     <input
@@ -88,7 +88,7 @@
                         name="subCategoriesId[]"
                         type="hidden"
                         class="form-control"
-                        value="<%= categories[i].id %>"
+                        value="<%= categories.categories[i].id %>"
                         required
                     />
                 </div>

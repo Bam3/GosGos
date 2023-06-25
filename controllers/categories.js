@@ -1,3 +1,4 @@
+const category = require('../models/category')
 const Category = require('../models/category')
 
 module.exports.createCategory = async (req) => {
@@ -20,11 +21,17 @@ module.exports.createCategory = async (req) => {
     return categoryObject
 }
 module.exports.getCategory = async (req, res, id) => {
-    const categories = await Category.find({
+    let categories = await Category.find({
         $or: [{ _id: id }, { parentCategory: id }],
     })
+    //what is parent category
+    const parentCategory = categories.filter(
+        (category) => !category.parentCategory
+    )
+    //what are the categories
+    categories = categories.filter((category) => category.parentCategory)
 
-    return categories
+    return { categories, parentCategory }
 }
 module.exports.getCategoriesToEdit = (req, res) => {
     let catss = []
