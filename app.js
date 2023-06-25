@@ -357,7 +357,6 @@ app.get(
     isLoggedIn,
     catchAsync(async (req, res) => {
         const debits = await getAllDebites(req, res)
-        console.log(debits, 'TUKAJ JE TRANJIN')
         res.render('debits/index', debits)
     })
 )
@@ -385,7 +384,6 @@ app.get(
     '/debits/:id/edit',
     catchAsync(async (req, res) => {
         const context = await getDebitContext(req, res)
-        console.log(context)
         const usersAndCategories = await getAllCategoriesAndUsers(req, res)
         if (!context) {
             req.flash('error', 'Iskanega trajnika ni moč najti!')
