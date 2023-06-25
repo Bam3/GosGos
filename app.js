@@ -45,7 +45,12 @@ const {
     updateCategoriesOrCreate,
 } = require('./controllers/categories')
 
-const { getAllDebites, createDebit } = require('./controllers/debit')
+const {
+    getAllDebites,
+    createDebit,
+    getDebitContext,
+    updateDebit,
+} = require('./controllers/debit')
 // const {
 //     getWhiskeyContext,
 //     createWhiskey,
@@ -373,6 +378,31 @@ app.post(
         const newDebit = await createDebit(req, res)
         req.flash('success', 'Trajnik dodan in shranjen')
         res.redirect(`/debits`)
+    })
+)
+
+app.get(
+    '/debits/:id/edit',
+    catchAsync(async (req, res) => {
+        const context = await getDebitContext(req, res)
+        console.log(context)
+        const usersAndCategories = await getAllCategoriesAndUsers(req, res)
+        if (!context) {
+            req.flash('error', 'Iskanega trajnika ni moč najti!')
+            return res.redirect('/debits/new')
+        }
+        res.render('debits/edit', {
+            context,
+            usersAndCategories,
+        })
+    })
+)
+
+app.put(
+    '/debits/:id',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        updateDebit(req, res)
     })
 )
 // app.get(

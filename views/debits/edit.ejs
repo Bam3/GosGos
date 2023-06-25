@@ -1,0 +1,175 @@
+<% layout('layouts/boilerplate')%>
+<div class="row">
+    <h1>Uredi Trajnik</h1>
+    <div class="col-md-6">
+        <form
+            action="/debits/<%=context.debit._id%>?_method=PUT"
+            class="validated-form"
+            method="POST"
+            id="addNewDebit"
+            novalidate
+        >
+            <div class="mb-3">
+                <label class="form-label">Trenutna kategorija</label>
+                <h4 class="lead">
+                    <%=context.debit.category.parentCategory.name%> -
+                    <%=context.debit.category.name%>
+                </h4>
+            </div>
+
+            <div class="mb-3">
+                <label for="category" class="form-label">Kategorija</label>
+                <select
+                    class="form-select"
+                    id="category"
+                    name="debit[category]"
+                    required
+                >
+                    <option
+                        selected
+                        disabled
+                        value="<%=context.debit.category._id%>"
+                    >
+                        <%=context.debit.category.name%>
+                    </option>
+                    <% for(let category of usersAndCategories.categories){ %>
+                    <optgroup label="<%=category.name%>">
+                        <% for(let subCategory of category.subCategories){ %>
+                        <option value="<%=subCategory._id%>">
+                            <%=subCategory.name%>
+                        </option>
+                        <% } %>
+                    </optgroup>
+                    <% } %>
+                </select>
+                <div class="invalid-feedback">Kategorija je obvezna.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="price" class="form-label">Strošek</label>
+                <div class="input-group">
+                    <input
+                        id="price"
+                        name="debit[cost]"
+                        type="number"
+                        class="form-control"
+                        step=".01"
+                        aria-label="Amount"
+                        value="<%=context.debit.cost%>"
+                        required
+                    />
+                    <span class="input-group-text">€</span>
+                    <div class="invalid-feedback">Znesek je obvezna.</div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Komentar</label>
+                <div class="input-group">
+                    <textarea
+                        id="description"
+                        name="debit[description]"
+                        type="text"
+                        class="form-control"
+                    >
+<%= context.debit.description %></textarea
+                    >
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="date" class="form-label"
+                    >Dan plačila v mesecu</label
+                >
+                <div class="input-group">
+                    <input
+                        id="date"
+                        name="debit[debitInputDayInMonth]"
+                        type="number"
+                        value="<%=context.debit.debitInputDayInMonth%>"
+                        class="form-control"
+                        min="1"
+                        max="31"
+                        autocomplete
+                        required
+                    />
+                    <div class="invalid-feedback">
+                        Dan plačila v mesecu je obvezen.
+                    </div>
+                </div>
+            </div>
+
+            <% if (context.debit.shared) { %>
+            <div class="mb-3">
+                <label class="form-check-label" for="flexSwitchCheckChecked"
+                    >Deljen strošek</label
+                >
+                <div class="form-check form-switch">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="flexSwitchCheckChecked"
+                        name="debit[shared]"
+                        value="true"
+                        checked
+                    />
+                </div>
+            </div>
+            <% } else {%>
+            <div class="mb-3">
+                <label class="form-check-label" for="flexSwitchCheckChecked"
+                    >Deljen strošek</label
+                >
+                <div class="form-check form-switch">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="flexSwitchCheckChecked"
+                        name="debit[shared]"
+                        value="true"
+                    />
+                </div>
+            </div>
+            <% } %> <% if (context.debit.enable) { %>
+            <div class="mb-3">
+                <label class="form-check-label" for="flexSwitchCheckChecked"
+                    >Vklop trajnika</label
+                >
+                <div class="form-check form-switch">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="flexSwitchCheckChecked"
+                        name="debit[enable]"
+                        value="true"
+                        checked
+                    />
+                </div>
+            </div>
+            <% } else {%>
+            <div class="mb-3">
+                <label class="form-check-label" for="flexSwitchCheckChecked"
+                    >Vklop trajnika</label
+                >
+                <div class="form-check form-switch">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="flexSwitchCheckChecked"
+                        name="debit[enable]"
+                        value="true"
+                    />
+                </div>
+            </div>
+            <% } %>
+
+            <div class="d-grid col-12 mx-auto">
+                <button class="btn btn-info">Uredi</button>
+            </div>
+        </form>
+    </div>
+</div>

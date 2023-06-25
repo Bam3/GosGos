@@ -77,7 +77,6 @@ module.exports.getExpenseContext = async (req, res, filter) => {
                 },
             })
             .populate('payer')
-
         await Promise.all(
             expenses.map(async (expense) => {
                 const neki = await generateCategoryLabel(expense.category)

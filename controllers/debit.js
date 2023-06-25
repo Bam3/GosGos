@@ -42,7 +42,6 @@ module.exports.getAllDebites = async (req, res) => {
         })
     return { debits }
 }
-
 module.exports.createDebit = async (req, res) => {
     const newDebit = new Debit({
         debitOwner: req.session.usersID,
@@ -57,4 +56,27 @@ module.exports.createDebit = async (req, res) => {
     await newDebit.save()
 
     return newDebit
+}
+module.exports.getDebitContext = async (req, res) => {
+    let debit = await Debit.findById(req.params.id).populate({
+        path: 'category',
+        populate: {
+            path: 'parentCategory',
+        },
+    })
+    return { debit }
+}
+module.exports.updateDebit = async (req, res) => {
+    const { id } = req.params
+    if (!req.body.debit.shared) {
+        req.body.debit.shared = 'false'
+    }
+    if (!req.body.debit.enable) {
+        req.body.debit.enable = 'false'
+    }
+    const debit = await Debit.findByIdAndUpdate(id, {
+        ...req.body.debit,
+    })
+    req.flash('success', 'Uspešno posodobljen trajnik!')
+    res.redirect(`/debits`)
 }

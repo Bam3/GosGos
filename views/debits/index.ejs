@@ -1,18 +1,17 @@
 <% layout('layouts/boilerplate')%>
 <div class="row">
-    <div class="col-md-12 mb-3">
+    <div class="col-md-12 mb-3 d-flex align-items-center justify-content-between">
         <h1>Trajniki</h1>
+        <a class="btn btn-secondary btn-sm" href="/debits/new">Dodaj</a>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <ul class="list-group">
-                <% for(let debit of debits){ %>
-                    <li class="list-group-item <%= debit.enable ? "list-group-item-success":"list-group-item-secondary" %> d-flex align-items-center justify-content-between">
-                        <%=`${debit.category.parentCategory.name} - ${debit.category.name}`%>
-                        <a class="btn btn-light btn-sm" href="/debits/<%= debit.id %>/edit">Uredi</a>
-                    </li>
-                <% } %>
-            </ul>
-        </div>
+    <div class="col-md-12">
+        <ul class="list-group">
+            <% for(let debit of debits){ %>
+                <li class="list-group-item <%= debit.enable ? "list-group-item-success":"list-group-item-secondary" %> d-flex align-items-center justify-content-between">
+                    <%=`${debit.category.parentCategory.name} - ${debit.category.name}`%>
+                    <a class="btn btn-light btn-sm" href="/debits/<%= debit.id %>/edit">Uredi</a>
+                </li>
+            <% } %>
+        </ul>
     </div>
 </div>
