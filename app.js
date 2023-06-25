@@ -299,7 +299,6 @@ app.get(
     catchAsync(async (req, res) => {
         const { id } = req.params
         const categories = await getCategory(req, res, id)
-        console.log(categories, 'to so kategorije')
         if (!categories) {
             req.flash('error', 'Iskane kategorije ni moč najti!')
             return res.redirect('/categories')
