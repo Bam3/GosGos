@@ -16,17 +16,23 @@
             Strošek deljen: <%= expenses.shared ? "DA":"NE"%>
         </li>
     </ul>
-    <div class="card-body">
-        <a href="/expenses" class="btn btn-primary"> Vsi stroški </a>
-        <a href="/expenses/<%= expenses._id%>/edit" class="btn btn-info"
+    <div class="m-2 d-grid gap-2 d-md-block">
+        <a href="/expenses" class="btn btn-outline-secondary"> Vsi stroški </a>
+        <a href="/myexpenses" class="btn btn-outline-secondary">
+            Moji stroški
+        </a>
+        <a
+            href="/expenses/<%= expenses._id%>/edit"
+            class="btn btn-outline-secondary"
             >Uredi
         </a>
+
         <form
             class="d-inline"
             action="/expenses/<%=expenses._id%>?_method=DELETE"
             method="POST"
         >
-            <button class="btn btn-danger">Izbriši</button>
+            <button class="btn btn-warning" type="button">Izbriši</button>
         </form>
     </div>
 </div>

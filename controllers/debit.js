@@ -1,6 +1,7 @@
-let cron = require('node-cron')
+var CronJob = require('cron').CronJob
 const User = require('../models/user')
 const Debit = require('../models/debit')
+const Expense = require('../models/expense')
 //  ┌────────────── second (0 - 59) (optional)
 //  │ ┌──────────── minute (0 - 59)
 //  │ │ ┌────────── hour (0 - 23)
@@ -10,24 +11,40 @@ const Debit = require('../models/debit')
 //  │ │ │ │ │ │
 //  │ │ │ │ │ │
 //  * * * * * *
-cron.schedule(
-    '* * * * *',
-    async () => {
-        const date = new Date()
-        //get all users in db
-        let allUsers = await User.find({})
-        console.log(`Število vseh uporabnikov je: ${allUsers.length}`)
 
-        //console.log(
-        //    `Ta task se izvaja vsako minuto - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-        //)
+var job = new CronJob(
+    '18 * * * * *',
+    function () {
+        console.log('You will see this message every second')
     },
-    {
-        scheduled: false,
-        timezone: 'Europe/Ljubljana',
-        recoverMissedExecutions: false,
-    }
+    null,
+    false,
+    'Europe/Ljubljana'
 )
+
+module.exports.createCronJobs = async (debits) => {
+    let running = debits.forEach((debit) => {
+        new CronJob(
+            `${debit.debitInputDayInMonth} * * * * *`,
+            async () => {
+                console.log(debit, running)
+                // const newExpense = new Expense({
+                //     cost: debit.cost,
+                //     payer: debit.debitOwner.id,
+                //     payDate: new Date(now),
+                //     description: debit.description,
+                //     category: debit.category.id,
+                //     shared: Boolean(debit.shared),
+                //     household: debit.household,
+                // })
+                // await newExpense.save()
+            },
+            null,
+            debit.enable,
+            'Europe/Ljubljana'
+        )
+    })
+}
 
 module.exports.getAllDebites = async (req, res) => {
     const debits = await Debit.find({ debitOwner: req.session.usersID })
@@ -40,7 +57,7 @@ module.exports.getAllDebites = async (req, res) => {
         .populate({
             path: 'debitOwner',
         })
-    return { debits }
+    return debits
 }
 module.exports.createDebit = async (req, res) => {
     const newDebit = new Debit({
