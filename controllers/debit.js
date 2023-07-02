@@ -1,4 +1,5 @@
-var CronJob = require('cron').CronJob
+var CronJobManager = require('cron-job-manager')
+
 const User = require('../models/user')
 const Debit = require('../models/debit')
 const Expense = require('../models/expense')
@@ -11,42 +12,53 @@ const Expense = require('../models/expense')
 //  │ │ │ │ │ │
 //  │ │ │ │ │ │
 //  * * * * * *
-
-var job = new CronJob(
-    '18 * * * * *',
-    function () {
-        console.log('You will see this message every second')
-    },
-    null,
-    false,
-    'Europe/Ljubljana'
-)
-
-module.exports.createCronJobs = async (debits) => {
-    let running = debits.forEach((debit) => {
-        new CronJob(
-            `${debit.debitInputDayInMonth} * * * * *`,
-            async () => {
-                console.log(debit, running)
-                // const newExpense = new Expense({
-                //     cost: debit.cost,
-                //     payer: debit.debitOwner.id,
-                //     payDate: new Date(now),
-                //     description: debit.description,
-                //     category: debit.category.id,
-                //     shared: Boolean(debit.shared),
-                //     household: debit.household,
-                // })
-                // await newExpense.save()
+//create manager
+let manager = new CronJobManager()
+//Every time app restarts all debits in database will create in manager(cronJobManager)
+async function createCronManager() {
+    let allDebits = await getAllDebits()
+    await createCronJobs(allDebits)
+}
+async function getAllDebits() {
+    const debits = await Debit.find()
+        .populate({
+            path: 'category',
+            populate: {
+                path: 'parentCategory',
             },
-            null,
-            debit.enable,
-            'Europe/Ljubljana'
+        })
+        .populate({
+            path: 'debitOwner',
+        })
+    return debits
+}
+async function createCronJobs(debits) {
+    debits.forEach((debit) => {
+        manager.add(
+            `${debit.id}`,
+            `* * * ${debit.debitInputDayInMonth} * *`,
+            async () => {
+                const newExpense = new Expense({
+                    cost: debit.cost,
+                    payer: debit.debitOwner.id,
+                    payDate: Date.now(),
+                    description: debit.description,
+                    category: debit.category.id,
+                    shared: Boolean(debit.shared),
+                    household: debit.household,
+                })
+                await newExpense.save()
+            },
+            {
+                start: debit.enable,
+                timeZone: 'Europe/Ljubljana',
+            }
         )
     })
 }
+createCronManager()
 
-module.exports.getAllDebites = async (req, res) => {
+module.exports.getAllLoggedInUserDebits = async (req, res) => {
     const debits = await Debit.find({ debitOwner: req.session.usersID })
         .populate({
             path: 'category',
@@ -70,8 +82,28 @@ module.exports.createDebit = async (req, res) => {
         enable: Boolean(req.body.enable),
         debitInputDayInMonth: req.body.payDay,
     })
-    await newDebit.save()
-
+    await newDebit.save(async function (err, result) {
+        if (err) {
+            req.flash(
+                'error',
+                'Trajnik ni shranjen in vnešen, poskusi ponovno!'
+            )
+            res.redirect(`/debits`)
+        } else {
+            const newDebitId = result.id
+            let debit = await Debit.findById(newDebitId)
+                .populate({
+                    path: 'category',
+                    populate: {
+                        path: 'parentCategory',
+                    },
+                })
+                .populate({
+                    path: 'debitOwner',
+                })
+            createCronJobs([debit])
+        }
+    })
     return newDebit
 }
 module.exports.getDebitContext = async (req, res) => {
@@ -91,9 +123,31 @@ module.exports.updateDebit = async (req, res) => {
     if (!req.body.debit.enable) {
         req.body.debit.enable = 'false'
     }
-    const debit = await Debit.findByIdAndUpdate(id, {
+    let debit = await Debit.findByIdAndUpdate(id, {
         ...req.body.debit,
     })
+    //update debit in manager as well
+    debit = await Debit.findById(id)
+        .populate({
+            path: 'category',
+            populate: {
+                path: 'parentCategory',
+            },
+        })
+        .populate({
+            path: 'debitOwner',
+        })
+    createCronJobs([debit])
     req.flash('success', 'Uspešno posodobljen trajnik!')
     res.redirect(`/debits`)
+}
+module.exports.deleteDebit = async (req, res) => {
+    const { id } = req.params
+    await Debit.findByIdAndDelete(id)
+    req.flash('success', 'Uspešno izbrisan trajnik!')
+    res.redirect('/debits')
+}
+module.exports.deleteCronJob = async (req, res) => {
+    const { id } = req.params
+    manager.deleteJob(id)
 }

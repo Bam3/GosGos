@@ -15,11 +15,9 @@ module.exports.calculateSum = (expenses, shared = true) => {
     }
     return sum
 }
-
 module.exports.roundToTwo = (num) => {
     return Number(Math.round(num + 'e2') + 'e-2')
 }
-
 //funkcija prečisti array tako da ostanejo samo unikati,
 //argumenta sta array objektov in properti katerega iščemo.
 module.exports.extractNameAndColor = (
@@ -53,7 +51,6 @@ module.exports.extractNameAndColor = (
     })
     return resArr
 }
-
 module.exports.updateUserOrCategoryClass = (
     expenses,
     usersObject,
@@ -73,7 +70,6 @@ module.exports.updateUserOrCategoryClass = (
     // sort by numberOfPayments
     usersObject.sort((a, b) => b.numberOfPayments - a.numberOfPayments)
 }
-
 module.exports.generateCategoryLabel = async (category) => {
     if (category.parentCategory) {
         await category.populate('parentCategory')

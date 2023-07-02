@@ -46,11 +46,12 @@ const {
 } = require('./controllers/categories')
 
 const {
-    getAllDebites,
+    getAllLoggedInUserDebits,
     createDebit,
     getDebitContext,
     updateDebit,
-    createCronJobs,
+    deleteDebit,
+    deleteCronJob,
 } = require('./controllers/debit')
 // const {
 //     getWhiskeyContext,
@@ -357,7 +358,7 @@ app.get(
     '/debits',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const debits = await getAllDebites(req, res)
+        const debits = await getAllLoggedInUserDebits(req, res)
         res.render('debits/index', { debits })
     })
 )
@@ -405,15 +406,12 @@ app.put(
     })
 )
 
-app.post(
-    '/debits/enable',
+app.delete(
+    '/debits/:id',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const debits = await getAllDebites(req, res)
-        console.log(debits, 'IZ BAZE')
-        //call all jobs
-        await createCronJobs(debits)
-        res.redirect(`/debits`)
+        deleteCronJob(req, res)
+        deleteDebit(req, res)
     })
 )
 // app.get(

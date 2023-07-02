@@ -4,25 +4,21 @@
         <h1>Trajniki</h1>
         <a class="btn btn-secondary btn-sm" href="/debits/new">Dodaj</a>
     </div>
+    
     <div class="col-md-12">
+                            
         <ul class="list-group">
             <% for(let debit of debits){ %>
-                <li class="list-group-item <%= debit.enable ? "list-group-item-success":"list-group-item-secondary" %> d-flex align-items-center justify-content-between">
-                    <%=`${debit.category.parentCategory.name} - ${debit.category.name}`%>
-                    <a class="btn btn-light btn-sm" href="/debits/<%= debit.id %>/edit">Uredi</a>
-                </li>
+                    <li class="list-group-item <%= debit.enable ? "list-group-item-success":"list-group-item-secondary" %> d-flex align-items-center justify-content-between">
+                        <%=`${debit.category.parentCategory.name} - ${debit.category.name}`%>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <a class="me-2 btn btn-light btn-sm" href="/debits/<%= debit.id %>/edit">Uredi</a>
+                            <form class="" action="/debits/<%=debit._id%>?_method=DELETE" method="POST">
+                                <button class="btn btn-sm btn-warning" type="submit">Izbriši</button>
+                            </form>
+                        </div>
+                    </li>
             <% } %>
         </ul>
     </div>
-    <form
-            action="/debits/enable"
-            class="validated-form"
-            method="POST"
-            id="addNewDebit"
-            novalidate
-        >
-        <div class="mt-3 d-grid col-4 mx-auto">
-            <button class="btn btn-success">Vklop urnika</button>
-        </div>
-    </form>
 </div>

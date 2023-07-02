@@ -222,7 +222,6 @@ const calculateComparison = (req, expenses) => {
                 message = `You owes: €${Math.abs(
                     roundToTwo(activeUsers[0].sumOfExpenses - perUser)
                 )}`
-                console.log(activeUsers[0].name, req.session.passport.user)
             }
         } else {
             message = 'Fair and square!'
