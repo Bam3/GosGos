@@ -18,6 +18,7 @@ let manager = new CronJobManager()
 async function createCronManager() {
     let allDebits = await getAllDebits()
     await createCronJobs(allDebits)
+    console.log(manager)
 }
 async function getAllDebits() {
     const debits = await Debit.find()
