@@ -13,11 +13,12 @@ const {
     changeAllUsers,
 } = require('./household')
 const { seedUsers } = require('./user')
+const { cleanFaildJobs } = require('./clean')
 const { seedWhiskies } = require('./whiskey')
 
 //local DB
-const dbUrl = 'mongodb://localhost:27017/gos-gos'
-//const dbUrl = process.env.DB_URL
+//const dbUrl = 'mongodb://localhost:27017/gos-gos'
+const dbUrl = process.env.DB_URL
 mongoose
     .connect(dbUrl, {
         useNewUrlParser: true,
@@ -31,7 +32,8 @@ mongoose
         //await seedHouseholds()
         //await cosnoleAllHouses()
         //await changeAllUsers()
-        //await
+        await cleanFaildJobs()
+
         await client.disconnect()
     })
     .catch((err) => {

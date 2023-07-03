@@ -18,7 +18,6 @@ let manager = new CronJobManager()
 async function createCronManager() {
     let allDebits = await getAllDebits()
     await createCronJobs(allDebits)
-    console.log(manager)
 }
 async function getAllDebits() {
     const debits = await Debit.find()
@@ -37,7 +36,7 @@ async function createCronJobs(debits) {
     debits.forEach((debit) => {
         manager.add(
             `${debit.id}`,
-            `* * * ${debit.debitInputDayInMonth} * *`,
+            `0 0 1 ${debit.debitInputDayInMonth} * *`,
             async () => {
                 const newExpense = new Expense({
                     cost: debit.cost,
@@ -59,6 +58,18 @@ async function createCronJobs(debits) {
 }
 createCronManager()
 
+//destroj all expanses from jobs
+// async function cleanFaildJobs() {
+//     Expense.deleteMany({ description: '2' }, function (err, result) {
+//         if (err) {
+//             console.log(err)
+//         } else {
+//             console.log(result)
+//         }
+//     })
+// }
+
+//cleanFaildJobs()
 module.exports.getAllLoggedInUserDebits = async (req, res) => {
     const debits = await Debit.find({ debitOwner: req.session.usersID })
         .populate({
