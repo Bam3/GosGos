@@ -21,7 +21,7 @@ module.exports.filterByCategoryAndDate = async (
     let filterByDate = {}
     let matchFilter = {}
     let filterHousehold = {
-        household: { $eq: mongoose.Types.ObjectId(req.session.household) },
+        household: { $eq: new mongoose.Types.ObjectId(req.session.household) },
     }
     let filterSharedExpenses = { shared: true }
     //Sort by cat
