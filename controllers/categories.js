@@ -61,12 +61,28 @@ module.exports.updateCategoriesOrCreate = async (
     res,
     categoriesObject
 ) => {
-    await Category.findByIdAndUpdate(categoriesObject.parentId, {
-        name: categoriesObject.parentCategory,
-        color: categoriesObject.parentColor,
-    })
-    categoriesObject.subCats.map(async (subCategory) => {
+    // Update category name and color
+    const parentCategory = await Category.findByIdAndUpdate(
+        categoriesObject.parentId,
+        {
+            name: categoriesObject.parentCategory,
+            color: categoriesObject.parentColor,
+        }
+    ).populate('subCategories')
+
+    // Mark all existing subcategories for deletion
+    let subcategoryIdsToDelete = parentCategory.subCategories.map(
+        (subcategory) => subcategory.id
+    )
+
+    categoriesObject.subCats.forEach(async (subCategory) => {
         if (subCategory.id !== undefined) {
+            // If a subcategory id exists in the posted subcategories, it's
+            // still valid, so remove it from the ones marked for deletion
+            subcategoryIdsToDelete = subcategoryIdsToDelete.filter(
+                id => id !== subCategory.id
+            )
+
             await Category.findByIdAndUpdate(subCategory.id, {
                 name: subCategory.name,
             })
@@ -79,4 +95,7 @@ module.exports.updateCategoriesOrCreate = async (
             await newSubCategory.save()
         }
     })
+
+    // Delete any old subcategories that should no longer exist
+    await Category.deleteMany({_id: {$in: subcategoryIdsToDelete}})
 }
