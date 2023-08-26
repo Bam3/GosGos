@@ -11,6 +11,7 @@ addButton.addEventListener('click', (event) => {
     const newInput = document.createElement('input')
 
     newDiv.classList.add('input-group', 'my-3')
+    newDiv.id = 'subcategory'
     newInput.classList.add('form-control')
     newInput.type = 'text'
     newInput.id = 'SubCategories'
@@ -21,8 +22,8 @@ addButton.addEventListener('click', (event) => {
     body.append(newDiv)
 })
 deleteButton.addEventListener('click', (event) => {
-    //zavarujemo elemente ki niso vnosna polja
-    if (body.children.length >= 5) {
-        body.children[body.children.length - 1].remove()
+    const subcategories = document.querySelectorAll('#subcategory')
+    if (subcategories.length > 0) {
+        subcategories[subcategories.length - 1].remove()
     }
 })

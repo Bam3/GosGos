@@ -1,4 +1,3 @@
-const category = require('../models/category')
 const Category = require('../models/category')
 
 module.exports.createCategory = async (req) => {
@@ -10,7 +9,7 @@ module.exports.createCategory = async (req) => {
     })
     await categoryObject.save()
 
-    category.subCategories.map(async (subCategory) => {
+    category.subCategories?.map(async (subCategory) => {
         const subCategoryObject = new Category({
             name: subCategory,
             household: req.session.household,
@@ -34,18 +33,27 @@ module.exports.getCategory = async (req, res, id) => {
     return { categories, parentCategory }
 }
 module.exports.getCategoriesToEdit = (req, res) => {
-    let catss = []
-    for (let i = 0; i < req.body.subCategories.length; i++) {
-        catss.push({
-            name: req.body.subCategories[i],
-            id: req.body.subCategoriesId[i],
-        })
+    let subCategories = []
+
+    // Check if there are any subcategories before trying to loop through
+    const subCategoriesExist = Boolean(req.body.subCategories)
+
+    if (subCategoriesExist) {
+        for (let i = 0; i < req.body.subCategories.length; i++) {
+            subCategories.push({
+                name: req.body.subCategories[i],
+                // Check if subCategoriesId exists - it might not if all the
+                // subcategories are newly added in this edit.
+                id: req.body.subCategoriesId?.[i]
+            })
+        }
     }
+
     return {
         parentCategory: req.body.name,
         parentId: req.body.id,
         parentColor: req.body.color,
-        subCats: catss,
+        subCats: subCategories,
     }
 }
 module.exports.updateCategoriesOrCreate = async (
