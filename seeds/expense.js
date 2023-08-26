@@ -1,5 +1,7 @@
 const Expense = require('../models/expense')
 const Category = require('../models/category')
+const User = require('../models/user')
+const Household = require('../models/household')
 const allExpenses = require('./expensesAll')
 
 module.exports.seedExpenses = async () => {
@@ -8,6 +10,11 @@ module.exports.seedExpenses = async () => {
 
     //zbrišem vse stroške v bazi
     await Expense.deleteMany({})
+
+    const mihaId = (await User.findOne({username: "Miha"}))._id
+    const natasaId = (await User.findOne({username: "Nataša"}))._id
+    const revolutId = (await User.findOne({username: "Revolut"}))._id
+    const householdId = (await Household.findOne())._id
 
     const promises = []
     let payerID = ''
@@ -21,11 +28,11 @@ module.exports.seedExpenses = async () => {
                 subCategory.subCategories.forEach(async (subCatName) => {
                     if (subCatName.name === expense.subCategory) {
                         if (expense.payer === 'Miha') {
-                            payerID = '63f542caa32f470814a243cc' //production user id: '62b0220d04b744701a0bab83'
+                            payerID = mihaId //production user id: '62b0220d04b744701a0bab83'
                         } else if (expense.payer === 'Nataša') {
-                            payerID = '63f542caa32f470814a243cd' //production user id: '62b021f604b744701a0bab7a'
+                            payerID = natasaId //production user id: '62b021f604b744701a0bab7a'
                         } else {
-                            payerID = '63f542caa32f470814a243ce' //production user id: '62ba152107ee0fb001590933'
+                            payerID = revolutId //production user id: '62ba152107ee0fb001590933'
                         }
                         const newExpense = new Expense({
                             cost:
@@ -39,8 +46,8 @@ module.exports.seedExpenses = async () => {
                             description: expense.description,
                             category: subCatName.id,
                             shared: Boolean(expense.shared),
+                            household: householdId,
                         })
-                        console.log(newExpense)
                         promises.push(newExpense.save())
                     }
                 })

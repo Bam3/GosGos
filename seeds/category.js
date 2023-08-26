@@ -1,4 +1,5 @@
 const Category = require('../models/category')
+const Household = require('../models/household')
 
 const categories = [
     {
@@ -79,11 +80,14 @@ const categories = [
 module.exports.seedCategories = async () => {
     await Category.deleteMany({})
 
+    const household = await Household.findOne({})
+
     await Promise.all(
         categories.map(async (category) => {
             const categoryObject = new Category({
                 name: category.name,
                 color: category.color,
+                household: household._id
             })
             await categoryObject.save()
 
@@ -92,6 +96,7 @@ module.exports.seedCategories = async () => {
                     const subCategoryObject = new Category({
                         name: subCategory,
                         parentCategory: categoryObject._id,
+                        household: household._id
                     })
                     await subCategoryObject.save()
                 })

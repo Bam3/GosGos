@@ -25,13 +25,12 @@ mongoose
         useUnifiedTopology: true,
     })
     .then(async (client) => {
-        //await seedUsers()
-        //await seedCategories()
-        //await seedExpenses()
-        //await seedWhiskies()
-        //await seedHouseholds()
-        //await cosnoleAllHouses()
-        //await changeAllUsers()
+        await seedUsers()
+        await seedHouseholds()
+        await seedCategories()
+        await seedExpenses()
+        // await seedWhiskies()
+        await cosnoleAllHouses()
         await cleanFaildJobs()
 
         await client.disconnect()
