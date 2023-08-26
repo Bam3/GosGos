@@ -1,4 +1,5 @@
 const Category = require('../models/category')
+const Expense = require('../models/expense')
 
 module.exports.createCategory = async (req) => {
     const category = req.body
@@ -96,6 +97,10 @@ module.exports.updateCategoriesOrCreate = async (
         }
     })
 
-    // Delete any old subcategories that should no longer exist
-    await Category.deleteMany({_id: {$in: subcategoryIdsToDelete}})
+    if (subcategoryIdsToDelete.length > 0) {
+        // Delete any old subcategories that should no longer exist
+        await Category.deleteMany({_id: {$in: subcategoryIdsToDelete}})
+        // Delete expenses belonging to deleted categories
+        await Expense.deleteMany({'category': {$in: subcategoryIdsToDelete}})
+    }
 }
