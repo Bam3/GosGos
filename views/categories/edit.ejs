@@ -74,9 +74,8 @@
                 </button>
                 <% for (let i = 0; i < categories.categories.length; i++) {%>
 
-                <div class="input-group my-3">
+                <div id="subcategory" class="input-group my-3">
                     <input
-                        id="SubCategories"
                         name="subCategories[]"
                         type="text"
                         class="form-control"
@@ -84,7 +83,6 @@
                         required
                     />
                     <input
-                        id="SubCategories"
                         name="subCategoriesId[]"
                         type="hidden"
                         class="form-control"

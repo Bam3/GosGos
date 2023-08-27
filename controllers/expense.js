@@ -1,12 +1,10 @@
 const Category = require('../models/category')
 const Expense = require('../models/expense')
 const User = require('../models/user')
-const UserOrCategoryObject = require('../public/javascripts/Classes')
 const {
     calculateSum,
     roundToTwo,
-    extractNameAndColor,
-    updateUserOrCategoryClass,
+    groupExpensesByUserOrCategory,
     generateCategoryLabel,
     extractExpensesByUser,
 } = require('../public/javascripts/pureFunctions')
@@ -135,103 +133,32 @@ module.exports.deleteExpense = async (req, res) => {
 }
 
 const calculateComparison = (req, expenses) => {
-    let usersColors = []
+    const expensesByUser = groupExpensesByUserOrCategory(expenses, 'user')
+    const expensesByCategory = groupExpensesByUserOrCategory(expenses, 'category')
     let message = ''
-    let usersObject = []
-    let parentCategoriesObject = []
-    let sumForCalculation = 0
-    let activeUsers = []
-    let perUser = 0
-    let parentCategoriesColors = []
 
-    //pojdem čez stroške in izločim vse glavne kategorije
-    parentCategoriesColors = extractNameAndColor(
-        expenses,
-        'category.parentCategory.name',
-        'category.parentCategory.color'
-    )
-
-    //ustvarimo kategorije glede na filtriranje zgoraj
-    parentCategoriesColors.forEach(function (category) {
-        let newCategory = new UserOrCategoryObject(
-            category.name,
-            [],
-            false,
-            category.color
-        )
-        parentCategoriesObject.push(newCategory)
-    })
-
-    //pojdem čez vse stroške in izločim vse uporabnike
-    usersColors = extractNameAndColor(
-        expenses,
-        'payer.username',
-        'payer.color',
-        'payer.roll'
-    )
-    //Ustvarim uporabnike glede na zbrane zgoraj
-    usersColors.forEach(function (user) {
-        let newUser = []
-        if (user.roll === 'shared') {
-            newUser = new UserOrCategoryObject(user.name, [], false, user.color)
-        } else {
-            newUser = new UserOrCategoryObject(user.name, [], true, user.color)
-        }
-        usersObject.push(newUser)
-    })
     // če so users prazni pomeni, da nimamo izračuna, ker ni stroškov
-    if (usersObject.length !== 0) {
-        // za vse parent kategorije zapišemo koliko je vosta stroškov
-        updateUserOrCategoryClass(
-            expenses,
-            parentCategoriesObject,
-            'category.parentCategory.name'
-        )
-        //vsem zapišem kaj so plačali
-        updateUserOrCategoryClass(expenses, usersObject, 'payer.username')
+    if (expensesByUser.length !== 0) {
+        const totalExpenses = expensesByUser.reduce((sum, user) => sum += user.sumOfPayments, 0)
 
-        //seštejemo vse stroške po uporabnikih
-        usersObject.forEach(function (user) {
-            if (user.inCalculation) {
-                sumForCalculation += user.sumOfExpenses
-            }
-        })
-        activeUsers = usersObject.filter((user) => user.inCalculation)
-        perUser = sumForCalculation / 2
+        // Note - this should be divided by `expensesByUser.length` if we want
+        // to handle households with > 2 people.
+        const sharePerUser = totalExpenses / 2
 
-        if (activeUsers.length > 1) {
-            if (activeUsers[0].sumOfExpenses - perUser >= 0) {
-                message = `${activeUsers[1].name} owes ${
-                    activeUsers[0].name
-                }: €${Math.abs(
-                    roundToTwo(activeUsers[0].sumOfExpenses - perUser)
-                )}`
-            } else {
-                message = `${activeUsers[0].name} owes ${
-                    activeUsers[1].name
-                }: €${Math.abs(
-                    roundToTwo(activeUsers[0].sumOfExpenses - perUser)
-                )}`
-            }
-        } else if (activeUsers.length === 1) {
-            if (activeUsers[0].name === req.session.passport.user) {
-                message = `Owes you: €${Math.abs(
-                    roundToTwo(activeUsers[0].sumOfExpenses - perUser)
-                )}`
-            } else {
-                message = `You owes: €${Math.abs(
-                    roundToTwo(activeUsers[0].sumOfExpenses - perUser)
-                )}`
-            }
+        const userWhoPaidMost = expensesByUser[0].name
+        const secondUser = expensesByUser[1].name
+        const differenceOwed = roundToTwo(expensesByUser[0].sumOfPayments - sharePerUser)
+
+        if (expensesByUser.length > 1) {
+            message = `${secondUser} owes ${userWhoPaidMost} €${differenceOwed}`
+        } else if (expensesByUser.length === 1) {
+            const youPaidMost = userWhoPaidMost === req.session.passport.user
+            message = `You ${youPaidMost ? 'are owed' : 'owe'} ${differenceOwed}`
         } else {
             message = 'Fair and square!'
         }
     }
-    return {
-        message,
-        usersObject,
-        parentCategoriesObject,
-    }
+    return { message, expensesByUser, expensesByCategory }
 }
 
 module.exports.getLastExpanses = async (req, res) => {

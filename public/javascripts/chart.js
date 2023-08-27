@@ -6,9 +6,9 @@ const usersColor = []
 const categoriesColor = []
 
 //Categories Pie Chart
-parentCategoriesObject.forEach((category) => {
+expensesByCategory.forEach((category) => {
     categoriesLabels.push(category.name)
-    categoriesInputData.push(category.payments)
+    categoriesInputData.push(category.sumOfPayments)
     categoriesColor.push(category.color)
 })
 
@@ -35,9 +35,9 @@ const myChart = new Chart(
 )
 
 //Users Pie Chart
-usersObject.forEach((user) => {
+expensesByUser.forEach((user) => {
     usersLabels.push(user.name)
-    usersInputData.push(user.payments)
+    usersInputData.push(user.sumOfPayments)
     usersColor.push(user.color)
 })
 
