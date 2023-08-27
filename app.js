@@ -157,9 +157,9 @@ app.get(
     '/expenses/new',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const context = await getAllCategoriesAndUsers(req, res)
+        const { users, categories } = await getAllCategoriesAndUsers(req, res)
         const expenses = await getLastExpanses(req, res)
-        res.render('expenses/new', { context, expenses })
+        res.render('expenses/create-edit', { users, categories, expense: null, expenses, mode: 'create' })
     })
 )
 
@@ -179,13 +179,16 @@ app.get(
     '/expenses/:id/edit',
     catchAsync(async (req, res) => {
         const expense = await getSingleExpenseById(req, res)
-        const usersAndCategories = await getAllCategoriesAndUsers(req, res)
+        const { users, categories } = await getAllCategoriesAndUsers(req, res)
         if (!expense) {
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
         }
-        res.render('expenses/edit', {
+        res.render('expenses/create-edit', {
             expense,
+            users,
+            categories,
+            mode: 'edit',
         })
     })
 )

@@ -20,11 +20,9 @@ module.exports.getAllCategoriesAndUsers = async (req, res) => {
 
 module.exports.updateExpense = async (req, res) => {
     const { id } = req.params
-    if (!req.body.expense.shared) {
-        req.body.expense.shared = 'false'
-    }
     const expense = await Expense.findByIdAndUpdate(id, {
         ...req.body.expense,
+        shared: Boolean(req.body.expense.shared)
     })
     req.flash('success', 'Uspešno posodobljen strošek!')
     res.redirect(`/expenses/${expense._id}`)
@@ -32,13 +30,9 @@ module.exports.updateExpense = async (req, res) => {
 
 module.exports.createExpense = async (req, res) => {
     const newExpense = new Expense({
-        cost: req.body.price,
-        payer: req.body.user,
-        payDate: new Date(req.body.payDate),
-        description: req.body.description,
-        category: req.body.category,
-        shared: Boolean(req.body.shared),
+        ...req.body.expense,
         household: req.session.household,
+        shared: Boolean(req.body.expense.shared)
     })
     await newExpense.save()
 
