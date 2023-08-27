@@ -10,14 +10,6 @@
             novalidate
         >
             <div class="mb-3">
-                <label class="form-label">Trenutna kategorija</label>
-                <h4 class="lead">
-                    <%=context.expenses.category.parentCategory.name%> -
-                    <%=context.expenses.category.name%>
-                </h4>
-            </div>
-
-            <div class="mb-3">
                 <label for="category" class="form-label">Kategorija</label>
                 <select
                     class="form-select"
@@ -33,11 +25,24 @@
                         <%=context.expenses.category.name%>
                     </option>
                     <% for(let category of usersAndCategories.categories){ %>
-                    <optgroup label="<%=category.name%>">
-                        <% for(let subCategory of category.subCategories){ %>
-                        <option value="<%=subCategory._id%>">
-                            <%=subCategory.name%>
+                        <option
+                            value="<%= category._id %>"
+                            <% if (context.expenses.category._id.equals(category._id)) { %>
+                                selected
+                            <% } %>
+                        >
+                            <%= category.name %>
                         </option>
+                        <% for(let subCategory of category.subCategories){ %>
+                            <option
+                                id="Option"
+                                value="<%=subCategory._id%>"
+                                <% if (context.expenses.category._id.equals(subCategory._id)) { %>
+                                    selected
+                                <% } %>
+                            >
+                                &nbsp;&nbsp;⁃ <%=subCategory.name%>
+                            </option>
                         <% } %>
                     </optgroup>
                     <% } %>
