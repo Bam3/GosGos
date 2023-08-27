@@ -147,5 +147,17 @@
                 <button class="btn btn-info"><%= mode == 'edit' ? 'Uredi' : 'Dodaj' %></button>
             </div>
         </form>
+
+        <% if (mode === 'create') { %>
+            <%- include('../partials/recent-expenses', {
+                expenses: sharedExpenses,
+                title: 'ZADNJI VNEŠENI - SKUPNI'
+            }); %>
+
+            <%- include('../partials/recent-expenses', {
+                expenses: usersExpenses,
+                title: 'ZADNJI VNEŠENI - MOJI'
+            }); %>
+        <% } %>
     </div>
 </div>

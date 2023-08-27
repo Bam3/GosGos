@@ -158,8 +158,16 @@ app.get(
     isLoggedIn,
     catchAsync(async (req, res) => {
         const { users, categories } = await getAllCategoriesAndUsers(req, res)
-        const expenses = await getLastExpenses(req, res)
-        res.render('expenses/create-edit', { users, categories, expense: null, expenses, mode: 'create' })
+        const { sharedExpenses, usersExpenses } = await getLastExpenses(req, res)
+
+        res.render('expenses/create-edit', {
+            users,
+            categories,
+            expense: null,
+            sharedExpenses,
+            usersExpenses,
+            mode: 'create'
+        })
     })
 )
 
