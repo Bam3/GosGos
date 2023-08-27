@@ -12,15 +12,10 @@ const {
 module.exports.getAllCategoriesAndUsers = async (req, res) => {
     const categories = await Category.find({
         household: req.session.household,
+        parentCategory: null,
     }).populate('subCategories')
     const users = await User.find({ household: req.session.household })
-    const parentCategories = categories.filter(
-        (category) => category.parentCategory === undefined
-    )
-    return {
-        categories: parentCategories,
-        users,
-    }
+    return { categories, users }
 }
 
 module.exports.updateExpense = async (req, res) => {
