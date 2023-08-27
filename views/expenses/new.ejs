@@ -17,13 +17,15 @@
                     name="category"
                     required
                 >
-                    <option selected disabled value="">Izberi...</option>
+                    <option selected disabled value="">Izberi kategorijo …</option>
                     <% for(let category of context.categories){ %>
-                    <optgroup label="<%=category.name%>">
-                        <% for(let subCategory of category.subCategories){ %>
-                        <option id="Option" value="<%=subCategory._id%>">
-                            <%=subCategory.name%>
+                        <option value="<%=category._id%>">
+                            <b><%= category.name %></b>
                         </option>
+                        <% for(let subCategory of category.subCategories){ %>
+                            <option id="Option" value="<%=subCategory._id%>">
+                                &nbsp;&nbsp;⁃ <%=subCategory.name%>
+                            </option>
                         <% } %>
                     </optgroup>
                     <% } %>
@@ -79,7 +81,7 @@
             <div class="mb-3">
                 <label for="user" class="form-label">Plačnik</label>
                 <select class="form-select" id="user" name="user" required>
-                    <option selected disabled value>Izberi plačnika...</option>
+                    <option selected disabled value>Izberi plačnika …</option>
                     <% for(let user of context.users) { %>
                     <option value="<%=user._id%>"><%=user.username%></option>
                     <% } %>
