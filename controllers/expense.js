@@ -45,79 +45,67 @@ module.exports.createExpense = async (req, res) => {
     return newExpense
 }
 
-module.exports.getExpenseContext = async (req, res, filter) => {
-    let filterObject = {}
-    let expenses = {}
-    //če podamo filter datuma, od - do
-    if (filter !== undefined) {
-        filterObject = {
-            household: req.session.household,
-            payDate: {
-                $gte: new Date(filter.from),
-                $lte: new Date(filter.to),
-            },
-            shared: filter.share,
-        }
-
-        expenses = await Expense.find(filterObject)
-            .sort({
-                payDate: -1,
-            })
-            .populate({
-                path: 'category',
-                populate: {
-                    path: 'parentCategory',
-                },
-            })
-            .populate('payer')
-        await Promise.all(
-            expenses.map(async (expense) => {
-                const neki = await generateCategoryLabel(expense.category)
-                expense.categoryLabel = neki
-            })
-        )
-        if (filter.share === 'false') {
-            expenses = extractExpensesByUser(
-                expenses,
-                req.session.passport.user
-            )
-        }
-
-        let sum = calculateSum(
-            expenses,
-            String(filter.share).toLowerCase() === 'true'
-        )
-        sum = roundToTwo(sum)
-        const comparison = calculateComparison(req, expenses)
-        return {
-            expenses,
-            sum,
-            filter,
-            comparison,
-        }
-        // če želimo filtriratio po id-ju
-    } else if (req.params.id) {
-        expenses = await Expense.findById(req.params.id)
-            .sort({
-                payDate: -1,
-            })
-            .populate({
-                path: 'category',
-                populate: {
-                    path: 'parentCategory',
-                },
-            })
-            .populate('payer')
-        if (expenses) {
-            const neki = await generateCategoryLabel(expenses.category)
-            expenses.categoryLabel = neki
-            return {
-                expenses,
-            }
-        } else {
-            return undefined
-        }
+module.exports.getExpensesForFilter = async (req, res, filter) => {
+    const filterObject = {
+        household: req.session.household,
+        payDate: {
+            $gte: new Date(filter.from),
+            $lte: new Date(filter.to),
+        },
+        shared: filter.share,
     }
+
+    if (filter.share === 'false') {
+        const currentUser = await User.find({
+            username: req.session.passport.user,
+            household: req.session.household,
+        })
+        filterObject.payer = currentUser
+    }
+
+    const expenses = await Expense.find(filterObject)
+        .sort({
+            payDate: -1,
+        })
+        .populate({
+            path: 'category',
+            populate: {
+                path: 'parentCategory',
+            },
+        })
+        .populate('payer')
+
+    await Promise.all(
+        expenses.map(async (expense) => {
+            expense.categoryLabel = await generateCategoryLabel(expense.category)
+        })
+    )
+
+    let sum = expenses.reduce((sum, expense) => sum + expense.cost, 0)
+    sum = roundToTwo(sum)
+    const comparison = calculateComparison(req, expenses)
+    return {
+        expenses,
+        sum,
+        filter,
+        comparison,
+    }
+}
+
+module.exports.getSingleExpenseById = async (req, res) => {
+    const expense = await Expense.findById(req.params.id)
+        .populate({
+            path: 'category',
+            populate: {
+                path: 'parentCategory',
+            },
+        })
+        .populate('payer')
+
+    if (expense)
+        expense.categoryLabel = await generateCategoryLabel(expense.category)
+
+    return expense
 }
 
 module.exports.deleteExpense = async (req, res) => {
