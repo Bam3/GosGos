@@ -1,25 +1,19 @@
 # GosGos
 
-Popravi modele:
+Dev setup:
+```sh
+# Set up env file
+cp .env.example .env
 
--   stroški
--   kategorije
--   users
-* dodaj barve na kategotije in users (za Chart.js)
+# Install fresh npm dependencies
+npm install
 
-CRUD za:
+# Start mongo container
+docker compose up
 
--   stroške
--   kategorije
--   users
+# Generate seed data
+npm run seed
 
-Validiranje Form:
-
--   JOI
-
-FILTRIRANJE:
-
--   po Kategorijah
--   leto/mesec
-
-CHART.js
+# Run the app locally
+npm run dev
+```

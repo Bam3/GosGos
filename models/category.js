@@ -17,6 +17,7 @@ const categorySchema = new Schema(
         household: {
             type: Schema.Types.ObjectId,
             ref: 'Household',
+            required: true,
         },
     },
     {
