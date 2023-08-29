@@ -146,10 +146,10 @@ const calculateComparison = (req, expenses) => {
         const sharePerUser = totalExpenses / 2
 
         const userWhoPaidMost = expensesByUser[0].name
-        const secondUser = expensesByUser[1].name
         const differenceOwed = roundToTwo(expensesByUser[0].sumOfPayments - sharePerUser)
 
         if (expensesByUser.length > 1) {
+            const secondUser = expensesByUser[1].name
             message = `${secondUser} owes ${userWhoPaidMost} €${differenceOwed}`
         } else if (expensesByUser.length === 1) {
             const youPaidMost = userWhoPaidMost === req.session.passport.user
