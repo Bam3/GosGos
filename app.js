@@ -21,10 +21,11 @@ const User = require('./models/user')
 const {
     getAllCategoriesAndUsers,
     createExpense,
-    getExpenseContext,
+    getExpensesForFilter,
     updateExpense,
     deleteExpense,
-    getLastExpanses,
+    getLastExpenses,
+    getSingleExpenseById,
 } = require('./controllers/expense')
 
 const { readPicture } = require('./controllers/camera')
@@ -156,36 +157,46 @@ app.get(
     '/expenses/new',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const context = await getAllCategoriesAndUsers(req, res)
-        const expenses = await getLastExpanses(req, res)
-        res.render('expenses/new', { context, expenses })
+        const { users, categories } = await getAllCategoriesAndUsers(req, res)
+        const { sharedExpenses, usersExpenses } = await getLastExpenses(req, res)
+
+        res.render('expenses/create-edit', {
+            users,
+            categories,
+            expense: null,
+            sharedExpenses,
+            usersExpenses,
+            mode: 'create'
+        })
     })
 )
 
 app.get(
     '/expenses/:id',
     catchAsync(async (req, res) => {
-        const context = await getExpenseContext(req, res)
-        if (!context) {
+        const expense = await getSingleExpenseById(req, res)
+        if (!expense) {
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
         }
-        res.render('expenses/show', context)
+        res.render('expenses/show', { expense })
     })
 )
 
 app.get(
     '/expenses/:id/edit',
     catchAsync(async (req, res) => {
-        const context = await getExpenseContext(req, res)
-        const usersAndCategories = await getAllCategoriesAndUsers(req, res)
-        if (!context) {
+        const expense = await getSingleExpenseById(req, res)
+        const { users, categories } = await getAllCategoriesAndUsers(req, res)
+        if (!expense) {
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
         }
-        res.render('expenses/edit', {
-            context,
-            usersAndCategories,
+        res.render('expenses/create-edit', {
+            expense,
+            users,
+            categories,
+            mode: 'edit',
         })
     })
 )
@@ -213,7 +224,7 @@ app.get(
             req.flash('error', 'Začetni datum ne mora biti po končnem!')
             res.redirect('/expenses/new')
         } else {
-            const context = await getExpenseContext(req, res, {
+            const context = await getExpensesForFilter(req, res, {
                 from,
                 to,
                 share,

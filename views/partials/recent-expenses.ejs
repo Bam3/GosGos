@@ -1,0 +1,41 @@
+<% if (expenses.length > 0) { %>
+<div class="col-md-12 table-responsive mt-4">
+    <table class="table table-hover table-borderless">
+        <thead class="table-light">
+            <tr>
+                <th colspan="4" class="text-center">
+                    <%= title %>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (expense of expenses) { %>
+                <tr>
+                    <td class="align-middle" scope="row">
+                        <%= expense.payDate.toLocaleDateString(
+                            'de-CH',
+                            { year:"2-digit", month: "2-digit", day:"2-digit" }
+                        )%>
+                    </td>
+                    <td class="align-middle">
+                        <%=expense.category.name %>
+                    </td>
+                    <td class="align-middle">
+                        <a href="/expenses/<%= expense.id %>">
+                            €<%= expense.cost.toFixed(2) %>
+                        </a>
+                    </td>
+                    <td class="p-1 d-flex justify-content-center">
+                        <div
+                            class="name-tag"
+                            style="background-color: <%= expense.payer.color %>;"
+                        >
+                            <%= expense.payer.nickName %>
+                        </div>
+                    </td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+<% } %>

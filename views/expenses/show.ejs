@@ -1,24 +1,24 @@
 <% layout('layouts/boilerplate')%>
 <div class="card" style="width: auto">
     <div class="card-body">
-        <h5 class="card-title"><%= expenses.categoryLabel%></h5>
-        <p class="card-text"><%= expenses.description%></p>
+        <h5 class="card-title"><%= expense.categoryLabel%></h5>
+        <p class="card-text"><%= expense.description%></p>
     </div>
     <ul class="list-group list-group-flush">
-        <li class="list-group-item">Znesek: €<%= expenses.cost.toFixed(2)%></li>
-        <li class="list-group-item">Plačnik: <%= expenses.payer.username%></li>
+        <li class="list-group-item">Znesek: €<%= expense.cost.toFixed(2)%></li>
+        <li class="list-group-item">Plačnik: <%= expense.payer.username%></li>
         <li class="list-group-item">
             Dan nakupa: <%=
-            expenses.payDate.toLocaleDateString('de-CH',{year:"2-digit", month:
+            expense.payDate.toLocaleDateString('de-CH',{year:"2-digit", month:
             "2-digit", day:"2-digit"}) %>
         </li>
         <li class="list-group-item">
-            Strošek deljen: <%= expenses.shared ? "DA":"NE"%>
+            Strošek deljen: <%= expense.shared ? "DA":"NE"%>
         </li>
     </ul>
     <form
         class="d-inline"
-        action="/expenses/<%=expenses._id%>?_method=DELETE"
+        action="/expenses/<%=expense._id%>?_method=DELETE"
         method="POST"
     >
         <div class="m-2 d-grid gap-2 d-md-block">
@@ -29,7 +29,7 @@
                 Moji stroški
             </a>
             <a
-                href="/expenses/<%= expenses._id%>/edit"
+                href="/expenses/<%= expense._id%>/edit"
                 class="btn btn-outline-secondary"
                 >Uredi
             </a>

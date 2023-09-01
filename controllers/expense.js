@@ -12,24 +12,17 @@ const {
 module.exports.getAllCategoriesAndUsers = async (req, res) => {
     const categories = await Category.find({
         household: req.session.household,
+        parentCategory: null,
     }).populate('subCategories')
     const users = await User.find({ household: req.session.household })
-    const parentCategories = categories.filter(
-        (category) => category.parentCategory === undefined
-    )
-    return {
-        categories: parentCategories,
-        users,
-    }
+    return { categories, users }
 }
 
 module.exports.updateExpense = async (req, res) => {
     const { id } = req.params
-    if (!req.body.expense.shared) {
-        req.body.expense.shared = 'false'
-    }
     const expense = await Expense.findByIdAndUpdate(id, {
         ...req.body.expense,
+        shared: Boolean(req.body.expense.shared)
     })
     req.flash('success', 'Uspešno posodobljen strošek!')
     res.redirect(`/expenses/${expense._id}`)
@@ -37,92 +30,76 @@ module.exports.updateExpense = async (req, res) => {
 
 module.exports.createExpense = async (req, res) => {
     const newExpense = new Expense({
-        cost: req.body.price,
-        payer: req.body.user,
-        payDate: new Date(req.body.payDate),
-        description: req.body.description,
-        category: req.body.category,
-        shared: Boolean(req.body.shared),
+        ...req.body.expense,
         household: req.session.household,
+        shared: Boolean(req.body.expense.shared)
     })
     await newExpense.save()
 
     return newExpense
 }
 
-module.exports.getExpenseContext = async (req, res, filter) => {
-    let filterObject = {}
-    let expenses = {}
-    //če podamo filter datuma, od - do
-    if (filter !== undefined) {
-        filterObject = {
-            household: req.session.household,
-            payDate: {
-                $gte: new Date(filter.from),
-                $lte: new Date(filter.to),
-            },
-            shared: filter.share,
-        }
-
-        expenses = await Expense.find(filterObject)
-            .sort({
-                payDate: -1,
-            })
-            .populate({
-                path: 'category',
-                populate: {
-                    path: 'parentCategory',
-                },
-            })
-            .populate('payer')
-        await Promise.all(
-            expenses.map(async (expense) => {
-                const neki = await generateCategoryLabel(expense.category)
-                expense.categoryLabel = neki
-            })
-        )
-        if (filter.share === 'false') {
-            expenses = extractExpensesByUser(
-                expenses,
-                req.session.passport.user
-            )
-        }
-
-        let sum = calculateSum(
-            expenses,
-            String(filter.share).toLowerCase() === 'true'
-        )
-        sum = roundToTwo(sum)
-        const comparison = calculateComparison(req, expenses)
-        return {
-            expenses,
-            sum,
-            filter,
-            comparison,
-        }
-        // če želimo filtriratio po id-ju
-    } else if (req.params.id) {
-        expenses = await Expense.findById(req.params.id)
-            .sort({
-                payDate: -1,
-            })
-            .populate({
-                path: 'category',
-                populate: {
-                    path: 'parentCategory',
-                },
-            })
-            .populate('payer')
-        if (expenses) {
-            const neki = await generateCategoryLabel(expenses.category)
-            expenses.categoryLabel = neki
-            return {
-                expenses,
-            }
-        } else {
-            return undefined
-        }
+module.exports.getExpensesForFilter = async (req, res, filter) => {
+    const filterObject = {
+        household: req.session.household,
+        payDate: {
+            $gte: new Date(filter.from),
+            $lte: new Date(filter.to),
+        },
+        shared: filter.share,
     }
+
+    if (filter.share === 'false') {
+        const currentUser = await User.find({
+            username: req.session.passport.user,
+            household: req.session.household,
+        })
+        filterObject.payer = currentUser
+    }
+
+    const expenses = await Expense.find(filterObject)
+        .sort({
+            payDate: -1,
+        })
+        .populate({
+            path: 'category',
+            populate: {
+                path: 'parentCategory',
+            },
+        })
+        .populate('payer')
+
+    await Promise.all(
+        expenses.map(async (expense) => {
+            expense.categoryLabel = await generateCategoryLabel(expense.category)
+        })
+    )
+
+    let sum = expenses.reduce((sum, expense) => sum + expense.cost, 0)
+    sum = roundToTwo(sum)
+    const comparison = calculateComparison(req, expenses)
+    return {
+        expenses,
+        sum,
+        filter,
+        comparison,
+    }
+}
+
+module.exports.getSingleExpenseById = async (req, res) => {
+    const expense = await Expense.findById(req.params.id)
+        .populate({
+            path: 'category',
+            populate: {
+                path: 'parentCategory',
+            },
+        })
+        .populate('payer')
+
+    if (expense)
+        expense.categoryLabel = await generateCategoryLabel(expense.category)
+
+    return expense
 }
 
 module.exports.deleteExpense = async (req, res) => {
@@ -161,7 +138,7 @@ const calculateComparison = (req, expenses) => {
     return { message, expensesByUser, expensesByCategory }
 }
 
-module.exports.getLastExpanses = async (req, res) => {
+module.exports.getLastExpenses = async (req, res) => {
     let currentUser = await User.find({
         username: req.session.passport.user,
         household: req.session.household,
@@ -175,13 +152,13 @@ module.exports.getLastExpanses = async (req, res) => {
         shared: false,
         payer: currentUser[0].id,
     }
-    let sharedExpenses = await filterLastExpanses(filterObject, 10)
-    let usersExpenses = await filterLastExpanses(filterObjectUser, 5)
+    let sharedExpenses = await filterLastExpenses(filterObject, 10)
+    let usersExpenses = await filterLastExpenses(filterObjectUser, 5)
 
     return { sharedExpenses, usersExpenses }
 }
 
-const filterLastExpanses = async (filterObject, limit = 10) => {
+const filterLastExpenses = async (filterObject, limit = 10) => {
     let expenses = await Expense.find(filterObject)
         .sort({
             payDate: -1,
