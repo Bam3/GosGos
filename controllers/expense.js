@@ -125,14 +125,14 @@ const calculateComparison = (req, expenses) => {
         const userWhoPaidMost = expensesByUser[0].name
         const differenceOwed = roundToTwo(expensesByUser[0].sumOfPayments - sharePerUser)
 
-        if (expensesByUser.length > 1) {
+        if (differenceOwed === 0) {
+            message = 'Fair and square!'
+        } else if (expensesByUser.length > 1) {
             const secondUser = expensesByUser[1].name
             message = `${secondUser} owes ${userWhoPaidMost} €${differenceOwed}`
         } else if (expensesByUser.length === 1) {
             const youPaidMost = userWhoPaidMost === req.session.passport.user
             message = `You ${youPaidMost ? 'are owed' : 'owe'} ${differenceOwed}`
-        } else {
-            message = 'Fair and square!'
         }
     }
     return { message, expensesByUser, expensesByCategory }
