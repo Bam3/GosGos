@@ -106,14 +106,14 @@
             <div class="mb-3">
                 <label for="user" class="form-label">Plačnik</label>
                 <select class="form-select" id="user" name="expense[payer]" required>
-                    <% if (mode === 'create') { %>
-                        <option selected disabled value>Izberi plačnika …</option>
-                    <% } %>
-
                     <% for (let user of users) { %>
                         <option
                             value="<%= user._id %>"
-                            <% if (expense?.payer._id.equals(user._id)) { %>
+                            <%
+                            const isCurrentUser = mode === 'create' && currentUser.equals(user)
+                            const isExpensePayer = mode === 'edit' &&  expense?.payer.equals(user)
+
+                            if (isCurrentUser || isExpensePayer) { %>
                                 selected
                             <% } %>
                         >
@@ -136,7 +136,7 @@
                         id="flexSwitchCheckChecked"
                         name="expense[shared]"
                         value="true"
-                        <% if (expense?.shared) { %>
+                        <% if (mode === 'create' || expense?.shared) { %>
                             checked
                         <% } %>
                     />

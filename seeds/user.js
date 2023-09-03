@@ -17,6 +17,7 @@ const users = [{
         email: 'bastasic.revolut@gmail.com',
         password: 'revolut123',
         color: '#E9C46A',
+        roll: 'shared',
     },
 ]
 
@@ -28,12 +29,14 @@ module.exports.seedUsers = async () => {
                 email,
                 username,
                 password,
-                color
+                color,
+                roll
             } = user
             const userObject = new User({
                 email,
                 username,
-                color
+                color,
+                roll
             })
             console.log(userObject)
             return await User.register(userObject, password)
