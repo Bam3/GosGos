@@ -136,7 +136,7 @@
                         id="flexSwitchCheckChecked"
                         name="expense[shared]"
                         value="true"
-                        <% if (expense?.shared) { %>
+                        <% if (mode === 'create' || expense?.shared) { %>
                             checked
                         <% } %>
                     />
