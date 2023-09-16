@@ -128,7 +128,7 @@ app.use(fileUpload())
 app.use(
     express.urlencoded({
         extended: true,
-    })
+    }),
 )
 app.use(methodOverride('_method'))
 app.use(express.static('public'))
@@ -158,7 +158,10 @@ app.get(
     isLoggedIn,
     catchAsync(async (req, res) => {
         const { users, categories } = await getAllCategoriesAndUsers(req, res)
-        const { sharedExpenses, usersExpenses } = await getLastExpenses(req, res)
+        const { sharedExpenses, usersExpenses } = await getLastExpenses(
+            req,
+            res,
+        )
 
         res.render('expenses/create-edit', {
             users,
@@ -166,9 +169,9 @@ app.get(
             expense: null,
             sharedExpenses,
             usersExpenses,
-            mode: 'create'
+            mode: 'create',
         })
-    })
+    }),
 )
 
 app.get(
@@ -180,7 +183,7 @@ app.get(
             return res.redirect('/expenses/new')
         }
         res.render('expenses/show', { expense })
-    })
+    }),
 )
 
 app.get(
@@ -198,7 +201,7 @@ app.get(
             categories,
             mode: 'edit',
         })
-    })
+    }),
 )
 
 app.get(
@@ -208,7 +211,7 @@ app.get(
         const from = `${new Date().toISOString().substring(0, 8)}01`
         const to = new Date().toISOString().substring(0, 10)
         return res.redirect(`/expenses?from=${from}&to=${to}&share=${false}`)
-    })
+    }),
 )
 app.get(
     '/expenses',
@@ -231,7 +234,7 @@ app.get(
             })
             res.render('expenses/index', context)
         }
-    })
+    }),
 )
 
 app.get(
@@ -248,7 +251,7 @@ app.get(
             from,
             to,
         })
-    })
+    }),
 )
 
 app.post(
@@ -262,14 +265,14 @@ app.post(
             req.body.dateFrom,
             req.body.dateTo,
             req.body.category,
-            req.body.subCategory
+            req.body.subCategory,
         )
         const categoriesAndUsers = await getAllCategoriesAndUsers(req, res)
         res.render('expenses/search', {
             context,
             categoriesAndUsers,
         })
-    })
+    }),
 )
 
 app.post(
@@ -279,7 +282,7 @@ app.post(
         const newExpense = await createExpense(req, res)
         req.flash('success', 'Strošek dodan in shranjen')
         res.redirect(`/expenses/${newExpense._id}`)
-    })
+    }),
 )
 app.post(
     '/expenses/filter',
@@ -287,9 +290,9 @@ app.post(
     catchAsync(async (req, res) => {
         const formData = req.body
         res.redirect(
-            `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}&share=${formData.share}`
+            `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}&share=${formData.share}`,
         )
-    })
+    }),
 )
 
 app.put(
@@ -297,7 +300,7 @@ app.put(
     isLoggedIn,
     catchAsync(async (req, res) => {
         updateExpense(req, res)
-    })
+    }),
 )
 
 app.delete(
@@ -305,7 +308,7 @@ app.delete(
     isLoggedIn,
     catchAsync(async (req, res) => {
         deleteExpense(req, res)
-    })
+    }),
 )
 
 app.get('/categories/new', isLoggedIn, (req, res) => {
@@ -325,7 +328,7 @@ app.get(
             categories,
             id,
         })
-    })
+    }),
 )
 
 app.get(
@@ -334,7 +337,7 @@ app.get(
     catchAsync(async (req, res) => {
         const context = await getAllCategoriesAndUsers(req, res)
         res.render('categories/index', context)
-    })
+    }),
 )
 
 app.post(
@@ -344,7 +347,7 @@ app.post(
         const newCategory = await createCategory(req)
         req.flash('success', 'Kategorija dodan in shranjen')
         res.redirect(`/categories/${newCategory._id}/edit`)
-    })
+    }),
 )
 app.put(
     '/categories/:id',
@@ -352,7 +355,7 @@ app.put(
     catchAsync(async (req, res) => {
         await updateCategoriesOrCreate(req, res, getCategoriesToEdit(req, res))
         res.redirect('/categories')
-    })
+    }),
 )
 app.post(
     '/camera/photo',
@@ -362,7 +365,7 @@ app.post(
         const categories = await getAllCategoriesAndUsers(req, res)
         const context = await readPicture(picture.data)
         res.render('expenses/new', categories)
-    })
+    }),
 )
 
 app.get(
@@ -371,7 +374,7 @@ app.get(
     catchAsync(async (req, res) => {
         const debits = await getAllLoggedInUserDebits(req, res)
         res.render('debits/index', { debits })
-    })
+    }),
 )
 
 app.get(
@@ -380,7 +383,7 @@ app.get(
     catchAsync(async (req, res) => {
         const context = await getAllCategoriesAndUsers(req, res)
         res.render('debits/new', { context })
-    })
+    }),
 )
 
 app.post(
@@ -390,7 +393,7 @@ app.post(
         const newDebit = await createDebit(req, res)
         req.flash('success', 'Trajnik dodan in shranjen')
         res.redirect(`/debits`)
-    })
+    }),
 )
 
 app.get(
@@ -406,7 +409,7 @@ app.get(
             context,
             usersAndCategories,
         })
-    })
+    }),
 )
 
 app.put(
@@ -414,7 +417,7 @@ app.put(
     isLoggedIn,
     catchAsync(async (req, res) => {
         updateDebit(req, res)
-    })
+    }),
 )
 
 app.delete(
@@ -423,7 +426,7 @@ app.delete(
     catchAsync(async (req, res) => {
         deleteCronJob(req, res)
         deleteDebit(req, res)
-    })
+    }),
 )
 // app.get(
 //     '/whiskies/wishlist',
@@ -533,7 +536,7 @@ app.get(
     catchAsync(async (req, res) => {
         const loggedinUser = await getLoggedinUser(req, res)
         res.render('users/settings', loggedinUser)
-    })
+    }),
 )
 
 app.post(
@@ -547,14 +550,14 @@ app.post(
         delete req.session.returnTo
         req.flash(
             'success',
-            `${req.session.passport.user}, pozdravljen v GosGos!`
+            `${req.session.passport.user}, pozdravljen v GosGos!`,
         )
         //on login get users household and save it in session
         const loggedinUser = await getLoggedinUser(req, res)
         req.session.household = loggedinUser[0].household._id
         req.session.usersID = loggedinUser[0]._id
         res.redirect(redirectUrl)
-    }
+    },
 )
 
 app.post('/register', async (req, res) => {

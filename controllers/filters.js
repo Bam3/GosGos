@@ -14,7 +14,7 @@ module.exports.filterByCategoryAndDate = async (
     dateFrom,
     dateTo,
     category,
-    subCategory
+    subCategory,
 ) => {
     let expenses = {}
     let filterByCat = {}

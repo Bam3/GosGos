@@ -22,7 +22,7 @@ module.exports.updateExpense = async (req, res) => {
     const { id } = req.params
     const expense = await Expense.findByIdAndUpdate(id, {
         ...req.body.expense,
-        shared: Boolean(req.body.expense.shared)
+        shared: Boolean(req.body.expense.shared),
     })
     req.flash('success', 'Uspešno posodobljen strošek!')
     res.redirect(`/expenses/${expense._id}`)
@@ -32,7 +32,7 @@ module.exports.createExpense = async (req, res) => {
     const newExpense = new Expense({
         ...req.body.expense,
         household: req.session.household,
-        shared: Boolean(req.body.expense.shared)
+        shared: Boolean(req.body.expense.shared),
     })
     await newExpense.save()
 
@@ -71,8 +71,10 @@ module.exports.getExpensesForFilter = async (req, res, filter) => {
 
     await Promise.all(
         expenses.map(async (expense) => {
-            expense.categoryLabel = await generateCategoryLabel(expense.category)
-        })
+            expense.categoryLabel = await generateCategoryLabel(
+                expense.category,
+            )
+        }),
     )
 
     let sum = expenses.reduce((sum, expense) => sum + expense.cost, 0)
@@ -111,19 +113,27 @@ module.exports.deleteExpense = async (req, res) => {
 
 const calculateComparison = (req, expenses) => {
     const expensesByUser = groupExpensesByUserOrCategory(expenses, 'user')
-    const expensesByCategory = groupExpensesByUserOrCategory(expenses, 'category')
+    const expensesByCategory = groupExpensesByUserOrCategory(
+        expenses,
+        'category',
+    )
     let message = ''
 
     // če so users prazni pomeni, da nimamo izračuna, ker ni stroškov
     if (expensesByUser.length !== 0) {
-        const totalExpenses = expensesByUser.reduce((sum, user) => sum += user.sumOfPayments, 0)
+        const totalExpenses = expensesByUser.reduce(
+            (sum, user) => (sum += user.sumOfPayments),
+            0,
+        )
 
         // Note - this should be divided by `expensesByUser.length` if we want
         // to handle households with > 2 people.
         const sharePerUser = totalExpenses / 2
 
         const userWhoPaidMost = expensesByUser[0].name
-        const differenceOwed = roundToTwo(expensesByUser[0].sumOfPayments - sharePerUser)
+        const differenceOwed = roundToTwo(
+            expensesByUser[0].sumOfPayments - sharePerUser,
+        )
 
         if (differenceOwed === 0) {
             message = 'Fair and square!'
@@ -132,7 +142,9 @@ const calculateComparison = (req, expenses) => {
             message = `${secondUser} owes ${userWhoPaidMost} €${differenceOwed}`
         } else if (expensesByUser.length === 1) {
             const youPaidMost = userWhoPaidMost === req.session.passport.user
-            message = `You ${youPaidMost ? 'are owed' : 'owe'} ${differenceOwed}`
+            message = `You ${
+                youPaidMost ? 'are owed' : 'owe'
+            } ${differenceOwed}`
         }
     }
     return { message, expensesByUser, expensesByCategory }
@@ -176,7 +188,7 @@ const filterLastExpenses = async (filterObject, limit = 10) => {
         expenses.map(async (expense) => {
             const neki = await generateCategoryLabel(expense.category)
             expense.categoryLabel = neki
-        })
+        }),
     )
     return expenses
 }

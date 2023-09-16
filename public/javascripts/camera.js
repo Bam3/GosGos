@@ -45,7 +45,7 @@ video.addEventListener(
             streaming = true
         }
     },
-    false
+    false,
 )
 startbutton.addEventListener(
     'click',
@@ -54,7 +54,7 @@ startbutton.addEventListener(
         window.sessionStorage.clear()
         window.sessionStorage.setItem('pictureUrl', JSON.stringify(data))
     },
-    false
+    false,
 )
 
 function takepicture() {

@@ -12,7 +12,7 @@ module.exports = {
                 .collection('expenses')
                 .updateOne(
                     { _id: exspense._id },
-                    { $set: { household: households[0]._id } }
+                    { $set: { household: households[0]._id } },
                 )
         })
         return Promise.all(operations)

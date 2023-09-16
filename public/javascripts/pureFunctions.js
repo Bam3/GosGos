@@ -36,12 +36,15 @@ module.exports.groupExpensesByUserOrCategory = (expenses, groupBy) => {
         if (groupBy === 'user' && expense.payer.roll === 'shared') return
 
         // Decide which property to use for name and color
-        const name = groupBy === 'user'
-            ? expense.payer.username
-            : expense.category.parentCategory?.name ?? expense.category.name
-        const color = groupBy === 'user'
-            ? expense.payer.color
-            : expense.category.parentCategory?.color ?? expense.category.color
+        const name =
+            groupBy === 'user'
+                ? expense.payer.username
+                : expense.category.parentCategory?.name ?? expense.category.name
+        const color =
+            groupBy === 'user'
+                ? expense.payer.color
+                : expense.category.parentCategory?.color ??
+                  expense.category.color
 
         // See if we already have this category/user in `groups`
         const existing = groups[name]
@@ -72,7 +75,6 @@ module.exports.groupExpensesByUserOrCategory = (expenses, groupBy) => {
         // ones with most expenses at the beginning
         listOfGroups.sort((a, b) => b.numberOfPayments - a.numberOfPayments)
     }
-
 
     return listOfGroups
 }

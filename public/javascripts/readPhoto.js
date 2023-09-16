@@ -4,7 +4,7 @@ function submitPic() {
 }
 function readDateFromData(data) {
     let res = data.match(
-        /\d(0?[1-9]|1[0-2])([\D|\s]|(\D\s))(0?[1-9]|[12]\d|3[01])([\D|\s]|(\D\s))(19|20)\d{2}/
+        /\d(0?[1-9]|1[0-2])([\D|\s]|(\D\s))(0?[1-9]|[12]\d|3[01])([\D|\s]|(\D\s))(19|20)\d{2}/,
     )
     //console.log(res, 'direkt datum iz listka')
     if (res !== null) {
@@ -20,7 +20,7 @@ function readDateFromData(data) {
 }
 function readPriceFromData(data) {
     let res = data.match(
-        /(CENA|SKUPAJ|ZNESEK|EUR|€)(\D\s|\s)?([\d,]+(?:[.,]\d{1,2})?)/s
+        /(CENA|SKUPAJ|ZNESEK|EUR|€)(\D\s|\s)?([\d,]+(?:[.,]\d{1,2})?)/s,
     )
     //console.log(res, 'cena iz računa')
     if (res !== null) {

@@ -52,7 +52,7 @@ async function createCronJobs(debits) {
             {
                 start: debit.enable,
                 timeZone: 'Europe/Ljubljana',
-            }
+            },
         )
     })
 }
@@ -98,7 +98,7 @@ module.exports.createDebit = async (req, res) => {
         if (err) {
             req.flash(
                 'error',
-                'Trajnik ni shranjen in vnešen, poskusi ponovno!'
+                'Trajnik ni shranjen in vnešen, poskusi ponovno!',
             )
             res.redirect(`/debits`)
         } else {

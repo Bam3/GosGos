@@ -11,9 +11,9 @@ module.exports.seedExpenses = async () => {
     //zbrišem vse stroške v bazi
     await Expense.deleteMany({})
 
-    const mihaId = (await User.findOne({username: "Miha"}))._id
-    const natasaId = (await User.findOne({username: "Nataša"}))._id
-    const revolutId = (await User.findOne({username: "Revolut"}))._id
+    const mihaId = (await User.findOne({ username: 'Miha' }))._id
+    const natasaId = (await User.findOne({ username: 'Nataša' }))._id
+    const revolutId = (await User.findOne({ username: 'Revolut' }))._id
     const householdId = (await Household.findOne())._id
 
     const promises = []
@@ -38,7 +38,7 @@ module.exports.seedExpenses = async () => {
                             cost:
                                 typeof expense.cost == 'string'
                                     ? (expense.cost = Number(
-                                          expense.cost.replace(',', '.')
+                                          expense.cost.replace(',', '.'),
                                       ))
                                     : expense.cost,
                             payer: payerID,
