@@ -87,7 +87,7 @@ module.exports.seedCategories = async () => {
             const categoryObject = new Category({
                 name: category.name,
                 color: category.color,
-                household: household._id
+                household: household._id,
             })
             await categoryObject.save()
 
@@ -96,11 +96,11 @@ module.exports.seedCategories = async () => {
                     const subCategoryObject = new Category({
                         name: subCategory,
                         parentCategory: categoryObject._id,
-                        household: household._id
+                        household: household._id,
                     })
                     await subCategoryObject.save()
-                })
+                }),
             )
-        })
+        }),
     )
 }

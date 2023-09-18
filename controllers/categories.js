@@ -26,7 +26,7 @@ module.exports.getCategory = async (req, res, id) => {
     })
     //what is parent category
     const parentCategory = categories.filter(
-        (category) => !category.parentCategory
+        (category) => !category.parentCategory,
     )
     //what are the categories
     categories = categories.filter((category) => category.parentCategory)
@@ -45,7 +45,7 @@ module.exports.getCategoriesToEdit = (req, res) => {
                 name: req.body.subCategories[i],
                 // Check if subCategoriesId exists - it might not if all the
                 // subcategories are newly added in this edit.
-                id: req.body.subCategoriesId?.[i]
+                id: req.body.subCategoriesId?.[i],
             })
         }
     }
@@ -60,7 +60,7 @@ module.exports.getCategoriesToEdit = (req, res) => {
 module.exports.updateCategoriesOrCreate = async (
     req,
     res,
-    categoriesObject
+    categoriesObject,
 ) => {
     // Update category name and color
     const parentCategory = await Category.findByIdAndUpdate(
@@ -68,12 +68,12 @@ module.exports.updateCategoriesOrCreate = async (
         {
             name: categoriesObject.parentCategory,
             color: categoriesObject.parentColor,
-        }
+        },
     ).populate('subCategories')
 
     // Mark all existing subcategories for deletion
     let subcategoryIdsToDelete = parentCategory.subCategories.map(
-        (subcategory) => subcategory.id
+        (subcategory) => subcategory.id,
     )
 
     categoriesObject.subCats.forEach(async (subCategory) => {
@@ -81,7 +81,7 @@ module.exports.updateCategoriesOrCreate = async (
             // If a subcategory id exists in the posted subcategories, it's
             // still valid, so remove it from the ones marked for deletion
             subcategoryIdsToDelete = subcategoryIdsToDelete.filter(
-                id => id !== subCategory.id
+                (id) => id !== subCategory.id,
             )
 
             await Category.findByIdAndUpdate(subCategory.id, {
@@ -99,8 +99,8 @@ module.exports.updateCategoriesOrCreate = async (
 
     if (subcategoryIdsToDelete.length > 0) {
         // Delete any old subcategories that should no longer exist
-        await Category.deleteMany({_id: {$in: subcategoryIdsToDelete}})
+        await Category.deleteMany({ _id: { $in: subcategoryIdsToDelete } })
         // Delete expenses belonging to deleted categories
-        await Expense.deleteMany({'category': {$in: subcategoryIdsToDelete}})
+        await Expense.deleteMany({ category: { $in: subcategoryIdsToDelete } })
     }
 }

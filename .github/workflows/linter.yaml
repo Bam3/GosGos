@@ -1,0 +1,12 @@
+name: Lint all JS code with Prettier
+on: [push]
+jobs:
+    lint-with-prettier:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out repository code
+              uses: actions/checkout@v3
+            - name: Run prettier
+              uses: actionsx/prettier@v3
+              with:
+                  args: --check .

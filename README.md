@@ -1,6 +1,7 @@
 # GosGos
 
 Dev setup:
+
 ```sh
 # Set up env file
 cp .env.example .env

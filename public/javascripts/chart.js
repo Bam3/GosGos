@@ -31,7 +31,7 @@ const configCategories = {
 }
 const myChart = new Chart(
     document.getElementById('myChartCategories'),
-    configCategories
+    configCategories,
 )
 
 //Users Pie Chart
