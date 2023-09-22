@@ -18,6 +18,7 @@ const UserSchema = new Schema({
     },
     nickName: {
         type: String,
+        required: true,
     },
     roll: {
         type: String,
