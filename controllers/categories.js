@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const Category = require('../models/category')
 const Expense = require('../models/expense')
 
@@ -103,4 +104,44 @@ module.exports.updateCategoriesOrCreate = async (
         // Delete expenses belonging to deleted categories
         await Expense.deleteMany({ category: { $in: subcategoryIdsToDelete } })
     }
+}
+module.exports.getPopularCategories = async (req) => {
+    const householdId = req.session.household
+    const expenses = await Expense.find({
+        household: householdId,
+    })
+    const categories = await Category.find({
+        household: householdId,
+    })
+
+    let expenseCountsByCatagories = {}
+
+    categories.forEach((category) => {
+        expenseCountsByCatagories[category._id] = 0
+    })
+
+    expenses.forEach((expense) => {
+        const categoryId = expense.category._id
+        expenseCountsByCatagories[categoryId]++
+    })
+    const categoryCountPairs = Object.entries(expenseCountsByCatagories)
+    const categoryObjects = []
+    categoryCountPairs.forEach((pair) => {
+        const id = pair[0]
+        const count = pair[1]
+        categoryObjects.push({ id: id, count: count })
+    })
+
+    const sortedCategories = _.sortBy(categoryObjects, 'count')
+        .reverse()
+        .slice(0, 5)
+
+    const popularCategoriesIds = []
+    sortedCategories.forEach((category) => {
+        popularCategoriesIds.push(category.id)
+    })
+    const popularCategories = await Category.find({
+        _id: { $in: popularCategoriesIds },
+    }).populate('parentCategory')
+    return popularCategories
 }

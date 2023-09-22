@@ -44,6 +44,7 @@ const {
     getCategory,
     getCategoriesToEdit,
     updateCategoriesOrCreate,
+    getPopularCategories,
 } = require('./controllers/categories')
 
 const {
@@ -162,6 +163,7 @@ app.get(
             req,
             res,
         )
+        const popularCategories = await getPopularCategories(req)
 
         res.render('expenses/create-edit', {
             users,
@@ -170,6 +172,7 @@ app.get(
             sharedExpenses,
             usersExpenses,
             mode: 'create',
+            popularCategories: popularCategories,
         })
     }),
 )
