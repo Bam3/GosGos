@@ -152,7 +152,7 @@ app.use((req, res, next) => {
 app.get('/', isLoggedIn, async (req, res) => {
     res.redirect('/expenses/new')
 })
-
+//miha
 app.get(
     '/expenses/new',
     isLoggedIn,
