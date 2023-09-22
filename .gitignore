@@ -1,3 +1,5 @@
 node_modules
 .env
 seeds/user.js
+dev.js
+.vscode/launch.json

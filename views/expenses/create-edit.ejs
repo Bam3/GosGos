@@ -50,8 +50,19 @@
                 </select>
                 <div class="invalid-feedback">Kategorija je obvezna.</div>
             </div>
+            <div>
+                <% popularCategories.forEach(category => { %>
+                    <spam 
+                        data-quick-category 
+                        data-category-id="<%= category.id %>" 
+                        class="badge rounded-pill bg-secondary"
+                    >
+                        <%=category.name%>
+                    </spam>
+                <% }); %>
+            </div>
 
-            <div class="mb-3">
+            <div class="mb-3 mt-3">
                 <label for="price" class="form-label">Cena</label>
                 <div class="input-group">
                     <input
@@ -161,3 +172,4 @@
         <% } %>
     </div>
 </div>
+<script src="/javascripts/popularCategories.js"></script>
