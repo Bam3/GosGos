@@ -107,41 +107,36 @@ module.exports.updateCategoriesOrCreate = async (
 }
 module.exports.getPopularCategories = async (req) => {
     const householdId = req.session.household
-    const expenses = await Expense.find({
-        household: householdId,
-    })
-    const categories = await Category.find({
-        household: householdId,
-    })
 
-    let expenseCountsByCatagories = {}
+    const topCategories = await Expense.aggregate([
+        // Filter down to only expenses for the given household
+        { $match: { $expr: { household: householdId } } },
 
-    categories.forEach((category) => {
-        expenseCountsByCatagories[category._id] = 0
-    })
+        // Group them by category and calculate counts
+        { $group: { _id: '$category', count: { $sum: 1 } } },
 
-    expenses.forEach((expense) => {
-        const categoryId = expense.category._id
-        expenseCountsByCatagories[categoryId]++
-    })
-    const categoryCountPairs = Object.entries(expenseCountsByCatagories)
-    const categoryObjects = []
-    categoryCountPairs.forEach((pair) => {
-        const id = pair[0]
-        const count = pair[1]
-        categoryObjects.push({ id: id, count: count })
-    })
+        // Sort by count descending
+        { $sort: { count: -1 } },
 
-    const sortedCategories = _.sortBy(categoryObjects, 'count')
-        .reverse()
-        .slice(0, 5)
+        // Limit to top 5 results
+        { $limit: 5 },
 
-    const popularCategoriesIds = []
-    sortedCategories.forEach((category) => {
-        popularCategoriesIds.push(category.id)
-    })
-    const popularCategories = await Category.find({
-        _id: { $in: popularCategoriesIds },
-    }).populate('parentCategory')
-    return popularCategories
+        // Do a subquery to get full category
+        {
+            $lookup: {
+                from: 'categories',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'category',
+            },
+        },
+
+        // Unwind resulting category from array
+        { $unwind: { path: '$category' } },
+
+        // Replace the root object with category
+        { $replaceRoot: { newRoot: "$category" } }
+    ])
+
+    return topCategories
 }

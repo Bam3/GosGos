@@ -52,9 +52,9 @@
             </div>
             <div>
                 <% popularCategories.forEach(category => { %>
-                    <spam 
-                        data-quick-category 
-                        data-category-id="<%= category.id %>" 
+                    <spam
+                        data-quick-category
+                        data-category-id="<%= category._id %>"
                         class="badge rounded-pill bg-secondary"
                     >
                         <%=category.name%>
