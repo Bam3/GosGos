@@ -135,7 +135,7 @@ module.exports.getPopularCategories = async (req) => {
         { $unwind: { path: '$category' } },
 
         // Replace the root object with category
-        { $replaceRoot: { newRoot: "$category" } }
+        { $replaceRoot: { newRoot: '$category' } },
     ])
 
     return topCategories
