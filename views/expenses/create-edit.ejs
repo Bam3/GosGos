@@ -116,23 +116,37 @@
 
             <div class="mb-3">
                 <label for="user" class="form-label">Plačnik</label>
-                <select class="form-select" id="user" name="expense[payer]" required>
-                    <% for (let user of users) { %>
-                        <option
-                            value="<%= user._id %>"
-                            <%
-                            const isCurrentUser = mode === 'create' && currentUser.equals(user)
-                            const isExpensePayer = mode === 'edit' &&  expense?.payer.equals(user)
 
-                            if (isCurrentUser || isExpensePayer) { %>
-                                selected
-                            <% } %>
-                        >
-                            <%= user.username %>
-                        </option>
-                    <% } %>
-                </select>
-                <div class="invalid-feedback">Plačnik je obvezen!</div>
+                <div class="input-group">
+                    <div class="btn-group" role="group">
+                        <% for (let user of users) { %>
+                            <input
+                                id="<%= user._id %>"
+                                type="checkbox"
+                                class="btn-check"
+                                name="expense[payers]"
+                                autocomplete="off"
+                                <%
+                                    const isCurrentUser = mode === 'create' && currentUser.equals(user)
+                                    const isExpensePayer =
+                                        mode === 'edit' &&
+                                        expense?.payers.map(payer => payer._id.toString()).includes(user._id.toString())
+
+                                    if (isCurrentUser || isExpensePayer) { %>
+                                        checked
+                                <% } %>
+                                value="<%= user._id %>"
+                            />
+                            <label
+                                class="btn btn-outline-primary"
+                                for="<%= user._id %>"
+                            >
+                                <%= user.username %>
+                            </label>
+                        <% } %>
+                    </div>
+                    <div class="invalid-feedback">Plačnik je obvezen!</div>
+                </div>
             </div>
 
             <div class="mb-3">

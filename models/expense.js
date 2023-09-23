@@ -6,10 +6,14 @@ const expenseSchema = new Schema({
         type: Number,
         required: true,
     },
+    payers: {
+        type: [Schema.Types.ObjectId],
+        ref: 'User',
+        required: true,
+    },
     payer: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
     },
     inputDate: {
         type: Date,

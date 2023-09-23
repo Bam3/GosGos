@@ -26,12 +26,21 @@
                         </a>
                     </td>
                     <td class="p-1 d-flex justify-content-center">
-                        <div
-                            class="name-tag"
-                            style="background-color: <%= expense.payer.color %>;"
-                        >
-                            <%= expense.payer.nickName %>
-                        </div>
+                        <% if (expense.payers.length === 1) { %>
+                            <div
+                                class="name-tag"
+                                style="background-color: <%= expense.payers[0].color %>;"
+                            >
+                                <%= expense.payers[0].nickName %>
+                            </div>
+                        <% } else { %>
+                            <div
+                                class="name-tag"
+                                style="background-color: gray;"
+                            >
+                                S
+                            </div>
+                        <% } %>
                     </td>
                 </tr>
             <% } %>

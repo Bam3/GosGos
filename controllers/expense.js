@@ -96,7 +96,7 @@ module.exports.getSingleExpenseById = async (req, res) => {
                 path: 'parentCategory',
             },
         })
-        .populate('payer')
+        .populate('payers')
 
     if (expense)
         expense.categoryLabel = await generateCategoryLabel(expense.category)
@@ -151,7 +151,7 @@ const calculateComparison = (req, expenses) => {
 }
 
 module.exports.getLastExpenses = async (req, res) => {
-    let currentUser = await User.find({
+    let currentUser = await User.findOne({
         username: req.session.passport.user,
         household: req.session.household,
     })
@@ -162,7 +162,7 @@ module.exports.getLastExpenses = async (req, res) => {
     let filterObjectUser = {
         household: req.session.household,
         shared: false,
-        payer: currentUser[0].id,
+        payer: currentUser,
     }
     let sharedExpenses = await filterLastExpenses(filterObject, 10)
     let usersExpenses = await filterLastExpenses(filterObjectUser, 5)
@@ -181,7 +181,7 @@ const filterLastExpenses = async (filterObject, limit = 10) => {
                 path: 'parentCategory',
             },
         })
-        .populate('payer')
+        .populate('payers')
         .limit(limit)
 
     await Promise.all(
