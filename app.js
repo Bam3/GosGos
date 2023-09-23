@@ -194,6 +194,7 @@ app.get(
     catchAsync(async (req, res) => {
         const expense = await getSingleExpenseById(req, res)
         const { users, categories } = await getAllCategoriesAndUsers(req, res)
+        const popularCategories = await getPopularCategories(req)
         if (!expense) {
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
@@ -203,6 +204,7 @@ app.get(
             users,
             categories,
             mode: 'edit',
+            popularCategories,
         })
     }),
 )
