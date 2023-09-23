@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const { Types } = require('mongoose')
 const Category = require('../models/category')
 const Expense = require('../models/expense')
 
@@ -110,7 +111,7 @@ module.exports.getPopularCategories = async (req) => {
 
     const topCategories = await Expense.aggregate([
         // Filter down to only expenses for the given household
-        { $match: { $expr: { household: householdId } } },
+        { $match: { household: { $eq: new Types.ObjectId(householdId) } } },
 
         // Group them by category and calculate counts
         { $group: { _id: '$category', count: { $sum: 1 } } },
