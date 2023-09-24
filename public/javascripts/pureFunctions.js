@@ -32,17 +32,18 @@ module.exports.groupExpensesByUserOrCategory = (expenses, groupBy) => {
     const groups = {}
 
     expenses.forEach((expense) => {
-        // If a shared user paid the expense, just ignore it
-        if (groupBy === 'user' && expense.payer.roll === 'shared') return
+        // If a expense is shared, just ignore it
+
+        if (expense.payers.length > 1) return
 
         // Decide which property to use for name and color
         const name =
             groupBy === 'user'
-                ? expense.payer.username
+                ? expense.payers[0].username
                 : expense.category.parentCategory?.name ?? expense.category.name
         const color =
             groupBy === 'user'
-                ? expense.payer.color
+                ? expense.payers[0].color
                 : expense.category.parentCategory?.color ??
                   expense.category.color
 

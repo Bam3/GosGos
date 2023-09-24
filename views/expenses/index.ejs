@@ -62,7 +62,8 @@
                 <% for (user of comparison.expensesByUser) { %>
                 <div>
                     <h5 class="lead">
-                        <b><%= user.name %></b>: €<%= user.sumOfPayments.toFixed(2)%>
+                        <b><%= user.name %></b>: €<%=
+                        user.sumOfPayments.toFixed(2)%>
                     </h5>
                 </div>
                 <% } %> <% if (String(filter.share).toLowerCase() === 'true') {
@@ -151,8 +152,8 @@
             </thead>
             <tbody class="">
                 <% for (expense of expenses) { %> <%
-                    if(expense.category.parentCategory?.name === category.name || expense.category.name === category.name)
-                { %>
+                if(expense.category.parentCategory?.name === category.name ||
+                expense.category.name === category.name) { %>
                 <tr>
                     <td class="align-middle" scope="row">
                         <div>
@@ -171,12 +172,20 @@
                         </div>
                     </td>
                     <td class="p-1 d-flex justify-content-center">
+                        <% if (expense.payers.length === 1) { %>
                         <div
                             class="name-tag"
-                            style="background-color: <%=expense.payer[0].color %>"
+                            style="
+                                background-color: <%= expense.payers[0].color %>;
+                            "
                         >
-                            <%=expense.payer.nickName %>
+                            <%= expense.payers[0].nickName %>
                         </div>
+                        <% } else { %>
+                        <div class="name-tag" style="background-color: gray">
+                            S
+                        </div>
+                        <% } %>
                     </td>
                 </tr>
                 <% } %> <% } %>

@@ -237,6 +237,7 @@ app.get(
                 to,
                 share,
             })
+
             res.render('expenses/index', context)
         }
     }),

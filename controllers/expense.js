@@ -54,7 +54,7 @@ module.exports.getExpensesForFilter = async (req, res, filter) => {
             username: req.session.passport.user,
             household: req.session.household,
         })
-        filterObject.payer = currentUser
+        filterObject.payers = currentUser
     }
 
     const expenses = await Expense.find(filterObject)
@@ -67,7 +67,7 @@ module.exports.getExpensesForFilter = async (req, res, filter) => {
                 path: 'parentCategory',
             },
         })
-        .populate('payer')
+        .populate('payers')
 
     await Promise.all(
         expenses.map(async (expense) => {
@@ -155,6 +155,7 @@ module.exports.getLastExpenses = async (req, res) => {
         username: req.session.passport.user,
         household: req.session.household,
     })
+
     let filterObject = {
         household: req.session.household,
         shared: true,
@@ -162,7 +163,7 @@ module.exports.getLastExpenses = async (req, res) => {
     let filterObjectUser = {
         household: req.session.household,
         shared: false,
-        payer: currentUser,
+        payers: currentUser,
     }
     let sharedExpenses = await filterLastExpenses(filterObject, 10)
     let usersExpenses = await filterLastExpenses(filterObjectUser, 5)
