@@ -2,12 +2,10 @@ const Category = require('../models/category')
 const Expense = require('../models/expense')
 const User = require('../models/user')
 const {
-    calculateSum,
     roundToTwo,
     groupExpensesByUser,
     groupExpensesByCategory,
     generateCategoryLabel,
-    extractExpensesByUser,
 } = require('../public/javascripts/pureFunctions')
 
 module.exports.getAllCategoriesAndUsers = async (req, res) => {

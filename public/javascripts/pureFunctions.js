@@ -1,21 +1,5 @@
 var _ = require('lodash')
-const payerUtils = require('../../utils/payers')
 
-module.exports.calculateSum = (expenses, shared = true) => {
-    sum = 0
-    for (const expense of expenses) {
-        if (shared) {
-            if (expense.shared) {
-                sum = sum + expense.cost
-            }
-        } else {
-            if (!expense.shared) {
-                sum = sum + expense.cost
-            }
-        }
-    }
-    return sum
-}
 module.exports.roundToTwo = (num) => _.round(num, 2)
 
 function addExpenseToGroups(groups, name, color, cost) {
@@ -88,13 +72,4 @@ module.exports.generateCategoryLabel = async (category) => {
     } else {
         return category.name
     }
-}
-module.exports.extractExpensesByUser = (expenses, user) => {
-    let extrectedExpanses = []
-    expenses.forEach((expense) => {
-        if (expense.payer.username === user) {
-            extrectedExpanses.push(expense)
-        }
-    })
-    return extrectedExpanses
 }
