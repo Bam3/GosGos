@@ -4,7 +4,8 @@ const User = require('../models/user')
 const {
     calculateSum,
     roundToTwo,
-    groupExpensesByUserOrCategory,
+    groupExpensesByUser,
+    groupExpensesByCategory,
     generateCategoryLabel,
     extractExpensesByUser,
 } = require('../public/javascripts/pureFunctions')
@@ -112,11 +113,8 @@ module.exports.deleteExpense = async (req, res) => {
 }
 
 const calculateComparison = (req, expenses) => {
-    const expensesByUser = groupExpensesByUserOrCategory(expenses, 'user')
-    const expensesByCategory = groupExpensesByUserOrCategory(
-        expenses,
-        'category',
-    )
+    const expensesByUser = groupExpensesByUser(expenses)
+    const expensesByCategory = groupExpensesByCategory(expenses)
     let message = ''
 
     // če so users prazni pomeni, da nimamo izračuna, ker ni stroškov
