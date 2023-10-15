@@ -91,7 +91,6 @@
         </div>
     </div>
     <% } %>
-    <!--
         <% if (expenses.length > 10) { %>
     <div class="col-md-4 table-responsive">
         <table class="table table-hover table-borderless">
@@ -120,14 +119,7 @@
                         </div>
                     </td>
                     <td class="p-1 d-flex justify-content-center">
-                        <div
-                            class="name-tag"
-                            style="
-                                background-color: <%=expenses[i].payer.color %>;
-                            "
-                        >
-                            <%=expenses[i].payer.nickName %>
-                        </div>
+                        <%- include('../partials/name-tag', { payers: expenses[i].payers }); %>
                     </td>
                 </tr>
                 <% } %>
@@ -135,7 +127,7 @@
         </table>
     </div>
     <%}%>
--->
+
     <% for (category of comparison.expensesByCategory) { %>
     <div class="col-md-4 table-responsive">
         <table class="table table-hover table-borderless">
@@ -172,20 +164,7 @@
                         </div>
                     </td>
                     <td class="p-1 d-flex justify-content-center">
-                        <% if (expense.payers.length === 1) { %>
-                        <div
-                            class="name-tag"
-                            style="
-                                background-color: <%= expense.payers[0].color %>;
-                            "
-                        >
-                            <%= expense.payers[0].nickName %>
-                        </div>
-                        <% } else { %>
-                        <div class="name-tag" style="background-color: gray">
-                            S
-                        </div>
-                        <% } %>
+                        <%- include('../partials/name-tag', { payers: expense.payers }); %>
                     </td>
                 </tr>
                 <% } %> <% } %>

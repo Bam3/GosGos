@@ -40,7 +40,7 @@ async function createCronJobs(debits) {
             async () => {
                 const newExpense = new Expense({
                     cost: debit.cost,
-                    payers: debit.debitOwner.id,
+                    payers: [debit.debitOwner.id],
                     payDate: Date.now(),
                     description: debit.description,
                     category: debit.category.id,
