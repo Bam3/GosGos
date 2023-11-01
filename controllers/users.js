@@ -19,7 +19,7 @@ module.exports.logoutUser = (req, res, next) => {
 }
 
 module.exports.getLoggedinUser = async (req, res) => {
-    const loggedinUser = await User.find({
+    const loggedinUser = await User.findOne({
         username: req.session.passport.user,
     }).populate('household')
     return loggedinUser
