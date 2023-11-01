@@ -9,7 +9,7 @@ module.exports = {
                 .collection('users')
                 .findOne({ _id: expense.payer })
 
-            if (payer.roll === 'shared') {
+            if (!payer || payer.roll === 'shared') {
                 const users = await db
                     .collection('users')
                     .find({
@@ -30,8 +30,8 @@ module.exports = {
                 )
         })
 
-        deleteOperation = db.collection('users').deleteMany({ roll: 'shared' })
-        operations.push(deleteOperation)
+        //deleteOperation = db.collection('users').deleteMany({ roll: 'shared' })
+        //operations.push(deleteOperation)
 
         return Promise.all(operations)
     },
