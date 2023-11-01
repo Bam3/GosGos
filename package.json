@@ -28,6 +28,7 @@
         "migrate-mongo": "^11.0.0",
         "mongoose": "^8.0.0",
         "nodemon": "^3.0.1",
+        "open": "^8.4.2",
         "passport": "^0.6.0",
         "passport-local": "^1.0.0",
         "passport-local-mongoose": "^8.0.0",
@@ -35,7 +36,6 @@
         "tesseract.js": "^5.0.3"
     },
     "devDependencies": {
-        "open": "^8.4.2",
         "prettier": "3.0.3"
     }
 }
