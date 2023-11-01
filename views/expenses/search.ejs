@@ -83,12 +83,12 @@
                             >Podkategorija</label
                         >
                         <select multiple size ="5" class="form-select" id="subCategory" name="subCategory[]">
-                            <% for(let category of categoriesAndUsers.categories){ %> 
+                            <% for(let category of categoriesAndUsers.categories){ %>
                                 <% for(let subCategory of category.subCategories){ %>
                                     <option value="<%=subCategory.name%>">
                                         <%=subCategory.name%>
                                     </option>
-                                <% } %> 
+                                <% } %>
                             <% } %>
                         </select>
                     </div>
@@ -99,17 +99,17 @@
             </div>
         </form>
     </div>
-    <% if (context.date) { %> 
+    <% if (context.date) { %>
     <div class="col-md-3 mb-4">
         <div class="card">
             <div class="card-body">
                 <div>
-                    <% if (context.category && context.subCategory) { %> 
-                    <p class="display-6 lead "><kbd><%=context.category%></kbd></p> 
-                    <% for (category of context.subCategory) {%> 
+                    <% if (context.category && context.subCategory) { %>
+                    <p class="display-6 lead "><kbd><%=context.category%></kbd></p>
+                    <% for (category of context.subCategory) {%>
                     <p class="display-7 ">- <%=category%></p>
-                    <% } %> 
-                    <% }else if (context.category && !context.subCategory) { %> 
+                    <% } %>
+                    <% }else if (context.category && !context.subCategory) { %>
                     <p class="display-6 lead"><kbd><%=context.category%></kbd></p>
                     <% }else if (!context.category && context.subCategory) {%>
                     <p class="display-6 lead"><kbd><var><%=context.subCategory%></var></kbd></p>
@@ -117,20 +117,20 @@
                     <hr>
                     <% if(context.date.filteredByDate === undefined) {%>
                     <p class="display-7">Celotno časovno obdobje</b></p>
-                    <%}else{ %> 
+                    <%}else{ %>
                     <p class="display-7">Od: <b><%=`${context.date.dateFrom}`%></b></p>
                     <p class="display-7">Do: <b><%=`${context.date.dateTo}`%></b></p>
-                    <% } %> 
+                    <% } %>
                 </div>
                 <hr>
-                <% if (context.sum) { %> 
+                <% if (context.sum) { %>
                 <h4><b>SUM: <%= context.sum %> €</b></h4>
-                <% } %> 
-            </div>        
+                <% } %>
+            </div>
         </div>
     </div>
-    <% } %> 
-    <% if(context.expenses.length > 0) { %> 
+    <% } %>
+    <% if(context.expenses.length > 0) { %>
     <div class="col-md-12 table-responsive">
         <table class="table table-hover">
             <thead class="table-light">
@@ -143,7 +143,7 @@
                 </tr>
             </thead>
             <tbody>
-                <% if (true) { %> 
+                <% if (true) { %>
                     <% for (let i = 0; i < context.expenses.length; i++) { %>
                     <tr>
                         <td class="col" scope="row"><%= i+1 %></th>
@@ -155,17 +155,14 @@
                                 >
                             </td>
                         <td class="p-1 d-flex justify-content-center">
-                            <div class="name-tag"
-                            style="background-color: <%=context.expenses[i].payer[0].color %>">
-                                <%=context.expenses[i].payer[0].nickName %>
-                            </div>   
+                            <%- include('../partials/name-tag', { payers: context.expenses[i].payers }); %>
                         </td>
                     <% } %>
-                <% } %> 
+                <% } %>
             </tbody>
         </table>
     </div>
-    <% } %> 
+    <% } %>
 </div>
 <script>
     const categories = <%- JSON.stringify(categoriesAndUsers.categories) %>

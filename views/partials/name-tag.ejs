@@ -1,0 +1,10 @@
+<% if (payers.length === 1) { %>
+    <div
+        class="name-tag"
+        style="background-color: <%= payers[0].color %>;"
+    >
+        <%= payers[0].nickName %>
+    </div>
+<% } else { %>
+    <div class="name-tag" style="background-color: gray">S</div>
+<% } %>

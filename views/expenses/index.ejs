@@ -62,7 +62,8 @@
                 <% for (user of comparison.expensesByUser) { %>
                 <div>
                     <h5 class="lead">
-                        <b><%= user.name %></b>: €<%= user.sumOfPayments.toFixed(2)%>
+                        <b><%= user.name %></b>: €<%=
+                        user.sumOfPayments.toFixed(2)%>
                     </h5>
                 </div>
                 <% } %> <% if (String(filter.share).toLowerCase() === 'true') {
@@ -90,51 +91,7 @@
         </div>
     </div>
     <% } %>
-    <!--
-        <% if (expenses.length > 10) { %>
-    <div class="col-md-4 table-responsive">
-        <table class="table table-hover table-borderless">
-            <thead class="table-light">
-                <tr>
-                    <th colspan="4" class="text-center">ZADNJI VNEŠENI</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% for (let i = 0; i < 10; i++) { %>
-                <tr>
-                    <td class="align-middle" scope="row">
-                        <div>
-                            <%=expenses[i].payDate.toLocaleDateString('de-CH',{year:"2-digit",
-                            month: "2-digit", day:"2-digit"})%>
-                        </div>
-                    </td>
-                    <td class="align-middle">
-                        <div><%=expenses[i].category.name %></div>
-                    </td>
-                    <td class="align-middle">
-                        <div>
-                            <a href="/expenses/<%= expenses[i].id %>"
-                                >€<%=expenses[i].cost.toFixed(2) %></a
-                            >
-                        </div>
-                    </td>
-                    <td class="p-1 d-flex justify-content-center">
-                        <div
-                            class="name-tag"
-                            style="
-                                background-color: <%=expenses[i].payer.color %>;
-                            "
-                        >
-                            <%=expenses[i].payer.nickName %>
-                        </div>
-                    </td>
-                </tr>
-                <% } %>
-            </tbody>
-        </table>
-    </div>
-    <%}%>
--->
+
     <% for (category of comparison.expensesByCategory) { %>
     <div class="col-md-4 table-responsive">
         <table class="table table-hover table-borderless">
@@ -151,8 +108,8 @@
             </thead>
             <tbody class="">
                 <% for (expense of expenses) { %> <%
-                    if(expense.category.parentCategory?.name === category.name || expense.category.name === category.name)
-                { %>
+                if(expense.category.parentCategory.id === category.id ||
+                expense.category.id === category.id) { %>
                 <tr>
                     <td class="align-middle" scope="row">
                         <div>
@@ -171,12 +128,7 @@
                         </div>
                     </td>
                     <td class="p-1 d-flex justify-content-center">
-                        <div
-                            class="name-tag"
-                            style="background-color: <%=expense.payer.color %>"
-                        >
-                            <%=expense.payer.nickName %>
-                        </div>
+                        <%- include('../partials/name-tag', { payers: expense.payers }); %>
                     </td>
                 </tr>
                 <% } %> <% } %>

@@ -2,11 +2,10 @@ const Category = require('../models/category')
 const Expense = require('../models/expense')
 const User = require('../models/user')
 const {
-    calculateSum,
     roundToTwo,
-    groupExpensesByUserOrCategory,
+    groupExpensesByUser,
+    groupExpensesByCategory,
     generateCategoryLabel,
-    extractExpensesByUser,
 } = require('../public/javascripts/pureFunctions')
 
 module.exports.getAllCategoriesAndUsers = async (req, res) => {
@@ -54,7 +53,7 @@ module.exports.getExpensesForFilter = async (req, res, filter) => {
             username: req.session.passport.user,
             household: req.session.household,
         })
-        filterObject.payer = currentUser
+        filterObject.payers = currentUser
     }
 
     const expenses = await Expense.find(filterObject)
@@ -67,7 +66,7 @@ module.exports.getExpensesForFilter = async (req, res, filter) => {
                 path: 'parentCategory',
             },
         })
-        .populate('payer')
+        .populate('payers')
 
     await Promise.all(
         expenses.map(async (expense) => {
@@ -96,7 +95,7 @@ module.exports.getSingleExpenseById = async (req, res) => {
                 path: 'parentCategory',
             },
         })
-        .populate('payer')
+        .populate('payers')
 
     if (expense)
         expense.categoryLabel = await generateCategoryLabel(expense.category)
@@ -112,11 +111,8 @@ module.exports.deleteExpense = async (req, res) => {
 }
 
 const calculateComparison = (req, expenses) => {
-    const expensesByUser = groupExpensesByUserOrCategory(expenses, 'user')
-    const expensesByCategory = groupExpensesByUserOrCategory(
-        expenses,
-        'category',
-    )
+    const expensesByUser = groupExpensesByUser(expenses)
+    const expensesByCategory = groupExpensesByCategory(expenses)
     let message = ''
 
     // če so users prazni pomeni, da nimamo izračuna, ker ni stroškov
@@ -151,10 +147,11 @@ const calculateComparison = (req, expenses) => {
 }
 
 module.exports.getLastExpenses = async (req, res) => {
-    let currentUser = await User.find({
+    let currentUser = await User.findOne({
         username: req.session.passport.user,
         household: req.session.household,
     })
+
     let filterObject = {
         household: req.session.household,
         shared: true,
@@ -162,7 +159,7 @@ module.exports.getLastExpenses = async (req, res) => {
     let filterObjectUser = {
         household: req.session.household,
         shared: false,
-        payer: currentUser[0].id,
+        payers: currentUser,
     }
     let sharedExpenses = await filterLastExpenses(filterObject, 10)
     let usersExpenses = await filterLastExpenses(filterObjectUser, 5)
@@ -181,7 +178,7 @@ const filterLastExpenses = async (filterObject, limit = 10) => {
                 path: 'parentCategory',
             },
         })
-        .populate('payer')
+        .populate('payers')
         .limit(limit)
 
     await Promise.all(

@@ -26,12 +26,7 @@
                         </a>
                     </td>
                     <td class="p-1 d-flex justify-content-center">
-                        <div
-                            class="name-tag"
-                            style="background-color: <%= expense.payer.color %>;"
-                        >
-                            <%= expense.payer.nickName %>
-                        </div>
+                        <%- include('../partials/name-tag', { payers: expense.payers }); %>
                     </td>
                 </tr>
             <% } %>
