@@ -1,11 +1,65 @@
-<% layout('layouts/boilerplate')%>
-<div class="container d-flex justify-content-center align-items-center mt-5">
-    <div class="row">
-        <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
-            <a class="nav-link" href="/settings/changepassword"
-                >Spremeni geslo</a
-            >
-            <h5 class="card-title"></h5>
+<% layout('layouts/boilerplate', { containerClass: 'banana' })%>
+
+<h1>Nastavitve</h1>
+
+<form action="/settings" method="post">
+    <fieldset>
+        <legend>Uporabnik</legend>
+
+        <div class="mb-3">
+            <label for="color" class="form-label">Barva</label>
+            <input
+                type="color"
+                class="form-control"
+                id="color"
+                name="color"
+                value="<%= user.color %>"
+                required
+            />
         </div>
-    </div>
-</div>
+    </fieldset>
+    <fieldset>
+        <legend>Gospodinjstvo</legend>
+
+        <div class="mb-3">
+            <label class="form-label">Privzeta oblika stroška</label>
+            <div class="form-check">
+                <input
+                    class="form-check-input"
+                    type="radio"
+                    name="defaultToSharedExpense"
+                    id="defaultToSharedExpenseTrue"
+                    value="true"
+                    autocomplete="off"
+                    <% if (household.defaultToSharedExpense === true) { %>
+                        checked
+                    <% } %>
+                />
+                <label class="form-check-label" for="defaultToSharedExpenseTrue"
+                    >Deljen</label
+                >
+            </div>
+            <div class="form-check">
+                <input
+                    class="form-check-input"
+                    type="radio"
+                    name="defaultToSharedExpense"
+                    id="defaultToSharedExpenseFalse"
+                    value="false"
+                    autocomplete="off"
+                    <% if (household.defaultToSharedExpense === false) { %>
+                        checked
+                    <% } %>
+                    required
+                />
+                <label
+                    class="form-check-label"
+                    for="defaultToSharedExpenseFalse"
+                    >Individualen</label
+                >
+            </div>
+        </div>
+    </fieldset>
+    <hr />
+    <button type="submit" class="btn btn-primary btn-lg mt-3">Shrani</button>
+</form>

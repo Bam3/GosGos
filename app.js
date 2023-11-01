@@ -48,6 +48,8 @@ const {
     getPopularCategories,
 } = require('./controllers/categories')
 
+const { updateSettings } = require('./controllers/settings')
+
 const {
     getAllLoggedInUserDebits,
     createDebit,
@@ -70,7 +72,6 @@ const MongoStore = require('connect-mongo')
 const { authenticate } = require('passport')
 const { emitKeypressEvents } = require('readline')
 const { isEmpty } = require('lodash')
-const user = require('./models/user')
 
 const dbUrl = process.env.DB_URL
 //const dbUrl = 'mongodb://localhost:27017/gos-gos'
@@ -165,6 +166,7 @@ app.get(
             res,
         )
         const popularCategories = await getPopularCategories(req)
+        const currentHousehold = (await getLoggedinUser(req)).household
 
         res.render('expenses/create-edit', {
             users,
@@ -174,6 +176,7 @@ app.get(
             usersExpenses,
             mode: 'create',
             popularCategories: popularCategories,
+            currentHousehold,
         })
     }),
 )
@@ -200,12 +203,15 @@ app.get(
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
         }
+        const currentHousehold = (await getLoggedinUser(req)).household
+
         res.render('expenses/create-edit', {
             expense,
             users,
             categories,
             mode: 'edit',
             popularCategories,
+            currentHousehold,
         })
     }),
 )
@@ -541,8 +547,18 @@ app.get(
     '/settings',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const loggedinUser = await getLoggedinUser(req, res)
-        res.render('users/settings', loggedinUser)
+        const user = await getLoggedinUser(req)
+        const household = user.household
+        res.render('users/settings', { user, household })
+    }),
+)
+app.post(
+    '/settings',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        await updateSettings(req)
+        req.flash('success', 'Nastavitve so bile uspešno shranjene.')
+        res.redirect(`/settings`)
     }),
 )
 
@@ -560,9 +576,9 @@ app.post(
             `${req.session.passport.user}, pozdravljen v GosGos!`,
         )
         //on login get users household and save it in session
-        const loggedinUser = await getLoggedinUser(req, res)
-        req.session.household = loggedinUser[0].household._id
-        req.session.usersID = loggedinUser[0]._id
+        const loggedinUser = await getLoggedinUser(req)
+        req.session.household = loggedinUser.household._id
+        req.session.usersID = loggedinUser._id
         res.redirect(redirectUrl)
     },
 )
