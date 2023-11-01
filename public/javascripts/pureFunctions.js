@@ -2,7 +2,7 @@ var _ = require('lodash')
 
 module.exports.roundToTwo = (num) => _.round(num, 2)
 
-function addExpenseToGroups(groups, name, color, cost) {
+function addExpenseToGroups(groups, id, name, color, cost) {
     // See if we already have this category/user in `groups`
     const existing = groups[name]
 
@@ -13,6 +13,7 @@ function addExpenseToGroups(groups, name, color, cost) {
     } else {
         // This category/user is new, create it from scratch
         groups[name] = {
+            id: id,
             name: name,
             color: color,
             numberOfPayments: 1,
@@ -28,11 +29,12 @@ module.exports.groupExpensesByUser = function (expenses) {
         // We need to repeat the process for each payer because shared expenses
         // need to be split.
         expense.payers.forEach((payer) => {
+            const id = payer.id
             const name = payer.username
             const color = payer.color
             // Evenly split the cost among all payers
             const cost = expense.cost / expense.payers.length
-            addExpenseToGroups(userGroups, name, color, cost)
+            addExpenseToGroups(userGroups, id, name, color, cost)
         })
     })
 
@@ -49,12 +51,13 @@ module.exports.groupExpensesByCategory = function (expenses) {
     const categoryGroups = {}
 
     expenses.forEach((expense) => {
+        const id = expense.category.parentCategory?.id ?? expense.category.id
         const name =
             expense.category.parentCategory?.name ?? expense.category.name
         const color =
             expense.category.parentCategory?.color ?? expense.category.color
         const cost = expense.cost
-        addExpenseToGroups(categoryGroups, name, color, cost)
+        addExpenseToGroups(categoryGroups, id, name, color, cost)
     })
 
     const listOfCategoryGroups = Object.values(categoryGroups)

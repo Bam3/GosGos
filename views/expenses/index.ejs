@@ -108,8 +108,8 @@
             </thead>
             <tbody class="">
                 <% for (expense of expenses) { %> <%
-                if(expense.category.parentCategory?.name === category.name ||
-                expense.category.name === category.name) { %>
+                if(expense.category.parentCategory.id === category.id ||
+                expense.category.id === category.id) { %>
                 <tr>
                     <td class="align-middle" scope="row">
                         <div>
