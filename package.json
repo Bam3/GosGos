@@ -14,7 +14,6 @@
     "author": "BaM",
     "license": "ISC",
     "dependencies": {
-        "chart.js": "^4.4.0",
         "connect-flash": "^0.1.1",
         "connect-mongo": "^5.0.0",
         "cron-job-manager": "^2.3.1",
