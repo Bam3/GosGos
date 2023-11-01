@@ -3,6 +3,7 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
 
+const open = require('open')
 const mongoose = require('mongoose')
 const express = require('express')
 const ejsMate = require('ejs-mate')
@@ -602,6 +603,9 @@ app.use((err, req, res, next) => {
 const port = process.env.PORT || 3002
 app.listen(port, () => {
     console.log(`Serving on port ${port}`)
+    if (process.env.NODE_ENV === 'development') {
+        open(`http://localhost:${port}`)
+    }
 })
 
 //> db.expenses.find({ $and: [{ $expr: { $eq: [{$month: "$payDate" },6]}},{ $expr: { $eq: [{$year: "$payDate" },2021]}}]});

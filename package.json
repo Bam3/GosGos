@@ -36,6 +36,7 @@
         "tesseract.js": "^5.0.3"
     },
     "devDependencies": {
+        "open": "^8.4.2",
         "prettier": "3.0.3"
     }
 }
