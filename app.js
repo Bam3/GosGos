@@ -166,6 +166,7 @@ app.get(
             res,
         )
         const popularCategories = await getPopularCategories(req)
+        const currentHousehold = (await getLoggedinUser(req)).household
 
         res.render('expenses/create-edit', {
             users,
@@ -175,6 +176,7 @@ app.get(
             usersExpenses,
             mode: 'create',
             popularCategories: popularCategories,
+            currentHousehold,
         })
     }),
 )
@@ -201,12 +203,15 @@ app.get(
             req.flash('error', 'Iskanega stroška ni moč najti!')
             return res.redirect('/expenses/new')
         }
+        const currentHousehold = (await getLoggedinUser(req)).household
+
         res.render('expenses/create-edit', {
             expense,
             users,
             categories,
             mode: 'edit',
             popularCategories,
+            currentHousehold,
         })
     }),
 )
