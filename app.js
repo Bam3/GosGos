@@ -71,7 +71,6 @@ const MongoStore = require('connect-mongo')
 const { authenticate } = require('passport')
 const { emitKeypressEvents } = require('readline')
 const { isEmpty } = require('lodash')
-const user = require('./models/user')
 
 const dbUrl = process.env.DB_URL
 //const dbUrl = 'mongodb://localhost:27017/gos-gos'
