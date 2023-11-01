@@ -540,8 +540,9 @@ app.get(
     '/settings',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const loggedinUser = await getLoggedinUser(req, res)
-        res.render('users/settings', loggedinUser)
+        const user = await getLoggedinUser(req, res)
+        const household = user.household
+        res.render('users/settings', { user, household })
     }),
 )
 
