@@ -547,7 +547,7 @@ app.get(
     '/settings',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const user = await getLoggedinUser(req, res)
+        const user = await getLoggedinUser(req)
         const household = user.household
         res.render('users/settings', { user, household })
     }),
@@ -576,7 +576,7 @@ app.post(
             `${req.session.passport.user}, pozdravljen v GosGos!`,
         )
         //on login get users household and save it in session
-        const loggedinUser = await getLoggedinUser(req, res)
+        const loggedinUser = await getLoggedinUser(req)
         req.session.household = loggedinUser.household._id
         req.session.usersID = loggedinUser._id
         res.redirect(redirectUrl)

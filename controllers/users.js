@@ -18,7 +18,7 @@ module.exports.logoutUser = (req, res, next) => {
     })
 }
 
-module.exports.getLoggedinUser = async (req, res) => {
+module.exports.getLoggedinUser = async (req) => {
     const loggedinUser = await User.findOne({
         username: req.session.passport.user,
     }).populate('household')
