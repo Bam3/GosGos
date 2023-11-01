@@ -47,6 +47,8 @@ const {
     getPopularCategories,
 } = require('./controllers/categories')
 
+const { updateSettings } = require('./controllers/settings')
+
 const {
     getAllLoggedInUserDebits,
     createDebit,
@@ -543,6 +545,15 @@ app.get(
         const user = await getLoggedinUser(req, res)
         const household = user.household
         res.render('users/settings', { user, household })
+    }),
+)
+app.post(
+    '/settings',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        await updateSettings(req)
+        req.flash('success', 'Nastavitve so bile uspešno shranjene.')
+        res.redirect(`/settings`)
     }),
 )
 
