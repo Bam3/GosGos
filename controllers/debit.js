@@ -55,21 +55,10 @@ async function createCronJobs(debits) {
             },
         )
     })
+    //console.log(manager.listCrons(), 'to so vsi jobi')
 }
 createCronManager()
 
-//destroj all expanses from jobs
-// async function cleanFaildJobs() {
-//     Expense.deleteMany({ description: '2' }, function (err, result) {
-//         if (err) {
-//             console.log(err)
-//         } else {
-//             console.log(result)
-//         }
-//     })
-// }
-
-//cleanFaildJobs()
 module.exports.getAllLoggedInUserDebits = async (req, res) => {
     const debits = await Debit.find({ debitOwner: req.session.usersID })
         .populate({
@@ -94,28 +83,24 @@ module.exports.createDebit = async (req, res) => {
         enable: Boolean(req.body.enable),
         debitInputDayInMonth: req.body.payDay,
     })
-    await newDebit.save(async function (err, result) {
-        if (err) {
-            req.flash(
-                'error',
-                'Trajnik ni shranjen in vnešen, poskusi ponovno!',
-            )
-            res.redirect(`/debits`)
-        } else {
-            const newDebitId = result.id
-            let debit = await Debit.findById(newDebitId)
-                .populate({
-                    path: 'category',
-                    populate: {
-                        path: 'parentCategory',
-                    },
-                })
-                .populate({
-                    path: 'debitOwner',
-                })
-            createCronJobs([debit])
-        }
-    })
+    const savedDebit = await newDebit.save()
+    try {
+        const newDebitId = savedDebit.id
+        let debit = await Debit.findById(newDebitId)
+            .populate({
+                path: 'category',
+                populate: {
+                    path: 'parentCategory',
+                },
+            })
+            .populate({
+                path: 'debitOwner',
+            })
+        createCronJobs([debit])
+    } catch (err) {
+        req.flash('error', 'Trajnik ni shranjen in vnešen, poskusi ponovno!')
+        res.redirect(`/debits`)
+    }
     return newDebit
 }
 module.exports.getDebitContext = async (req, res) => {
