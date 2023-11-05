@@ -100,9 +100,9 @@ module.exports.filterByCategoryAndDate = async (
             {
                 $lookup: {
                     from: 'users',
-                    localField: 'payer',
+                    localField: 'payers',
                     foreignField: '_id',
-                    as: 'payer',
+                    as: 'payers',
                 },
             },
             matchFilter,
