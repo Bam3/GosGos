@@ -83,8 +83,8 @@ module.exports.createDebit = async (req, res) => {
         enable: Boolean(req.body.enable),
         debitInputDayInMonth: req.body.payDay,
     })
-    const savedDebit = await newDebit.save()
     try {
+        const savedDebit = await newDebit.save()
         const newDebitId = savedDebit.id
         let debit = await Debit.findById(newDebitId)
             .populate({
