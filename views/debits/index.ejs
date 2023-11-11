@@ -10,7 +10,7 @@
         <ul class="list-group">
             <% for(let debit of debits){ %>
                     <li class="list-group-item <%= debit.enable ? "list-group-item-success":"list-group-item-secondary" %> d-flex align-items-center justify-content-between">
-                        <%=`${debit.category.parentCategory.name} - ${debit.category.name}`%>
+                        <%=`${debit.category.name} - ${debit.description}`%>
                         <div class="d-flex align-items-center justify-content-between">
                             <a class="me-2 btn btn-light btn-sm" href="/debits/<%= debit.id %>/edit">Uredi</a>
                             <form class="" action="/debits/<%=debit._id%>?_method=DELETE" method="POST">

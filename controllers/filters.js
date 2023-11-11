@@ -1,11 +1,7 @@
 const Expense = require('../models/expense')
-var _ = require('lodash')
+const { sumBy } = require('lodash')
 const mongoose = require('mongoose')
-const {
-    extractFrom,
-    calculateSum,
-    roundToTwo,
-} = require('../public/javascripts/pureFunctions')
+const { roundToTwo } = require('../public/javascripts/pureFunctions')
 
 module.exports.filterByCategoryAndDate = async (
     req,
@@ -104,9 +100,9 @@ module.exports.filterByCategoryAndDate = async (
             {
                 $lookup: {
                     from: 'users',
-                    localField: 'payer',
+                    localField: 'payers',
                     foreignField: '_id',
-                    as: 'payer',
+                    as: 'payers',
                 },
             },
             matchFilter,
@@ -114,8 +110,9 @@ module.exports.filterByCategoryAndDate = async (
                 $sort: { payDate: -1 },
             },
         ])
-        let sum = calculateSum(expenses)
-        sum = roundToTwo(sum)
+
+        const sum = roundToTwo(sumBy(expenses, 'cost'))
+
         return {
             expenses,
             sum,
