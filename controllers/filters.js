@@ -1,5 +1,5 @@
 const Expense = require('../models/expense')
-var _ = require('lodash')
+const { sumBy } = require('lodash')
 const mongoose = require('mongoose')
 const { roundToTwo } = require('../public/javascripts/pureFunctions')
 
@@ -111,11 +111,8 @@ module.exports.filterByCategoryAndDate = async (
             },
         ])
 
-        let sum = 0
-        expenses.forEach((expense) => {
-            sum = sum + expense.cost
-        })
-        sum = roundToTwo(sum)
+        const sum = roundToTwo(sumBy(expenses, 'cost'))
+
         return {
             expenses,
             sum,
