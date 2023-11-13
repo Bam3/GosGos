@@ -1,4 +1,6 @@
 const User = require('../models/user')
+const Household = require('../models/household')
+const mongoose = require('mongoose')
 
 const users = [
     {
@@ -15,18 +17,14 @@ const users = [
         color: '#E76F51',
         nickName: 'NV',
     },
-    {
-        username: 'Revolut',
-        email: 'bastasic.revolut@gmail.com',
-        password: 'revolut123',
-        color: '#E9C46A',
-        roll: 'shared',
-        nickName: 'R',
-    },
 ]
 
 module.exports.seedUsers = async () => {
     await User.deleteMany({})
+    const households = await Household.find({})
+    console.log(households, 'keri je ??')
+    console.log(households[0].id, 'keri je ID??')
+
     await Promise.all(
         users.map(async (user) => {
             const { email, username, password, color, roll, nickName } = user
@@ -36,6 +34,7 @@ module.exports.seedUsers = async () => {
                 color,
                 roll,
                 nickName,
+                household: new mongoose.Types.ObjectId(households[0].id),
             })
             console.log(userObject)
             return await User.register(userObject, password)

@@ -12,6 +12,7 @@ module.exports.seedHouseholds = async () => {
         address: 'Sončni Log',
         members: usersIDs,
         color: '#152',
+        defaultToSharedExpense: false,
     })
     await newHousehold.save()
 
