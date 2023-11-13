@@ -22,8 +22,6 @@ const users = [
 module.exports.seedUsers = async () => {
     await User.deleteMany({})
     const households = await Household.find({})
-    console.log(households, 'keri je ??')
-    console.log(households[0].id, 'keri je ID??')
 
     await Promise.all(
         users.map(async (user) => {

@@ -577,7 +577,6 @@ app.post(
         )
         //on login get users household and save it in session
         const loggedinUser = await getLoggedinUser(req)
-        console.log(loggedinUser)
         req.session.household = loggedinUser.household._id
         req.session.usersID = loggedinUser._id
         res.redirect(redirectUrl)
