@@ -20,16 +20,13 @@ const { seedWhiskies } = require('./whiskey')
 //const dbUrl = 'mongodb://localhost:27017/gos-gos'
 const dbUrl = process.env.DB_URL
 mongoose
-    .connect(dbUrl, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+    .connect(dbUrl)
     .then(async (client) => {
         await seedHouseholds()
         await seedUsers()
 
-        //await seedCategories()
-        //await seedExpenses()
+        await seedCategories()
+        await seedExpenses()
         // await seedWhiskies()
         //await cosnoleAllHouses()
         //await cleanFaildJobs()
