@@ -158,7 +158,8 @@
                         id="flexSwitchCheckChecked"
                         name="expense[shared]"
                         value="true"
-                        <% if (currentHousehold.defaultToSharedExpense || expense?.shared) { %>
+                        <% if ((mode === 'create' && currentHousehold.defaultToSharedExpense) ||
+                               (mode === 'edit' && expense?.shared)) { %>
                             checked
                         <% } %>
                     />
