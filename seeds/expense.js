@@ -13,11 +13,10 @@ module.exports.seedExpenses = async () => {
 
     const mihaId = (await User.findOne({ username: 'Miha' }))._id
     const natasaId = (await User.findOne({ username: 'Nataša' }))._id
-    const revolutId = (await User.findOne({ username: 'Revolut' }))._id
     const householdId = (await Household.findOne())._id
 
     const promises = []
-    let payerID = ''
+    let payers = []
     //vzamem prvi vpisan strosek
     allExpenses.forEach(async (expense) => {
         //vzamem prvo kategorijo in preverim če se ujema parentCat s kat. prvega stroška
@@ -28,11 +27,11 @@ module.exports.seedExpenses = async () => {
                 subCategory.subCategories.forEach(async (subCatName) => {
                     if (subCatName.name === expense.subCategory) {
                         if (expense.payer === 'Miha') {
-                            payerID = mihaId //production user id: '62b0220d04b744701a0bab83'
+                            payers = [mihaId] //production user id: '62b0220d04b744701a0bab83'
                         } else if (expense.payer === 'Nataša') {
-                            payerID = natasaId //production user id: '62b021f604b744701a0bab7a'
+                            payers = [natasaId] //production user id: '62b021f604b744701a0bab7a'
                         } else {
-                            payerID = revolutId //production user id: '62ba152107ee0fb001590933'
+                            payers = [mihaId, natasaId] //production user id: '62ba152107ee0fb001590933'
                         }
                         const newExpense = new Expense({
                             cost:
@@ -41,7 +40,7 @@ module.exports.seedExpenses = async () => {
                                           expense.cost.replace(',', '.'),
                                       ))
                                     : expense.cost,
-                            payer: payerID,
+                            payers: payers,
                             payDate: new Date(expense.payDate),
                             description: expense.description,
                             category: subCatName.id,
