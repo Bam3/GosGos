@@ -28,14 +28,32 @@ module.exports.updateExpense = async (req, res) => {
 }
 
 module.exports.createExpense = async (req, res) => {
+    if (typeof req.body.expense.payers === 'undefined') {
+        return {
+            message: 'Strošek brez plačnika ni možno vnesti!',
+            type: 'error',
+        }
+    }
+    if (
+        req.body.expense.shared === undefined &&
+        typeof req.body.expense.payers !== 'string'
+    ) {
+        return {
+            message: 'Osebni strošek ne mora imeti dveh plačnikov!',
+            type: 'error',
+        }
+    }
     const newExpense = new Expense({
         ...req.body.expense,
         household: req.session.household,
         shared: Boolean(req.body.expense.shared),
     })
     await newExpense.save()
-
-    return newExpense
+    return {
+        message: 'Strošek uspešno vnesen in shranjen',
+        type: 'success',
+        newExpense,
+    }
 }
 
 module.exports.getExpensesForFilter = async (req, res, filter) => {
