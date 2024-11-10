@@ -290,10 +290,9 @@ app.post(
     isLoggedIn,
     catchAsync(async (req, res) => {
         const newExpenseMessage = await createExpense(req, res)
-        console.log(newExpenseMessage)
         if (newExpenseMessage.type === 'error') {
             req.flash(newExpenseMessage.type, newExpenseMessage.message)
-            //res.redirect('/expenses/new')
+            res.redirect('/expenses/new')
         } else {
             req.flash(newExpenseMessage.type, newExpenseMessage.message)
             res.redirect(`/expenses/${newExpenseMessage.newExpense._id}`)

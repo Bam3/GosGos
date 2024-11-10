@@ -32,6 +32,7 @@ module.exports.createExpense = async (req, res) => {
         return {
             message: 'Strošek brez plačnika ni možno vnesti!',
             type: 'error',
+            ...req.body.expense,
         }
     }
     if (
@@ -41,6 +42,7 @@ module.exports.createExpense = async (req, res) => {
         return {
             message: 'Osebni strošek ne mora imeti dveh plačnikov!',
             type: 'error',
+            ...req.body.expense,
         }
     }
     const newExpense = new Expense({
