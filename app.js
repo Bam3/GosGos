@@ -288,10 +288,16 @@ app.post(
 app.post(
     '/expenses',
     isLoggedIn,
-    catchAsync(async (req, res) => {
-        const newExpense = await createExpense(req, res)
-        req.flash('success', 'Strošek dodan in shranjen')
-        res.redirect(`/expenses/${newExpense._id}`)
+    catchAsync(async (req, res, next) => {
+        const newExpenseMessage = await createExpense(req, res)
+        if (newExpenseMessage.type === 'error') {
+            req.flash(newExpenseMessage.type, newExpenseMessage.message)
+            res.redirect('/expenses/new')
+            next()
+        } else {
+            req.flash(newExpenseMessage.type, newExpenseMessage.message)
+            res.redirect(`/expenses/${newExpenseMessage.newExpense._id}`)
+        }
     }),
 )
 app.post(
