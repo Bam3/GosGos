@@ -226,6 +226,36 @@ app.get(
     '/expenses',
     isLoggedIn,
     catchAsync(async (req, res) => {
+        let currentDate = new Date().toISOString().split('-')
+        let prevDateS = []
+        let prevDateE = []
+        if (currentDate[1] === '1') {
+            prevDateS[1] = '12'
+            prevDateE[1] = '12'
+            prevDateS[0] = String(parseInt(currentDate[0]) - 1)
+            prevDateE[0] = String(parseInt(currentDate[0]) - 1)
+        } else {
+            prevDateS[1] = String(parseInt(currentDate[1]) - 1)
+            prevDateE[1] = String(parseInt(currentDate[1]) - 1)
+            prevDateS[0] = currentDate[0]
+            prevDateE[0] = currentDate[0]
+        }
+        prevDateS[2] = '01'
+        prevDateE[2] = new Date(
+            parseInt(prevDateS[0]),
+            parseInt(prevDateS[1]),
+            0,
+        ).getDate()
+
+        let f = prevDateS.join('-')
+        let t = prevDateE.join('-')
+        let s = 'true'
+        const reults = await getExpensesForFilter(req, res, {
+            from: f,
+            to: t,
+            share: s,
+        })
+
         let { from, to, share } = req.query
         if (!from || !to) {
             from = `${new Date().toISOString().substring(0, 8)}01`
@@ -241,7 +271,6 @@ app.get(
                 to,
                 share,
             })
-
             res.render('expenses/index', context)
         }
     }),
