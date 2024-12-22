@@ -116,8 +116,26 @@
 
             <div class="mb-3">
                 <label for="user" class="form-label">Plačnik</label>
+                
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            role="switch"
+                            id="sharedExpenseSwitch"
+                            name="expense[shared]"
+                            value="true"
+                            <% if ((mode === 'create' && currentHousehold.defaultToSharedExpense) ||
+                                (mode === 'edit' && expense?.shared)) { %>
+                                checked
+                            <% } %>
+                        />
+                        <label class="form-check-label" for="sharedExpenseSwitch">Deljen strošek</label>
+                    </div>
+                </div>
 
-                <div class="input-group">
+                <div class="input-group" id="payerSelector">
                     <div class="btn-group" role="group">
                         <% for (let user of users) { %>
                             <input
@@ -146,24 +164,6 @@
                         <% } %>
                     </div>
                     <div class="invalid-feedback">Plačnik je obvezen!</div>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <div class="form-check form-switch">
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        role="switch"
-                        id="flexSwitchCheckChecked"
-                        name="expense[shared]"
-                        value="true"
-                        <% if ((mode === 'create' && currentHousehold.defaultToSharedExpense) ||
-                               (mode === 'edit' && expense?.shared)) { %>
-                            checked
-                        <% } %>
-                    />
-                    <label class="form-check-label" for="flexSwitchCheckChecked">Deljen strošek</label>
                 </div>
             </div>
 
