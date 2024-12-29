@@ -6,6 +6,7 @@ const {
     groupExpensesByUser,
     groupExpensesByCategory,
     generateCategoryLabel,
+    getLastMonthStartEndDate,
 } = require('../public/javascripts/pureFunctions')
 
 module.exports.getAllCategoriesAndUsers = async (req, res) => {

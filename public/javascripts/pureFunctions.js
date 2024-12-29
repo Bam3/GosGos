@@ -76,3 +76,27 @@ module.exports.generateCategoryLabel = async (category) => {
         return category.name
     }
 }
+module.exports.getLastMonthStartEndDate = function () {
+    let currentDate = new Date().toISOString().split('-')
+    let prevDateS = []
+    let prevDateE = []
+    if (currentDate[1] === '1') {
+        prevDateS[1] = '12'
+        prevDateE[1] = '12'
+        prevDateS[0] = String(parseInt(currentDate[0]) - 1)
+        prevDateE[0] = String(parseInt(currentDate[0]) - 1)
+    } else {
+        prevDateS[1] = String(parseInt(currentDate[1]) - 1)
+        prevDateE[1] = String(parseInt(currentDate[1]) - 1)
+        prevDateS[0] = currentDate[0]
+        prevDateE[0] = currentDate[0]
+    }
+    prevDateS[2] = '01'
+    prevDateE[2] = new Date(
+        parseInt(prevDateS[0]),
+        parseInt(prevDateS[1]),
+        0,
+    ).getDate()
+
+    return { from: prevDateS.join('-'), to: prevDateE.join('-') }
+}
