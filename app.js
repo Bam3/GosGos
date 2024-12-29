@@ -230,22 +230,32 @@ app.get(
     '/expenses',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        let { from, to, share } = req.query
-        if (!from || !to) {
-            from = `${new Date().toISOString().substring(0, 8)}01`
-            to = new Date().toISOString().substring(0, 10)
-            return res.redirect(`/expenses?from=${from}&to=${to}&share=${true}`)
-        }
-        if (from > to) {
-            req.flash('error', 'Začetni datum ne mora biti po končnem!')
-            res.redirect('/expenses/new')
+        if (
+            req.query.lastMonth === 'false' ||
+            req.query.lastMonth === undefined
+        ) {
+            let { from, to, share } = req.query
+            if (!from || !to) {
+                from = `${new Date().toISOString().substring(0, 8)}01`
+                to = new Date().toISOString().substring(0, 10)
+                return res.redirect(
+                    `/expenses?from=${from}&to=${to}&share=${true}`,
+                )
+            }
+            if (from > to) {
+                req.flash('error', 'Začetni datum ne mora biti po končnem!')
+                res.redirect('/expenses/new')
+            } else {
+                const context = await getExpensesForFilter(req, res, {
+                    from,
+                    to,
+                    share,
+                })
+                res.render('expenses/index', context)
+            }
         } else {
-            const context = await getExpensesForFilter(req, res, {
-                from,
-                to,
-                share,
-            })
-            res.render('expenses/index', context)
+            let { from, to } = getLastMonthStartEndDate(req.query.from)
+            return res.redirect(`/expenses?from=${from}&to=${to}&share=${true}`)
         }
     }),
 )
@@ -319,7 +329,7 @@ app.post(
     catchAsync(async (req, res) => {
         const formData = req.body
         res.redirect(
-            `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}&share=${formData.share}`,
+            `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}&share=${formData.share}&lastMonth=${formData.lastMonth}`,
         )
     }),
 )
