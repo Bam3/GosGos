@@ -1,7 +1,10 @@
 const Expense = require('../models/expense')
 const { sumBy } = require('lodash')
 const mongoose = require('mongoose')
-const { roundToTwo } = require('../public/javascripts/pureFunctions')
+const {
+    roundToTwo,
+    getLastMonthStartEndDate,
+} = require('../public/javascripts/pureFunctions')
 
 module.exports.filterByCategoryAndDate = async (
     req,

@@ -58,6 +58,10 @@ const {
     deleteDebit,
     deleteCronJob,
 } = require('./controllers/debit')
+
+const {
+    getLastMonthStartEndDate,
+} = require('./public/javascripts/pureFunctions')
 // const {
 //     getWhiskeyContext,
 //     createWhiskey,
@@ -226,23 +230,32 @@ app.get(
     '/expenses',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        let { from, to, share } = req.query
-        if (!from || !to) {
-            from = `${new Date().toISOString().substring(0, 8)}01`
-            to = new Date().toISOString().substring(0, 10)
-            return res.redirect(`/expenses?from=${from}&to=${to}&share=${true}`)
-        }
-        if (from > to) {
-            req.flash('error', 'Začetni datum ne mora biti po končnem!')
-            res.redirect('/expenses/new')
+        if (
+            req.query.lastMonth === 'false' ||
+            req.query.lastMonth === undefined
+        ) {
+            let { from, to, share } = req.query
+            if (!from || !to) {
+                from = `${new Date().toISOString().substring(0, 8)}01`
+                to = new Date().toISOString().substring(0, 10)
+                return res.redirect(
+                    `/expenses?from=${from}&to=${to}&share=${true}`,
+                )
+            }
+            if (from > to) {
+                req.flash('error', 'Začetni datum ne mora biti po končnem!')
+                res.redirect('/expenses/new')
+            } else {
+                const context = await getExpensesForFilter(req, res, {
+                    from,
+                    to,
+                    share,
+                })
+                res.render('expenses/index', context)
+            }
         } else {
-            const context = await getExpensesForFilter(req, res, {
-                from,
-                to,
-                share,
-            })
-
-            res.render('expenses/index', context)
+            let { from, to } = getLastMonthStartEndDate(req.query.from)
+            return res.redirect(`/expenses?from=${from}&to=${to}&share=${true}`)
         }
     }),
 )
@@ -268,20 +281,30 @@ app.post(
     '/search',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const context = await filterByCategoryAndDate(
-            req,
-            res,
-            req.body.filteredByDate,
-            req.body.dateFrom,
-            req.body.dateTo,
-            req.body.category,
-            req.body.subCategory,
-        )
-        const categoriesAndUsers = await getAllCategoriesAndUsers(req, res)
-        res.render('expenses/search', {
-            context,
-            categoriesAndUsers,
-        })
+        if (req.body.lastMonth === undefined) {
+            const context = await filterByCategoryAndDate(
+                req,
+                res,
+                req.body.filteredByDate,
+                req.body.dateFrom,
+                req.body.dateTo,
+                req.body.category,
+                req.body.subCategory,
+            )
+            const categoriesAndUsers = await getAllCategoriesAndUsers(req, res)
+            res.render('expenses/search', {
+                context,
+                categoriesAndUsers,
+            })
+        } else {
+            let { from, to } = getLastMonthStartEndDate()
+            const lastMonths = await getExpensesForFilter(req, res, {
+                from,
+                to,
+                share: 'true',
+            })
+            res.render('expenses/index', lastMonths)
+        }
     }),
 )
 
@@ -306,7 +329,7 @@ app.post(
     catchAsync(async (req, res) => {
         const formData = req.body
         res.redirect(
-            `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}&share=${formData.share}`,
+            `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}&share=${formData.share}&lastMonth=${formData.lastMonth}`,
         )
     }),
 )

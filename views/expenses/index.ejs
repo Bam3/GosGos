@@ -45,9 +45,18 @@
                             value="<%= filter.share %>"
                         />
                     </div>
-
+                    <input type="hidden" name="lastMonth" value="false">
                     <div class="d-grid col-12 mx-auto">
                         <button class="btn btn-secondary">Filtriraj</button>
+                    </div>
+                </form>
+                <form action="/expenses/filter" method="POST">
+                    <input type="hidden" name="dateFrom" value="<%= filter.from %>">
+                    <input type="hidden" name="dateTo" value="<%= filter.to %>">
+                    <input type="hidden" name="share" value="<%= filter.share %>">
+                    <input type="hidden" name="lastMonth" value="true">
+                    <div class="d-grid col-12 mx-auto my-3">
+                        <button class="btn btn-outline-secondary">Prejšnji mesec</button>
                     </div>
                 </form>
             </div>
