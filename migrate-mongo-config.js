@@ -4,8 +4,8 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
 //local DB
-//const dbUrl = 'mongodb://localhost:27017/gos-gos'
-const dbUrl = process.env.DB_URL
+const dbUrl = 'mongodb://localhost:27017/gos-gos'
+//const dbUrl = process.env.DB_URL
 const config = {
     mongodb: {
         // TODO Change (or review) the url to your MongoDB:

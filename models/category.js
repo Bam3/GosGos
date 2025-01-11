@@ -19,6 +19,10 @@ const categorySchema = new Schema(
             ref: 'Household',
             required: true,
         },
+        active: {
+            type: Boolean,
+            required: true,
+        },
     },
     {
         toJSON: { virtuals: true }, // So `res.json()` and other `JSON.stringify()` functions include virtuals
