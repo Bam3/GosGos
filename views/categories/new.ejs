@@ -10,7 +10,7 @@
             novalidate
         >
             <div class="row">
-                <div class="mb-3 col-9">
+                <div class="mb-3 col-8">
                     <label for="category" class="form-label">Kategorija</label>
                     <div class="input-group">
                         <input
@@ -25,7 +25,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="mb-3 col-3">
+                <div class="mb-3 ps-4 col-2">
                     <label for="exampleColorInput" class="form-label"
                         >Barva</label
                     >
@@ -42,12 +42,28 @@
                         Barva glavne kategorije je obvezna.
                     </div>
                 </div>
+                <div class="mb-3 pe-4 col-2">
+                    <label for="flexSwitchCheckDefault" class="form-label"
+                        >Aktivna</label
+                    >
+                    <div class="mt-2 mx-2">
+                        <div class="form-check form-switch">
+                            <input
+                                type="checkbox"
+                                class="form-check-input form-control"
+                                id="flexSwitchCheckDefault"
+                                checked
+                                autocomplete="off"
+                                role="switch"
+                                name="active"
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="subCatBody" class="mb-3">
-                <label class="form-label"
-                    >Podkategorije:</label
-                >
+                <label class="form-label">Podkategorije:</label>
                 <button
                     id="addSubCategory"
                     type="button"

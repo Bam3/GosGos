@@ -363,6 +363,7 @@ app.get(
             req.flash('error', 'Iskane kategorije ni moč najti!')
             return res.redirect('/categories')
         }
+        console.log(categories)
         res.render('categories/edit', {
             categories,
             id,
@@ -383,6 +384,7 @@ app.post(
     '/categories',
     isLoggedIn,
     catchAsync(async (req, res) => {
+        console.log(req.body)
         const newCategory = await createCategory(req)
         req.flash('success', 'Kategorija dodan in shranjen')
         res.redirect(`/categories/${newCategory._id}/edit`)
@@ -392,6 +394,7 @@ app.put(
     '/categories/:id',
     isLoggedIn,
     catchAsync(async (req, res) => {
+        console.log(req.body)
         await updateCategoriesOrCreate(req, res, getCategoriesToEdit(req, res))
         res.redirect('/categories')
     }),

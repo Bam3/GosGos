@@ -10,7 +10,7 @@
             novalidate
         >
             <div class="row">
-                <div class="mb-3 col-9">
+                <div class="mb-3 col-8">
                     <label for="category" class="form-label">Kategorija</label>
                     <div class="input-group">
                         <input
@@ -26,7 +26,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="mb-3 col-3">
+                <div class="mb-3 ps-4 col-2">
                     <label for="exampleColorInput" class="form-label"
                         >Barva</label
                     >
@@ -52,9 +52,26 @@
                         Barva glavne kategorije je obvezna.
                     </div>
                 </div>
+                <div class="mb-3 pe-4 col-2">
+                    <label for="flexSwitchCheckDefault" class="form-label"
+                        >Aktivna</label
+                    >
+                    <div class="mt-2 mx-2">
+                        <div class="form-check form-switch">
+                            <input 
+                                type="checkbox" 
+                                class="form-check-input form-control" 
+                                id="flexSwitchCheckDefault" 
+                                <% if (categories.parentCategory[0].active) { %> checked <% } %>
+                                autocomplete="off"
+                                role="switch"
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div id="subCatBody" class="mb-3">
+            <div class="mb-3">
                 <label for="SubCategories" class="form-label"
                     >Podkategorije:</label
                 >
@@ -72,25 +89,39 @@
                 >
                     <b>-</b>
                 </button>
-                <% for (let i = 0; i < categories.categories.length; i++) {%>
-
-                <div id="subcategory" class="input-group my-3">
-                    <input
-                        name="subCategories[]"
-                        type="text"
-                        class="form-control"
-                        value="<%= categories.categories[i].name %>"
-                        required
-                    />
-                    <input
-                        name="subCategoriesId[]"
-                        type="hidden"
-                        class="form-control"
-                        value="<%= categories.categories[i].id %>"
-                        required
-                    />
+                <div id="subCatBody" class="row">
+                    <% for (let i = 0; i < categories.categories.length; i++) {%>
+                    <div id="subcategory" class="input-group my-3">
+                        <input
+                            name="subCategories[]"
+                            type="text"
+                            class="form-control"
+                            value="<%= categories.categories[i].name %>"
+                            required
+                        />
+                        <input
+                            name="subCategoriesId[]"
+                            type="hidden"
+                            class="form-control"
+                            value="<%= categories.categories[i].id %>"
+                            required
+                        />
+                        <div class="mt-2 mx-2 px-2">
+                            <div class="form-check form-switch col-2">
+                                <input 
+                                    class="form-check-input form-control" 
+                                    type="checkbox" 
+                                    id="flexSwitchCheckDefault" 
+                                    <% if (categories.categories[i].active) { %> checked <% } %>
+                                    autocomplete="off"
+                                    role="switch"
+                                    name="subCategoriesActive[]"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
                 </div>
-                <% } %>
             </div>
 
             <div class="d-grid col-12 mx-auto">
