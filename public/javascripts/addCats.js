@@ -1,12 +1,20 @@
 const addButton = document.querySelector('#addSubCategory')
 const deleteButton = document.querySelector('#deleteSubCategory')
+const allCheckBoxes = document.querySelectorAll('.form-check')
 const body = document.getElementById('subCatBody')
+const form = document.getElementById('updateAddCat')
 
 function insertAfter(newNode, existingNode) {
     existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling)
 }
 
 addButton.addEventListener('click', (event) => {
+    console.log(allCheckBoxes)
+    allCheckBoxes.forEach((checkBox) => {
+        if (checkBox.firstElementChild.checked) {
+            checkBox.lastElementChild.disabled = true
+        }
+    })
     const newDiv = document.createElement('div')
     const newInput = document.createElement('input')
     const switchDivOut = document.createElement('div')
@@ -43,4 +51,12 @@ deleteButton.addEventListener('click', (event) => {
     if (subcategories.length > 0) {
         subcategories[subcategories.length - 1].remove()
     }
+})
+
+form.addEventListener('submit', () => {
+    allCheckBoxes.forEach((checkBox) => {
+        if (checkBox.firstElementChild.checked) {
+            checkBox.lastElementChild.disabled = true
+        }
+    })
 })

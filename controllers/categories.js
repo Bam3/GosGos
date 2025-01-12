@@ -92,17 +92,21 @@ module.exports.updateCategoriesOrCreate = async (
             subcategoryIdsToDelete = subcategoryIdsToDelete.filter(
                 (id) => id !== subCategory.id,
             )
-
+            //if parent categore is passive then all the subcategoreise will be passive as well
             await Category.findByIdAndUpdate(subCategory.id, {
                 name: subCategory.name,
-                active: subCategory.active,
+                active: categoriesObject.parentActive
+                    ? subCategory.active
+                    : false,
             })
         } else {
             const newSubCategory = new Category({
                 name: subCategory.name,
                 household: req.session.household,
                 parentCategory: categoriesObject.parentId,
-                active: subCategory.active,
+                active: categoriesObject.parentActive
+                    ? subCategory.active
+                    : false,
             })
             await newSubCategory.save()
         }

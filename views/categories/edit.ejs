@@ -6,7 +6,7 @@
             action="/categories/<%=id%>?_method=PUT"
             class="validated-form"
             method="POST"
-            id="addNewExpense"
+            id="updateAddCat"
             novalidate
         >
             <div class="row">
@@ -56,16 +56,24 @@
                     <label for="flexSwitchCheckDefault" class="form-label"
                         >Aktivna</label
                     >
-                    <div class="mt-2 mx-2">
+                    <div class="mt-2 mx-2 px-2">
                         <div class="form-check form-switch">
                             <input 
                                 type="checkbox" 
                                 class="form-check-input form-control" 
-                                id="flexSwitchCheckDefault" 
+                                id="flexSwitchCheckParentCat" 
                                 <% if (categories.parentCategory[0].active) { %> checked <% } %>
                                 autocomplete="off"
                                 role="switch"
                                 name="active"
+                            />
+                            <input
+                                type="hidden"
+                                class="form-check-input form-control"
+                                id="flexSwitchCheckParentCatHidden"
+                                value=off
+                                name="active"
+                                required
                             />
                         </div>
                     </div>
@@ -112,11 +120,19 @@
                                 <input 
                                     class="form-check-input form-control" 
                                     type="checkbox" 
-                                    id="flexSwitchCheckDefault" 
+                                    id="flexSwitchCheckSubCat" 
                                     <% if (categories.categories[i].active) { %> checked <% } %>
                                     autocomplete="off"
                                     role="switch"
-                                    name="subCategoriesActive[]"
+                                    name="subCategoriesActive"
+                                />
+                                <input
+                                    type="hidden"
+                                    class="form-check-input form-control"
+                                    id="flexSwitchCheckSubCatHidden"
+                                    value=off
+                                    name="subCategoriesActive"
+                                    required
                                 />
                             </div>
                         </div>
