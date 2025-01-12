@@ -1,6 +1,5 @@
 const addButton = document.querySelector('#addSubCategory')
 const deleteButton = document.querySelector('#deleteSubCategory')
-const allCheckBoxes = document.querySelectorAll('.form-check')
 const body = document.getElementById('subCatBody')
 const form = document.getElementById('updateAddCat')
 
@@ -9,17 +8,12 @@ function insertAfter(newNode, existingNode) {
 }
 
 addButton.addEventListener('click', (event) => {
-    console.log(allCheckBoxes)
-    allCheckBoxes.forEach((checkBox) => {
-        if (checkBox.firstElementChild.checked) {
-            checkBox.lastElementChild.disabled = true
-        }
-    })
     const newDiv = document.createElement('div')
     const newInput = document.createElement('input')
     const switchDivOut = document.createElement('div')
     const switchDivMain = document.createElement('div')
     const switchInput = document.createElement('input')
+    const switchInputHidden = document.createElement('input')
 
     //creating inout for category name
     newDiv.id = 'subcategory'
@@ -34,13 +28,18 @@ addButton.addEventListener('click', (event) => {
     switchDivMain.classList.add('form-check', 'form-switch', 'col-2')
     switchInput.classList.add('form-check-input', 'form-control')
     switchInput.type = 'checkbox'
-    switchInput.id = 'flexSwitchCheckDefault'
+    switchInput.id = 'flexSwitchCheckSubCat'
     switchInput.role = 'switch'
-    switchInput.name = 'subCategoriesActive[]'
+    switchInput.name = 'subCategoriesActive'
     switchInput.checked = true
+    switchInputHidden.classList.add('form-check-input', 'form-control')
+    switchInputHidden.type = 'hidden'
+    switchInputHidden.id = 'flexSwitchCheckSubCatHidden'
+    switchInputHidden.name = 'subCategoriesActive[]'
 
     newDiv.append(newInput)
     switchDivMain.append(switchInput)
+    switchDivMain.append(switchInputHidden)
     switchDivOut.append(switchDivMain)
 
     newDiv.append(switchDivOut)
@@ -54,6 +53,7 @@ deleteButton.addEventListener('click', (event) => {
 })
 
 form.addEventListener('submit', () => {
+    const allCheckBoxes = document.querySelectorAll('.form-check')
     allCheckBoxes.forEach((checkBox) => {
         if (checkBox.firstElementChild.checked) {
             checkBox.lastElementChild.disabled = true
