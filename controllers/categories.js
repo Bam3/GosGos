@@ -8,14 +8,16 @@ module.exports.createCategory = async (req) => {
     const categoryObject = new Category({
         name: category.name,
         color: category.color,
+        active: category.active === 'on' ? true : false,
         household: req.session.household,
     })
     await categoryObject.save()
 
-    category.subCategories?.map(async (subCategory) => {
+    category.subCategories?.map(async (subCategory, index) => {
         const subCategoryObject = new Category({
             name: subCategory,
             household: req.session.household,
+            active: category.subCategoriesActive[index] === 'on' ? true : false,
             parentCategory: categoryObject._id,
         })
         await subCategoryObject.save()
@@ -37,7 +39,7 @@ module.exports.getCategory = async (req, res, id) => {
 }
 module.exports.getCategoriesToEdit = (req, res) => {
     let subCategories = []
-
+    console.log(req.body, 'inside GET CAT TO EDIT')
     // Check if there are any subcategories before trying to loop through
     const subCategoriesExist = Boolean(req.body.subCategories)
 
@@ -48,6 +50,8 @@ module.exports.getCategoriesToEdit = (req, res) => {
                 // Check if subCategoriesId exists - it might not if all the
                 // subcategories are newly added in this edit.
                 id: req.body.subCategoriesId?.[i],
+                //add active property
+                active: req.body.subCategoriesActive[i] === 'on' ? true : false,
             })
         }
     }
@@ -56,6 +60,7 @@ module.exports.getCategoriesToEdit = (req, res) => {
         parentCategory: req.body.name,
         parentId: req.body.id,
         parentColor: req.body.color,
+        parentActive: req.body.active === 'on' ? true : false,
         subCats: subCategories,
     }
 }
@@ -64,12 +69,14 @@ module.exports.updateCategoriesOrCreate = async (
     res,
     categoriesObject,
 ) => {
+    console.log(categoriesObject, 'INSIDE UPDATECATSORCREATE')
     // Update category name and color
     const parentCategory = await Category.findByIdAndUpdate(
         categoriesObject.parentId,
         {
             name: categoriesObject.parentCategory,
             color: categoriesObject.parentColor,
+            active: categoriesObject.parentActive,
         },
     ).populate('subCategories')
 
@@ -88,12 +95,14 @@ module.exports.updateCategoriesOrCreate = async (
 
             await Category.findByIdAndUpdate(subCategory.id, {
                 name: subCategory.name,
+                active: subCategory.active,
             })
         } else {
             const newSubCategory = new Category({
                 name: subCategory.name,
                 household: req.session.household,
                 parentCategory: categoriesObject.parentId,
+                active: subCategory.active,
             })
             await newSubCategory.save()
         }
