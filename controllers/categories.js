@@ -39,7 +39,6 @@ module.exports.getCategory = async (req, res, id) => {
 }
 module.exports.getCategoriesToEdit = (req, res) => {
     let subCategories = []
-    console.log(req.body, 'inside GET CAT TO EDIT')
     // Check if there are any subcategories before trying to loop through
     const subCategoriesExist = Boolean(req.body.subCategories)
 
@@ -69,7 +68,6 @@ module.exports.updateCategoriesOrCreate = async (
     res,
     categoriesObject,
 ) => {
-    console.log(categoriesObject, 'INSIDE UPDATECATSORCREATE')
     // Update category name and color
     const parentCategory = await Category.findByIdAndUpdate(
         categoriesObject.parentId,
