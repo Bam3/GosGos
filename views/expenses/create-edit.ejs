@@ -25,27 +25,31 @@
                         <option selected disabled value="">Izberi kategorijo …</option>
                     <% } %>
 
-                    <% for(let category of categories){ %>
-                        <option
-                            value="<%= category._id %>"
-                            <% if (expense?.category._id.equals(category._id)) { %>
-                                selected
-                            <% } %>
-                        >
-                            <%= category.name %>
-                        </option>
-                        <% for(let subCategory of category.subCategories){ %>
+                    <% for(let category of categories) { %>
+                        <% if (category.active) { %>                        
                             <option
-                                id="Option"
-                                value="<%=subCategory._id%>"
-                                <% if (expense?.category._id.equals(subCategory._id)) { %>
+                                value="<%= category._id %>"
+                                <% if (expense?.category._id.equals(category._id)) { %>
                                     selected
                                 <% } %>
                             >
-                                &nbsp;&nbsp;⁃ <%=subCategory.name%>
+                                <%= category.name %>
                             </option>
+                            <% for(let subCategory of category.subCategories){ %>
+                                <% if (subCategory.active) { %>  
+                                    <option
+                                        id="Option"
+                                        value="<%=subCategory._id%>"
+                                        <% if (expense?.category._id.equals(subCategory._id)) { %>
+                                            selected
+                                        <% } %>
+                                    >
+                                        &nbsp;&nbsp;⁃ <%=subCategory.name%>
+                                    </option>
+                                <% } %>
+                            <% } %>
+                        </optgroup>
                         <% } %>
-                    </optgroup>
                     <% } %>
                 </select>
                 <div class="invalid-feedback">Kategorija je obvezna.</div>

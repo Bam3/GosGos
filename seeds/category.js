@@ -14,6 +14,7 @@ const categories = [
             'Vzdrževanje in nakupi',
         ],
         color: '#264653',
+        active: true,
     },
 
     {
@@ -26,6 +27,7 @@ const categories = [
             'Pnevmatike',
         ],
         color: '#2A9D8F',
+        active: true,
     },
 
     {
@@ -38,6 +40,7 @@ const categories = [
             'Pnevmatike',
         ],
         color: '#BABB74',
+        active: true,
     },
     {
         name: 'Hrana',
@@ -54,26 +57,31 @@ const categories = [
             'Tuš',
         ],
         color: '#287271',
+        active: true,
     },
     {
         name: 'Darila',
         subCategories: ['Družina', 'Prijatelji'],
         color: '#8AB17D',
+        active: true,
     },
     {
         name: 'Ljubljenčki',
         subCategories: ['Hrana', 'Zdravila', 'Pregled', 'Moda', 'Igrače'],
         color: '#F4A261',
+        active: true,
     },
     {
         name: 'Hobi',
         subCategories: ['Kolesarstvo', 'Tek', 'Pohodi', 'Plezanje'],
         color: '#E9C46A',
+        active: true,
     },
     {
         name: 'Zabava',
         subCategories: ['Dopust', 'Igrice', 'Knjige'],
         color: '#EFB366',
+        active: true,
     },
 ]
 
@@ -88,6 +96,7 @@ module.exports.seedCategories = async () => {
                 name: category.name,
                 color: category.color,
                 household: household._id,
+                active: category.active,
             })
             await categoryObject.save()
 
@@ -97,6 +106,7 @@ module.exports.seedCategories = async () => {
                         name: subCategory,
                         parentCategory: categoryObject._id,
                         household: household._id,
+                        active: true,
                     })
                     await subCategoryObject.save()
                 }),

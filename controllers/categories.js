@@ -8,14 +8,16 @@ module.exports.createCategory = async (req) => {
     const categoryObject = new Category({
         name: category.name,
         color: category.color,
+        active: category.active === 'on' ? true : false,
         household: req.session.household,
     })
     await categoryObject.save()
 
-    category.subCategories?.map(async (subCategory) => {
+    category.subCategories?.map(async (subCategory, index) => {
         const subCategoryObject = new Category({
             name: subCategory,
             household: req.session.household,
+            active: category.subCategoriesActive[index] === 'on' ? true : false,
             parentCategory: categoryObject._id,
         })
         await subCategoryObject.save()
@@ -37,7 +39,6 @@ module.exports.getCategory = async (req, res, id) => {
 }
 module.exports.getCategoriesToEdit = (req, res) => {
     let subCategories = []
-
     // Check if there are any subcategories before trying to loop through
     const subCategoriesExist = Boolean(req.body.subCategories)
 
@@ -48,6 +49,8 @@ module.exports.getCategoriesToEdit = (req, res) => {
                 // Check if subCategoriesId exists - it might not if all the
                 // subcategories are newly added in this edit.
                 id: req.body.subCategoriesId?.[i],
+                //add active property
+                active: req.body.subCategoriesActive[i] === 'on' ? true : false,
             })
         }
     }
@@ -56,6 +59,7 @@ module.exports.getCategoriesToEdit = (req, res) => {
         parentCategory: req.body.name,
         parentId: req.body.id,
         parentColor: req.body.color,
+        parentActive: req.body.active === 'on' ? true : false,
         subCats: subCategories,
     }
 }
@@ -70,6 +74,7 @@ module.exports.updateCategoriesOrCreate = async (
         {
             name: categoriesObject.parentCategory,
             color: categoriesObject.parentColor,
+            active: categoriesObject.parentActive,
         },
     ).populate('subCategories')
 
@@ -85,15 +90,21 @@ module.exports.updateCategoriesOrCreate = async (
             subcategoryIdsToDelete = subcategoryIdsToDelete.filter(
                 (id) => id !== subCategory.id,
             )
-
+            //if parent categore is passive then all the subcategoreise will be passive as well
             await Category.findByIdAndUpdate(subCategory.id, {
                 name: subCategory.name,
+                active: categoriesObject.parentActive
+                    ? subCategory.active
+                    : false,
             })
         } else {
             const newSubCategory = new Category({
                 name: subCategory.name,
                 household: req.session.household,
                 parentCategory: categoriesObject.parentId,
+                active: categoriesObject.parentActive
+                    ? subCategory.active
+                    : false,
             })
             await newSubCategory.save()
         }
