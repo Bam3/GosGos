@@ -467,6 +467,17 @@ app.delete(
         deleteDebit(req, res)
     }),
 )
+
+app.get(
+    '/overview',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const context = await getAllCategoriesAndUsers(req, res)
+        console.log(context)
+        res.render('overview/index', context)
+    }),
+)
+
 // app.get(
 //     '/whiskies/wishlist',
 //     isLoggedIn,
