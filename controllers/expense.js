@@ -244,7 +244,7 @@ module.exports.getAllHouseholdExpenses = async (req, res) => {
 
     expenses.map((expense) => {
         //payDate
-        let payYear = new Date(expense.payDate).getFullYear()
+        let payYear = new Date(expense.payDate).getFullYear().toString()
         const monthNames = [
             'Jan',
             'Feb',
@@ -269,16 +269,17 @@ module.exports.getAllHouseholdExpenses = async (req, res) => {
         console.log(payYear, payMonth, parentCat, category)
         //check if model has a year
         if (model[payYear] === undefined) model[payYear] = {}
-        console.log(model)
-        if (model.payYear[payMonth] === undefined) model.payYear[payMonth] = {}
-        if (model.payYear.payMonth[parentCat] === undefined)
-            model.payYear.payMonth[parentCat] = {}
-        if (model.payYear.payMonth.parentCat[category] === undefined) {
-            model.payYear.payMonth.parentCat[category] = []
+        if (model[payYear][payMonth] === undefined)
+            model[payYear][payMonth] = {}
+        if (model[payYear][payMonth][parentCat] === undefined)
+            model[payYear][payMonth][parentCat] = {}
+        if (model[payYear][payMonth][parentCat][category] === undefined) {
+            model[payYear][payMonth][parentCat][category] = []
         } else {
-            model.payYear.payMonth.parentCat.category.push(cost)
+            model[payYear][payMonth][parentCat][category].push(cost)
         }
     })
 
+    console.log(model)
     return expenses
 }
