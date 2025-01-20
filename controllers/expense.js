@@ -213,3 +213,72 @@ const filterLastExpenses = async (filterObject, limit = 10) => {
     )
     return expenses
 }
+
+module.exports.getAllHouseholdExpenses = async (req, res) => {
+    let modell = {
+        year: {
+            month: {
+                parentCategory: {
+                    category: [],
+                },
+            },
+        },
+    }
+    let model = {}
+
+    let filterObject = {
+        household: req.session.household,
+        shared: true,
+    }
+    let expenses = await Expense.find(filterObject)
+        .sort({
+            payDate: -1,
+        })
+        .populate({
+            path: 'category',
+            populate: {
+                path: 'parentCategory',
+            },
+        })
+        .populate('payers')
+
+    expenses.map((expense) => {
+        //payDate
+        let payYear = new Date(expense.payDate).getFullYear()
+        const monthNames = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'Maj',
+            'Jun',
+            'Jul',
+            'Avg',
+            'Sep',
+            'Okt',
+            'Nov',
+            'Dec',
+        ]
+        let payMonth = monthNames[new Date(expense.payDate).getMonth()]
+        //category.parentCategory.name
+        let parentCat = expense.category.parentCategory.name
+        //category.name
+        let category = expense.category.name
+        //cost
+        let cost = expense.cost
+        console.log(payYear, payMonth, parentCat, category)
+        //check if model has a year
+        if (model[payYear] === undefined) model[payYear] = {}
+        console.log(model)
+        if (model.payYear[payMonth] === undefined) model.payYear[payMonth] = {}
+        if (model.payYear.payMonth[parentCat] === undefined)
+            model.payYear.payMonth[parentCat] = {}
+        if (model.payYear.payMonth.parentCat[category] === undefined) {
+            model.payYear.payMonth.parentCat[category] = []
+        } else {
+            model.payYear.payMonth.parentCat.category.push(cost)
+        }
+    })
+
+    return expenses
+}

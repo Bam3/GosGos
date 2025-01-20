@@ -27,6 +27,7 @@ const {
     deleteExpense,
     getLastExpenses,
     getSingleExpenseById,
+    getAllHouseholdExpenses,
 } = require('./controllers/expense')
 
 const { readPicture } = require('./controllers/camera')
@@ -472,8 +473,9 @@ app.get(
     '/overview',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const context = await getAllCategoriesAndUsers(req, res)
-        console.log(context)
+        const context = await getAllHouseholdExpenses(req, res)
+        console.log(context.length)
+        console.log(context[0])
         res.render('overview/index', context)
     }),
 )
