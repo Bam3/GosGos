@@ -215,17 +215,7 @@ const filterLastExpenses = async (filterObject, limit = 10) => {
 }
 
 module.exports.getAllHouseholdExpenses = async (req, res) => {
-    let modell = {
-        year: {
-            month: {
-                parentCategory: {
-                    category: [],
-                },
-            },
-        },
-    }
     let model = {}
-
     let filterObject = {
         household: req.session.household,
         shared: true,
@@ -266,20 +256,44 @@ module.exports.getAllHouseholdExpenses = async (req, res) => {
         let category = expense.category.name
         //cost
         let cost = expense.cost
-        console.log(payYear, payMonth, parentCat, category)
+
         //check if model has a year
-        if (model[payYear] === undefined) model[payYear] = {}
-        if (model[payYear][payMonth] === undefined)
+        if (model[payYear] === undefined) {
+            model[payYear] = {}
+        }
+        if (model[payYear][payMonth] === undefined) {
             model[payYear][payMonth] = {}
-        if (model[payYear][payMonth][parentCat] === undefined)
-            model[payYear][payMonth][parentCat] = {}
-        if (model[payYear][payMonth][parentCat][category] === undefined) {
-            model[payYear][payMonth][parentCat][category] = []
+            if (model[payYear].sum === undefined) {
+                model[payYear].sum = cost
+            } else {
+                model[payYear].sum += cost
+            }
         } else {
-            model[payYear][payMonth][parentCat][category].push(cost)
+            model[payYear].sum += cost
+        }
+        if (model[payYear][payMonth][parentCat] === undefined) {
+            model[payYear][payMonth][parentCat] = {}
+            if (model[payYear][payMonth].sum === undefined) {
+                model[payYear][payMonth].sum = cost
+            } else {
+                model[payYear][payMonth].sum += cost
+            }
+        } else {
+            model[payYear][payMonth].sum += cost
+        }
+
+        if (model[payYear][payMonth][parentCat][category] === undefined) {
+            model[payYear][payMonth][parentCat][category] = cost
+            if (model[payYear][payMonth][parentCat].sum === undefined) {
+                model[payYear][payMonth][parentCat].sum = cost
+            } else {
+                model[payYear][payMonth][parentCat].sum += cost
+            }
+        } else {
+            model[payYear][payMonth][parentCat][category] += cost
+            model[payYear][payMonth][parentCat].sum += cost
         }
     })
 
-    console.log(model)
-    return expenses
+    return { model }
 }
