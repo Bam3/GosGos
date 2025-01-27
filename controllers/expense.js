@@ -1,3 +1,4 @@
+const { values } = require('lodash')
 const Category = require('../models/category')
 const Expense = require('../models/expense')
 const User = require('../models/user')
@@ -234,27 +235,24 @@ module.exports.getAllHouseholdExpenses = async (req, res) => {
 
     expenses.map((expense) => {
         //payDate
-        let payYear = new Date(expense.payDate).getFullYear().toString()
+        let payYear = new Date(expense.payDate).getFullYear()
         const monthNames = [
             'Jan',
             'Feb',
             'Mar',
             'Apr',
-            'Maj',
+            'May',
             'Jun',
             'Jul',
             'Avg',
             'Sep',
-            'Okt',
+            'Oct',
             'Nov',
             'Dec',
         ]
         let payMonth = monthNames[new Date(expense.payDate).getMonth()]
-        //category.parentCategory.name
         let parentCat = expense.category.parentCategory.name
-        //category.name
         let category = expense.category.name
-        //cost
         let cost = expense.cost
 
         //check if model has a year
@@ -295,5 +293,7 @@ module.exports.getAllHouseholdExpenses = async (req, res) => {
         }
     })
 
-    return { model }
+    var context = Object.keys(model).map((key) => [key, model[key]])
+
+    return { context }
 }

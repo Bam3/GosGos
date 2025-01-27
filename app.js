@@ -474,8 +474,14 @@ app.get(
     isLoggedIn,
     catchAsync(async (req, res) => {
         const context = await getAllHouseholdExpenses(req, res)
-        console.log(JSON.stringify(context), 'adela?')
-        console.log(context, 'adela?')
+        //console.log(JSON.stringify(context), 'adela?')
+        //console.log(context[1][0], context[1][1])
+        //console.log(context[0][1].Dec.sum)
+        console.log(context.context[0][1])
+        //console.log(context.context[1][1].Dec.Dom, context.context[1][0])
+        //console.log(context.context.length)
+        //console.log(context.context)
+        //console.log(Object.values(context.context[0][1].Dec))
 
         res.render('overview/index', context)
     }),
