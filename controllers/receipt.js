@@ -1,5 +1,6 @@
 const path = require('path')
 const sharp = require('sharp')
+const jsQR = require('jsqr')
 const { createWorker } = require('tesseract.js')
 const { Types } = require('mongoose')
 const Category = require('../models/category')
@@ -9,6 +10,7 @@ const {
     findDate,
     findStore,
     containsWord,
+    parseUpnQr,
 } = require('../utils/receiptParser')
 
 const MAX_PHOTO_SIZE = 15 * 1024 * 1024
@@ -29,6 +31,10 @@ const preparePhoto = (photo) =>
         .sharpen()
         .toBuffer()
 
+// Below this Tesseract mostly read noise, e.g. a receipt photographed
+// upside down
+const LOW_CONFIDENCE = 45
+
 const readText = async (image) => {
     // slv.traineddata lives in the project root
     const worker = await createWorker('slv', 1, {
@@ -38,10 +44,49 @@ const readText = async (image) => {
     })
     try {
         const { data } = await worker.recognize(image)
-        return data.text
+        if (data.confidence >= LOW_CONFIDENCE) return data.text
+        const { data: turned } = await worker.recognize(
+            await sharp(image).rotate(180).toBuffer(),
+        )
+        return turned.confidence > data.confidence ? turned.text : data.text
     } finally {
         await worker.terminate()
     }
+}
+
+module.exports.readReceiptText = async (photo) =>
+    readText(await preparePhoto(photo))
+
+// Text of a QR code on the photo, if there is one. UPN QR codes are
+// encoded in ISO-8859-2 (Slovenian letters)
+module.exports.readQrCode = async (photo) => {
+    for (const size of [1600, 2400]) {
+        const { data, info } = await sharp(photo)
+            .rotate()
+            .resize({
+                width: size,
+                height: size,
+                fit: 'inside',
+                withoutEnlargement: true,
+            })
+            .ensureAlpha()
+            .raw()
+            .toBuffer({ resolveWithObject: true })
+        const code = jsQR(
+            new Uint8ClampedArray(data),
+            info.width,
+            info.height,
+            {
+                inversionAttempts: 'dontInvert',
+            },
+        )
+        if (code) {
+            return new TextDecoder('iso-8859-2').decode(
+                Uint8Array.from(code.binaryData),
+            )
+        }
+    }
+    return null
 }
 
 // Words on bills that point to a category with a different name
@@ -52,6 +97,7 @@ const categoryHints = [
     [/KOMUNAL|VODOVOD|SNAGA|ODPADK/i, 'Komunala'],
     [/TELEKOM|TELEMACH|T-2|INTERNET/i, 'Internet'],
     [/RTV\s*PRISPEVEK/i, 'RTV'],
+    [/UPRAVNIK|UPRAVLJANJE|OBVEZNOSTI\s+ZA\s+OBDOBJE/i, 'Upravnik'],
 ]
 
 const countExpensesByCategory = (req, match) =>
@@ -152,21 +198,33 @@ module.exports.scanReceipt = async (req) => {
         return { error: 'Fotografija je prevelika (največ 15 MB).' }
     }
 
-    let text
     try {
-        text = await readText(await preparePhoto(photo.data))
+        // UPN bills: the QR code has exact values, no need to read the text
+        const upn = parseUpnQr(
+            (await module.exports.readQrCode(photo.data)) || '',
+        )
+        if (upn) {
+            const text = [upn.store, upn.purpose].filter(Boolean).join('\n')
+            const category = await guessCategory(req, text, upn.store)
+            return {
+                ...upn,
+                category: category && { id: category.id, name: category.name },
+                text: `UPN QR: ${text}`,
+            }
+        }
+
+        const text = await module.exports.readReceiptText(photo.data)
+        const store = findStore(text)
+        const category = await guessCategory(req, text, store)
+        return {
+            cost: findTotal(text),
+            date: findDate(text),
+            store,
+            category: category && { id: category.id, name: category.name },
+            text,
+        }
     } catch (e) {
         console.log('Receipt scan failed', e)
         return { error: 'Računa ni bilo mogoče prebrati.' }
-    }
-
-    const store = findStore(text)
-    const category = await guessCategory(req, text, store)
-    return {
-        cost: findTotal(text),
-        date: findDate(text),
-        store,
-        category: category && { id: category.id, name: category.name },
-        text,
     }
 }

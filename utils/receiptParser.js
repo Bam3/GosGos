@@ -45,8 +45,11 @@ const knownStores = [
     'KiK',
     'Lekarna',
     'Pošta',
-    'DM',
 ]
+// Short names need their full form, "DM:2" on a receipt is a register code
+const knownStorePatterns = [['DM', /\bdm[\s-]*drogerie/i]]
+// Shop names are printed in the header of the receipt
+const HEADER_LINES = 6
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
@@ -58,8 +61,9 @@ module.exports.containsWord = (text, word) =>
 
 // "12,34", "12.34" and OCR variants like "12, 34"
 const findAmounts = (line) =>
-    [...line.matchAll(/(\d{1,5})\s?[.,]\s?(\d{2})(?![\d%])/g)].map((match) =>
-        parseFloat(`${match[1]}.${match[2]}`),
+    // not followed by more digits, so "28.04.2022" is no amount
+    [...line.matchAll(/(\d{1,5})\s?[.,]\s?(\d{2})(?![\d%]|[.,]\d)/g)].map(
+        (match) => parseFloat(`${match[1]}.${match[2]}`),
     )
 
 module.exports.findTotal = (text) => {
@@ -95,7 +99,7 @@ module.exports.findDate = (text, today = new Date()) => {
         })),
         ...[
             ...text.matchAll(
-                /(\d{1,2})\s?[./-]\s?(\d{1,2})\s?[./-]\s?(\d{4}|\d{2})(?!\d)/g,
+                /(\d{1,2})\s?[.,/-]\s?(\d{1,2})\s?[.,/-]\s?(\d{4}|\d{2})(?!\d)/g,
             ),
         ].map((m) => ({
             year: m[3].length === 2 ? 2000 + +m[3] : +m[3],
@@ -117,19 +121,50 @@ module.exports.findDate = (text, today = new Date()) => {
     return null
 }
 
-// Store name: a known shop, else the first line with a company form
-// like "d.o.o."
+// Store name: a known shop in the header, else the first line with a
+// company form like "d.o.o."
 module.exports.findStore = (text) => {
+    const header = text
+        .split('\n')
+        .filter((line) => line.trim())
+        .slice(0, HEADER_LINES)
+        .join('\n')
     for (const name of knownStores) {
-        if (module.exports.containsWord(text, name)) return name
+        if (module.exports.containsWord(header, name)) return name
+    }
+    for (const [name, pattern] of knownStorePatterns) {
+        if (pattern.test(header)) return name
     }
     const companyLine = text
         .split('\n')
         .find((line) => /d\.\s?o\.\s?o|d\.\s?d\.|s\.\s?p\./i.test(line))
-    if (companyLine) {
-        return companyLine
-            .replace(/,?\s*(d\.\s?o\.\s?o|d\.\s?d|s\.\s?p)[.,]?.*$/i, '')
-            .trim()
-    }
+    if (companyLine) return cleanCompanyName(companyLine)
     return null
+}
+
+// "| NAKLO D.O.O." -> "NAKLO"
+const cleanCompanyName = (name) =>
+    name
+        .replace(/,?\s*(d\.\s?o\.\s?o|d\.\s?d|s\.\s?p)[.,]?.*$/i, '')
+        .replace(/^[^\p{L}\d]+/u, '')
+        .trim()
+
+// Slovenian UPN bills carry all payment data in the QR code, one field
+// per line: amount in cents on line 8, purpose on 12, due date on 13 and
+// the payee name on 16 (counting the "UPNQR" header as line 0)
+module.exports.parseUpnQr = (qrText, today = new Date()) => {
+    const fields = qrText.split(/\r?\n/).map((field) => field.trim())
+    if (fields[0] !== 'UPNQR' || !/^\d{11}$/.test(fields[8] || '')) {
+        return null
+    }
+    const cost = parseInt(fields[8], 10) / 100
+    const purpose = fields[12] || null
+    const payee = fields[16] ? cleanCompanyName(fields[16]) : null
+    return {
+        cost: cost || null,
+        // Due date, unless it is still ahead (then the form keeps today)
+        date: module.exports.findDate(fields[13] || '', today),
+        store: payee,
+        purpose,
+    }
 }

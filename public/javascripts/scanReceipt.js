@@ -3,7 +3,7 @@ const receiptInput = document.querySelector('#receiptPhoto')
 const receiptStatus = document.querySelector('#receiptStatus')
 
 //Shrink big phone photos before upload, the server does not need more
-const shrinkPhoto = async (file, maxSize = 1600) => {
+const shrinkPhoto = async (file, maxSize = 2400) => {
     try {
         const bitmap = await createImageBitmap(file)
         const scale = Math.min(
@@ -69,7 +69,11 @@ receiptInput.addEventListener('change', async () => {
     } else missing.push('datum')
     if (result.store) {
         const description = document.querySelector('#description')
-        if (!description.value.trim()) description.value = result.store
+        if (!description.value.trim()) {
+            description.value = [result.store, result.purpose]
+                .filter(Boolean)
+                .join(' - ')
+        }
         found.push(`trgovina ${result.store}`)
     } else missing.push('trgovina')
     if (result.category) {
