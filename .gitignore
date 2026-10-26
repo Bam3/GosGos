@@ -3,3 +3,4 @@ node_modules
 seeds/user.js
 dev.js
 .vscode/launch.json
+xvba_debug.log

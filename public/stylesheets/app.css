@@ -7,3 +7,36 @@
     justify-content: center;
     border-color: black;
 }
+
+.report-table {
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+.category-color {
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    margin-right: 0.25rem;
+}
+.report-table th:first-child,
+.report-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: var(--bs-body-bg);
+    box-shadow: inset -1px 0 0 var(--bs-border-color);
+}
+.report-table thead th:first-child,
+.report-table tfoot td:first-child {
+    background-color: var(--bs-light);
+}
+.chart-container {
+    position: relative;
+    height: 360px;
+}
+@media (min-width: 768px) {
+    .chart-container {
+        height: 420px;
+    }
+}

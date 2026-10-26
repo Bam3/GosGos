@@ -1,0 +1,172 @@
+<% layout('layouts/boilerplate')%>
+<%
+// Link to the expenses list for one month, optionally for one category
+const monthLink = (linkYear, monthIndex, categoryId) => {
+    const month = String(monthIndex + 1).padStart(2, '0')
+    const lastDay = new Date(Date.UTC(linkYear, monthIndex + 1, 0)).getUTCDate()
+    return `/expenses?from=${linkYear}-${month}-01&to=${linkYear}-${month}-${lastDay}` +
+        `&share=${share}` + (categoryId ? `&category=${categoryId}` : '')
+}
+const costCell = (cost, linkYear, monthIndex, categoryId) => cost
+    ? `<a class="text-reset" href="${monthLink(linkYear, monthIndex, categoryId)}">${cost.toFixed(2)}</a>`
+    : '–'
+%>
+<div class="row">
+    <div class="col-md-12 d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+        <h1>
+            Primerjava let
+            <% if (comparison) { %>
+            <small class="text-muted fs-5"><%= comparison.category.label %></small>
+            <% } %>
+        </h1>
+        <a class="btn btn-outline-secondary text-nowrap" href="/report?share=<%= share %>"
+            >Letno poročilo</a
+        >
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <form action="/report/compare" method="GET">
+                    <label for="category">Kategorija:</label>
+                    <select id="category" name="category" class="form-select mb-3" required>
+                        <option value="" disabled <%= categoryId ? '' : 'selected' %>>
+                            Izberi kategorijo
+                        </option>
+                        <% for (const category of categories) { %>
+                        <option
+                            class="fw-bold"
+                            value="<%= category.id %>"
+                            <%= category.id === categoryId ? 'selected' : '' %>
+                        >
+                            <%= category.name %>
+                        </option>
+                        <% for (const subCategory of category.subCategories) { %>
+                        <option
+                            value="<%= subCategory.id %>"
+                            <%= subCategory.id === categoryId ? 'selected' : '' %>
+                        >
+                            &nbsp;&nbsp;&nbsp;<%= subCategory.name %>
+                        </option>
+                        <% } %> <% } %>
+                    </select>
+
+                    <label>Leta:</label>
+                    <div class="mb-3">
+                        <% for (const availableYear of availableYears) { %>
+                        <div class="form-check form-check-inline">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="years"
+                                id="year-<%= availableYear %>"
+                                value="<%= availableYear %>"
+                                <%= years.includes(availableYear) ? 'checked' : '' %>
+                            />
+                            <label class="form-check-label" for="year-<%= availableYear %>"
+                                ><%= availableYear %></label
+                            >
+                        </div>
+                        <% } %>
+                    </div>
+
+                    <label for="share">Stroški:</label>
+                    <select id="share" name="share" class="form-select mb-3">
+                        <option value="true" <%= share === 'true' ? 'selected' : '' %>>Skupni</option>
+                        <option value="false" <%= share === 'false' ? 'selected' : '' %>>Moji</option>
+                    </select>
+                    <div class="d-grid col-12 mx-auto">
+                        <button class="btn btn-secondary">Primerjaj</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <% if (!comparison) { %>
+    <div class="col-md-9">
+        <p class="lead">
+            Izberi kategorijo (npr. Hrana ali Dom - Elektrika) in leta, ki jih
+            želiš primerjati.
+        </p>
+    </div>
+    <% } else { %>
+    <div class="col-md-9 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="compareChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 d-md-none mb-3">
+        <ul class="list-group">
+            <% for (const entry of comparison.series) { %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <b><%= entry.year %></b>: €<%= entry.total.toFixed(2) %>
+                    <div class="small text-muted">
+                        €<%= entry.monthlyAverage.toFixed(2) %> / mesec
+                    </div>
+                </div>
+                <% if (entry.change !== null) { %>
+                <span class="badge <%= entry.change > 0 ? 'text-bg-danger' : 'text-bg-success' %>">
+                    <%= entry.change > 0 ? '+' : '' %><%= entry.change.toFixed(1) %> %
+                </span>
+                <% } %>
+            </li>
+            <% } %>
+        </ul>
+    </div>
+
+    <div class="col-md-12 table-responsive">
+        <table class="table table-hover table-sm text-end report-table">
+            <thead class="table-light">
+                <tr>
+                    <th class="text-start">Leto</th>
+                    <% for (const label of monthLabels) { %>
+                    <th><%= label %></th>
+                    <% } %>
+                    <th>Skupaj</th>
+                    <th>Povpr./mesec</th>
+                    <th>Sprememba</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (const entry of comparison.series) { %>
+                <tr>
+                    <td class="text-start fw-bold">
+                        <a href="/report?year=<%= entry.year %>&share=<%= share %>"
+                            ><%= entry.year %></a
+                        >
+                    </td>
+                    <% entry.months.forEach((cost, i) => { %>
+                    <td><%- costCell(cost, entry.year, i, comparison.category.id) %></td>
+                    <% }) %>
+                    <td class="fw-bold">€<%= entry.total.toFixed(2) %></td>
+                    <td>€<%= entry.monthlyAverage.toFixed(2) %></td>
+                    <% if (entry.change === null) { %>
+                    <td>–</td>
+                    <% } else { %>
+                    <td class="<%= entry.change > 0 ? 'text-danger' : 'text-success' %>">
+                        <%= entry.change > 0 ? '+' : '' %><%= entry.change.toFixed(1) %> %
+                    </td>
+                    <% } %>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <p class="text-muted small">
+            Sprememba primerja povprečje na mesec s prejšnjim izbranim letom.
+            Za tekoče leto se povprečje računa samo za pretekle mesece.
+        </p>
+    </div>
+    <script>
+        const monthLabels = <%- JSON.stringify(monthLabels) %>
+        const series = <%- JSON.stringify(comparison.series) %>
+    </script>
+    <script src="/javascripts/compareChart.js"></script>
+    <% } %>
+</div>

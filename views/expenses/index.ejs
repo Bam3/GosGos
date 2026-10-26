@@ -4,6 +4,17 @@
         <h1>
             <%= String(filter.share).toLowerCase() === 'true'? "Skupni " :
             "Moji"%> stroški
+            <% if (filter.categoryLabel) { %>
+            <span class="badge text-bg-secondary fs-6 align-middle">
+                <%= filter.categoryLabel %>
+                <a
+                    class="text-white ms-1 text-decoration-none"
+                    href="/expenses?from=<%= filter.from %>&to=<%= filter.to %>&share=<%= filter.share %>"
+                    title="Prikaži vse kategorije"
+                    >✕</a
+                >
+            </span>
+            <% } %>
         </h1>
     </div>
 
