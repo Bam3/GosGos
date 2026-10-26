@@ -13,6 +13,20 @@
             id="addNewExpense"
             novalidate
         >
+            <% if (mode === 'create') { %>
+            <div class="mb-3">
+                <label class="btn btn-outline-primary w-100" for="receiptPhoto">
+                    📷 Skeniraj račun
+                </label>
+                <input
+                    id="receiptPhoto"
+                    type="file"
+                    accept="image/*"
+                    class="d-none"
+                />
+                <div id="receiptStatus"></div>
+            </div>
+            <% } %>
             <div class="mb-3">
                 <label for="category" class="form-label">Kategorija</label>
                 <select
@@ -190,3 +204,6 @@
     </div>
 </div>
 <script src="/javascripts/popularCategories.js"></script>
+<% if (mode === 'create') { %>
+<script src="/javascripts/scanReceipt.js"></script>
+<% } %>

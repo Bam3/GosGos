@@ -23,6 +23,7 @@
         "express": "^4.21.1",
         "express-fileupload": "^1.5.1",
         "express-session": "^1.18.1",
+        "jsqr": "^1.4.0",
         "lodash": "^4.17.21",
         "method-override": "^3.0.0",
         "migrate-mongo": "^11.0.0",

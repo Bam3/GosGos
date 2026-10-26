@@ -29,7 +29,7 @@ const {
     getSingleExpenseById,
 } = require('./controllers/expense')
 
-const { readPicture } = require('./controllers/camera')
+const { scanReceipt } = require('./controllers/receipt')
 
 const { filterByCategoryAndDate } = require('./controllers/filters')
 
@@ -482,13 +482,11 @@ app.put(
     }),
 )
 app.post(
-    '/camera/photo',
+    '/expenses/scan',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        const { picture } = req.files
-        const categories = await getAllCategoriesAndUsers(req, res)
-        const context = await readPicture(picture.data)
-        res.render('expenses/new', categories)
+        const result = await scanReceipt(req)
+        res.status(result.error ? 400 : 200).json(result)
     }),
 )
 
