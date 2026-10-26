@@ -278,8 +278,8 @@ app.get(
     '/search',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        from = `${new Date().toISOString().substring(0, 8)}01`
-        to = new Date().toISOString().substring(0, 10)
+        const from = `${new Date().toISOString().substring(0, 8)}01`
+        const to = new Date().toISOString().substring(0, 10)
         const categoriesAndUsers = await getAllCategoriesAndUsers(req, res)
         const context = await filterByCategoryAndDate(req, res)
         res.render('expenses/search', {
@@ -304,11 +304,19 @@ app.post(
                 req.body.dateTo,
                 req.body.category,
                 req.body.subCategory,
+                req.body.keyword,
             )
             const categoriesAndUsers = await getAllCategoriesAndUsers(req, res)
             res.render('expenses/search', {
                 context,
                 categoriesAndUsers,
+                // Keep the chosen period in the date fields
+                from:
+                    req.body.dateFrom ||
+                    `${new Date().toISOString().substring(0, 8)}01`,
+                to:
+                    req.body.dateTo ||
+                    new Date().toISOString().substring(0, 10),
             })
         } else {
             let { from, to } = getLastMonthStartEndDate()

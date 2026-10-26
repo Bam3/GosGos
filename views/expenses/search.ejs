@@ -5,6 +5,20 @@
     </div>
     <div class="col-md-2 mb-4">
         <form action="/search" method="POST" id="addNewExpense">
+            <label for="keyword" class="form-label">Išči po kategoriji:</label>
+            <div class="input-group">
+                <input
+                    id="keyword"
+                    name="keyword"
+                    type="search"
+                    class="form-control"
+                    placeholder="npr. elektrika"
+                    value="<%= context.keyword || '' %>"
+                />
+                <button class="btn btn-outline-success" aria-label="Išči">
+                    🔍
+                </button>
+            </div>
             <input
                 type="checkbox"
                 class="btn-check d-grid col-12 mx-auto"
@@ -110,6 +124,9 @@
         <div class="card">
             <div class="card-body">
                 <div>
+                    <% if (context.keyword) { %>
+                    <p class="display-6 lead">"<%= context.keyword %>"</p>
+                    <% } %>
                     <% if (context.category && context.subCategory) { %>
                     <p class="display-6 lead "><kbd><%=context.category%></kbd></p>
                     <% for (category of context.subCategory) {%>
@@ -136,6 +153,11 @@
         </div>
     </div>
     <% } %>
+    <% if (context.keyword && context.expenses.length === 0) { %>
+    <div class="col-md-7">
+        <p class="lead">Ni stroškov v kategorijah, ki vsebujejo "<%= context.keyword %>".</p>
+    </div>
+    <% } %>
     <% if(context.expenses.length > 0) { %>
     <div class="col-md-12 table-responsive">
         <table class="table table-hover">
@@ -154,7 +176,9 @@
                     <tr>
                         <td class="col" scope="row"><%= i+1 %></th>
                         <td><%=context.expenses[i].payDate.toLocaleDateString('de-CH',{year:"2-digit",month: "2-digit", day:"2-digit"})%></td>
-                        <td><%=context.expenses[i].category[0].name %></td>
+                        <td>
+                            <% if (context.expenses[i].parentCat[0]) { %><%= context.expenses[i].parentCat[0].name %> - <% } %><%= context.expenses[i].category[0].name %>
+                        </td>
                         <td>
                             <a href="/expenses/<%= context.expenses[i]._id %>"
                                 >€<%=context.expenses[i].cost.toFixed(2) %></a
