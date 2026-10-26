@@ -68,6 +68,7 @@ const {
 
 const {
     getLastMonthStartEndDate,
+    getNextMonthStartEndDate,
 } = require('./public/javascripts/pureFunctions')
 // const {
 //     getWhiskeyContext,
@@ -239,10 +240,16 @@ app.get(
     '/expenses',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        if (
-            req.query.lastMonth === 'false' ||
-            req.query.lastMonth === undefined
-        ) {
+        if (req.query.lastMonth === 'true' || req.query.nextMonth === 'true') {
+            const share = req.query.share === 'false' ? 'false' : 'true'
+            let { from, to } =
+                req.query.lastMonth === 'true'
+                    ? getLastMonthStartEndDate(req.query.from)
+                    : getNextMonthStartEndDate(req.query.from)
+            return res.redirect(
+                `/expenses?from=${from}&to=${to}&share=${share}`,
+            )
+        } else {
             let { from, to, share, category } = req.query
             if (!from || !to) {
                 from = `${new Date().toISOString().substring(0, 8)}01`
@@ -263,9 +270,6 @@ app.get(
                 })
                 res.render('expenses/index', context)
             }
-        } else {
-            let { from, to } = getLastMonthStartEndDate(req.query.from)
-            return res.redirect(`/expenses?from=${from}&to=${to}&share=${true}`)
         }
     }),
 )
@@ -338,9 +342,10 @@ app.post(
     isLoggedIn,
     catchAsync(async (req, res) => {
         const formData = req.body
-        res.redirect(
-            `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}&share=${formData.share}&lastMonth=${formData.lastMonth}`,
-        )
+        let url = `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}&share=${formData.share}`
+        if (formData.lastMonth === 'true') url += '&lastMonth=true'
+        if (formData.nextMonth === 'true') url += '&nextMonth=true'
+        res.redirect(url)
     }),
 )
 

@@ -109,3 +109,17 @@ module.exports.getLastMonthStartEndDate = function (
     ).getDate()
     return { from: prevDateS.join('-'), to: prevDateE.join('-') }
 }
+module.exports.getNextMonthStartEndDate = function (
+    refDate = new Date().toISOString(),
+) {
+    const [year, month] = refDate.split('-').map(Number)
+    // `month` is 1-based, so as a 0-based Date month it already means next month
+    const nextMonthStart = new Date(Date.UTC(year, month, 1))
+    const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate()
+    const nextYear = nextMonthStart.getUTCFullYear()
+    const nextMonth = String(nextMonthStart.getUTCMonth() + 1).padStart(2, '0')
+    return {
+        from: `${nextYear}-${nextMonth}-01`,
+        to: `${nextYear}-${nextMonth}-${String(lastDay).padStart(2, '0')}`,
+    }
+}
