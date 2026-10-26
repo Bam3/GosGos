@@ -104,12 +104,16 @@ module.exports.createDebit = async (req, res) => {
     return newDebit
 }
 module.exports.getDebitContext = async (req, res) => {
-    let debit = await Debit.findById(req.params.id).populate({
+    let debit = await Debit.findOne({
+        _id: req.params.id,
+        debitOwner: req.session.usersID,
+    }).populate({
         path: 'category',
         populate: {
             path: 'parentCategory',
         },
     })
+    if (!debit) return null
     return { debit }
 }
 module.exports.updateDebit = async (req, res) => {
@@ -120,9 +124,18 @@ module.exports.updateDebit = async (req, res) => {
     if (!req.body.debit.enable) {
         req.body.debit.enable = 'false'
     }
-    let debit = await Debit.findByIdAndUpdate(id, {
-        ...req.body.debit,
-    })
+    let debit = await Debit.findOneAndUpdate(
+        { _id: id, debitOwner: req.session.usersID },
+        {
+            ...req.body.debit,
+            debitOwner: req.session.usersID,
+            household: req.session.household,
+        },
+    )
+    if (!debit) {
+        req.flash('error', 'Iskanega trajnika ni moč najti!')
+        return res.redirect('/debits')
+    }
     //update debit in manager as well
     debit = await Debit.findById(id)
         .populate({
@@ -140,11 +153,15 @@ module.exports.updateDebit = async (req, res) => {
 }
 module.exports.deleteDebit = async (req, res) => {
     const { id } = req.params
-    await Debit.findByIdAndDelete(id)
+    const debit = await Debit.findOneAndDelete({
+        _id: id,
+        debitOwner: req.session.usersID,
+    })
+    if (!debit) {
+        req.flash('error', 'Iskanega trajnika ni moč najti!')
+        return res.redirect('/debits')
+    }
+    manager.deleteJob(id)
     req.flash('success', 'Uspešno izbrisan trajnik!')
     res.redirect('/debits')
-}
-module.exports.deleteCronJob = async (req, res) => {
-    const { id } = req.params
-    manager.deleteJob(id)
 }

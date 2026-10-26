@@ -2,6 +2,7 @@ const _ = require('lodash')
 const { Types } = require('mongoose')
 const Category = require('../models/category')
 const Expense = require('../models/expense')
+const Debit = require('../models/debit')
 
 module.exports.createCategory = async (req) => {
     const category = req.body
@@ -27,11 +28,13 @@ module.exports.createCategory = async (req) => {
 module.exports.getCategory = async (req, res, id) => {
     let categories = await Category.find({
         $or: [{ _id: id }, { parentCategory: id }],
+        household: req.session.household,
     })
     //what is parent category
     const parentCategory = categories.filter(
         (category) => !category.parentCategory,
     )
+    if (parentCategory.length === 0) return null
     //what are the categories
     categories = categories.filter((category) => category.parentCategory)
 
@@ -69,14 +72,15 @@ module.exports.updateCategoriesOrCreate = async (
     categoriesObject,
 ) => {
     // Update category name and color
-    const parentCategory = await Category.findByIdAndUpdate(
-        categoriesObject.parentId,
+    const parentCategory = await Category.findOneAndUpdate(
+        { _id: categoriesObject.parentId, household: req.session.household },
         {
             name: categoriesObject.parentCategory,
             color: categoriesObject.parentColor,
             active: categoriesObject.parentActive,
         },
     ).populate('subCategories')
+    if (!parentCategory) return null
 
     // Mark all existing subcategories for deletion
     let subcategoryIdsToDelete = parentCategory.subCategories.map(
@@ -91,12 +95,18 @@ module.exports.updateCategoriesOrCreate = async (
                 (id) => id !== subCategory.id,
             )
             //if parent categore is passive then all the subcategoreise will be passive as well
-            await Category.findByIdAndUpdate(subCategory.id, {
-                name: subCategory.name,
-                active: categoriesObject.parentActive
-                    ? subCategory.active
-                    : false,
-            })
+            await Category.findOneAndUpdate(
+                {
+                    _id: subCategory.id,
+                    parentCategory: parentCategory._id,
+                },
+                {
+                    name: subCategory.name,
+                    active: categoriesObject.parentActive
+                        ? subCategory.active
+                        : false,
+                },
+            )
         } else {
             const newSubCategory = new Category({
                 name: subCategory.name,
@@ -110,12 +120,37 @@ module.exports.updateCategoriesOrCreate = async (
         }
     })
 
+    let deactivatedCount = 0
     if (subcategoryIdsToDelete.length > 0) {
-        // Delete any old subcategories that should no longer exist
-        await Category.deleteMany({ _id: { $in: subcategoryIdsToDelete } })
-        // Delete expenses belonging to deleted categories
-        await Expense.deleteMany({ category: { $in: subcategoryIdsToDelete } })
+        // Subcategories that still have expenses or debits are only made
+        // passive, so their history stays in the reports
+        const [usedByExpenses, usedByDebits] = await Promise.all([
+            Expense.distinct('category', {
+                category: { $in: subcategoryIdsToDelete },
+            }),
+            Debit.distinct('category', {
+                category: { $in: subcategoryIdsToDelete },
+            }),
+        ])
+        const usedIds = new Set(
+            [...usedByExpenses, ...usedByDebits].map((id) => String(id)),
+        )
+        const idsToDeactivate = subcategoryIdsToDelete.filter((id) =>
+            usedIds.has(id),
+        )
+        const idsToDelete = subcategoryIdsToDelete.filter(
+            (id) => !usedIds.has(id),
+        )
+
+        await Category.updateMany(
+            { _id: { $in: idsToDeactivate } },
+            { active: false },
+        )
+        // Delete unused subcategories that should no longer exist
+        await Category.deleteMany({ _id: { $in: idsToDelete } })
+        deactivatedCount = idsToDeactivate.length
     }
+    return { deactivatedCount }
 }
 module.exports.getPopularCategories = async (req) => {
     const householdId = req.session.household
