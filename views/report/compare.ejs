@@ -1,5 +1,16 @@
 <% layout('layouts/boilerplate')%>
-<% const formatCost = (cost) => cost ? cost.toFixed(2) : '–' %>
+<%
+// Link to the expenses list for one month, optionally for one category
+const monthLink = (linkYear, monthIndex, categoryId) => {
+    const month = String(monthIndex + 1).padStart(2, '0')
+    const lastDay = new Date(Date.UTC(linkYear, monthIndex + 1, 0)).getUTCDate()
+    return `/expenses?from=${linkYear}-${month}-01&to=${linkYear}-${month}-${lastDay}` +
+        `&share=${share}` + (categoryId ? `&category=${categoryId}` : '')
+}
+const costCell = (cost, linkYear, monthIndex, categoryId) => cost
+    ? `<a class="text-reset" href="${monthLink(linkYear, monthIndex, categoryId)}">${cost.toFixed(2)}</a>`
+    : '–'
+%>
 <div class="row">
     <div class="col-md-12 d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
         <h1>
@@ -131,9 +142,9 @@
                             ><%= entry.year %></a
                         >
                     </td>
-                    <% for (const cost of entry.months) { %>
-                    <td><%= formatCost(cost) %></td>
-                    <% } %>
+                    <% entry.months.forEach((cost, i) => { %>
+                    <td><%- costCell(cost, entry.year, i, comparison.category.id) %></td>
+                    <% }) %>
                     <td class="fw-bold">€<%= entry.total.toFixed(2) %></td>
                     <td>€<%= entry.monthlyAverage.toFixed(2) %></td>
                     <% if (entry.change === null) { %>

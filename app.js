@@ -242,7 +242,7 @@ app.get(
             req.query.lastMonth === 'false' ||
             req.query.lastMonth === undefined
         ) {
-            let { from, to, share } = req.query
+            let { from, to, share, category } = req.query
             if (!from || !to) {
                 from = `${new Date().toISOString().substring(0, 8)}01`
                 to = new Date().toISOString().substring(0, 10)
@@ -258,6 +258,7 @@ app.get(
                     from,
                     to,
                     share,
+                    category,
                 })
                 res.render('expenses/index', context)
             }

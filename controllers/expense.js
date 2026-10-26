@@ -1,3 +1,4 @@
+const { Types } = require('mongoose')
 const Category = require('../models/category')
 const Expense = require('../models/expense')
 const User = require('../models/user')
@@ -78,6 +79,23 @@ module.exports.getExpensesForFilter = async (req, res, filter) => {
             household: req.session.household,
         })
         filterObject.payers = currentUser
+    }
+
+    // Optional category filter (used by links from the yearly report),
+    // a parent category also includes all of its subcategories
+    if (filter.category && Types.ObjectId.isValid(filter.category)) {
+        const category = await Category.findOne({
+            _id: filter.category,
+            household: req.session.household,
+        }).populate(['subCategories', 'parentCategory'])
+        if (category) {
+            filterObject.category = {
+                $in: [category._id, ...category.subCategories],
+            }
+            filter.categoryLabel = category.parentCategory
+                ? `${category.parentCategory.name} - ${category.name}`
+                : category.name
+        }
     }
 
     const expenses = await Expense.find(filterObject)

@@ -1,5 +1,16 @@
 <% layout('layouts/boilerplate')%>
-<% const formatCost = (cost) => cost ? cost.toFixed(2) : '–' %>
+<%
+// Link to the expenses list for one month, optionally for one category
+const monthLink = (linkYear, monthIndex, categoryId) => {
+    const month = String(monthIndex + 1).padStart(2, '0')
+    const lastDay = new Date(Date.UTC(linkYear, monthIndex + 1, 0)).getUTCDate()
+    return `/expenses?from=${linkYear}-${month}-01&to=${linkYear}-${month}-${lastDay}` +
+        `&share=${share}` + (categoryId ? `&category=${categoryId}` : '')
+}
+const costCell = (cost, linkYear, monthIndex, categoryId) => cost
+    ? `<a class="text-reset" href="${monthLink(linkYear, monthIndex, categoryId)}">${cost.toFixed(2)}</a>`
+    : '–'
+%>
 <div class="row">
     <div class="col-md-12 d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
         <h1>
@@ -88,9 +99,9 @@
                             €<%= row.total.toFixed(2) %>
                         </div>
                     </td>
-                    <% for (const cost of row.months) { %>
-                    <td><%= formatCost(cost) %></td>
-                    <% } %>
+                    <% row.months.forEach((cost, i) => { %>
+                    <td><%- costCell(cost, year, i, row.id) %></td>
+                    <% }) %>
                     <td>
                         <a
                             href="/report/compare?category=<%= row.id %>&share=<%= share %>"
@@ -107,9 +118,9 @@
                             €<%= subRow.total.toFixed(2) %>
                         </div>
                     </td>
-                    <% for (const cost of subRow.months) { %>
-                    <td><%= formatCost(cost) %></td>
-                    <% } %>
+                    <% subRow.months.forEach((cost, i) => { %>
+                    <td><%- costCell(cost, year, i, subRow.id) %></td>
+                    <% }) %>
                     <td>
                         <a
                             href="/report/compare?category=<%= subRow.id %>&share=<%= share %>"
@@ -123,9 +134,9 @@
             <tfoot class="table-light fw-bold">
                 <tr>
                     <td class="text-start">Skupaj</td>
-                    <% for (const cost of monthTotals) { %>
-                    <td><%= formatCost(cost) %></td>
-                    <% } %>
+                    <% monthTotals.forEach((cost, i) => { %>
+                    <td><%- costCell(cost, year, i) %></td>
+                    <% }) %>
                     <td>€<%= total.toFixed(2) %></td>
                 </tr>
             </tfoot>
