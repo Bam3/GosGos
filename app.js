@@ -68,6 +68,7 @@ const {
 
 const {
     getLastMonthStartEndDate,
+    getNextMonthStartEndDate,
 } = require('./public/javascripts/pureFunctions')
 // const {
 //     getWhiskeyContext,
@@ -239,10 +240,16 @@ app.get(
     '/expenses',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        if (
-            req.query.lastMonth === 'false' ||
-            req.query.lastMonth === undefined
-        ) {
+        if (req.query.lastMonth === 'true' || req.query.nextMonth === 'true') {
+            const share = req.query.share === 'false' ? 'false' : 'true'
+            let { from, to } =
+                req.query.lastMonth === 'true'
+                    ? getLastMonthStartEndDate(req.query.from)
+                    : getNextMonthStartEndDate(req.query.from)
+            return res.redirect(
+                `/expenses?from=${from}&to=${to}&share=${share}`,
+            )
+        } else {
             let { from, to, share, category } = req.query
             if (!from || !to) {
                 from = `${new Date().toISOString().substring(0, 8)}01`
@@ -263,9 +270,6 @@ app.get(
                 })
                 res.render('expenses/index', context)
             }
-        } else {
-            let { from, to } = getLastMonthStartEndDate(req.query.from)
-            return res.redirect(`/expenses?from=${from}&to=${to}&share=${true}`)
         }
     }),
 )
@@ -274,8 +278,8 @@ app.get(
     '/search',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        from = `${new Date().toISOString().substring(0, 8)}01`
-        to = new Date().toISOString().substring(0, 10)
+        const from = `${new Date().toISOString().substring(0, 8)}01`
+        const to = new Date().toISOString().substring(0, 10)
         const categoriesAndUsers = await getAllCategoriesAndUsers(req, res)
         const context = await filterByCategoryAndDate(req, res)
         res.render('expenses/search', {
@@ -300,11 +304,19 @@ app.post(
                 req.body.dateTo,
                 req.body.category,
                 req.body.subCategory,
+                req.body.keyword,
             )
             const categoriesAndUsers = await getAllCategoriesAndUsers(req, res)
             res.render('expenses/search', {
                 context,
                 categoriesAndUsers,
+                // Keep the chosen period in the date fields
+                from:
+                    req.body.dateFrom ||
+                    `${new Date().toISOString().substring(0, 8)}01`,
+                to:
+                    req.body.dateTo ||
+                    new Date().toISOString().substring(0, 10),
             })
         } else {
             let { from, to } = getLastMonthStartEndDate()
@@ -338,9 +350,10 @@ app.post(
     isLoggedIn,
     catchAsync(async (req, res) => {
         const formData = req.body
-        res.redirect(
-            `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}&share=${formData.share}&lastMonth=${formData.lastMonth}`,
-        )
+        let url = `/expenses?from=${formData.dateFrom}&to=${formData.dateTo}&share=${formData.share}`
+        if (formData.lastMonth === 'true') url += '&lastMonth=true'
+        if (formData.nextMonth === 'true') url += '&nextMonth=true'
+        res.redirect(url)
     }),
 )
 

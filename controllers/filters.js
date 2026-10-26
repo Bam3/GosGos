@@ -1,4 +1,5 @@
 const Expense = require('../models/expense')
+const Category = require('../models/category')
 const { sumBy } = require('lodash')
 const mongoose = require('mongoose')
 const {
@@ -14,6 +15,7 @@ module.exports.filterByCategoryAndDate = async (
     dateTo,
     category,
     subCategory,
+    keyword,
 ) => {
     let expenses = {}
     let filterByCat = {}
@@ -23,6 +25,22 @@ module.exports.filterByCategoryAndDate = async (
         household: { $eq: new mongoose.Types.ObjectId(req.session.household) },
     }
     let filterSharedExpenses = { shared: true }
+    keyword = typeof keyword === 'string' ? keyword.trim() : ''
+    //Search by keyword in category and sub category names and comments
+    let filterByKeyword = {}
+    if (keyword) {
+        const keywordRegex = {
+            $regex: keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+            $options: 'i',
+        }
+        const categoryIds = await getCategoryIdsByKeyword(req, keywordRegex)
+        filterByKeyword = {
+            $or: [
+                { 'category._id': { $in: categoryIds } },
+                { description: keywordRegex },
+            ],
+        }
+    }
     //Sort by cat
     if (!subCategory && category) {
         filterByCat = { 'parentCat.name': { $eq: category } }
@@ -58,7 +76,12 @@ module.exports.filterByCategoryAndDate = async (
     if (filteredByDate === undefined) {
         matchFilter = {
             $match: {
-                $and: [filterByCat, filterHousehold, filterSharedExpenses],
+                $and: [
+                    filterByCat,
+                    filterByKeyword,
+                    filterHousehold,
+                    filterSharedExpenses,
+                ],
             },
         }
     } else {
@@ -74,13 +97,14 @@ module.exports.filterByCategoryAndDate = async (
                 $and: [
                     filterByDate,
                     filterByCat,
+                    filterByKeyword,
                     filterHousehold,
                     filterSharedExpenses,
                 ],
             },
         }
     }
-    if (!category && !subCategory) {
+    if (!category && !subCategory && !keyword) {
         return { expenses }
     } else {
         expenses = await Expense.aggregate([
@@ -108,6 +132,9 @@ module.exports.filterByCategoryAndDate = async (
                     as: 'payers',
                 },
             },
+            // $lookup skips the schema's `select: false`, so drop password
+            // fields before expenses are sent to the page
+            { $project: { 'payers.hash': 0, 'payers.salt': 0 } },
             matchFilter,
             {
                 $sort: { payDate: -1 },
@@ -121,6 +148,7 @@ module.exports.filterByCategoryAndDate = async (
             sum,
             category,
             subCategory,
+            keyword,
             date: {
                 filteredByDate,
                 dateFrom,
@@ -128,4 +156,19 @@ module.exports.filterByCategoryAndDate = async (
             },
         }
     }
+}
+
+// Ids of household categories whose name matches the keyword. A matching
+// parent category also brings in all of its subcategories.
+const getCategoryIdsByKeyword = async (req, keywordRegex) => {
+    const matchingCategories = await Category.find({
+        household: req.session.household,
+        name: keywordRegex,
+    })
+    const matchingIds = matchingCategories.map((category) => category._id)
+    const subCategories = await Category.find({
+        household: req.session.household,
+        parentCategory: { $in: matchingIds },
+    })
+    return [...matchingIds, ...subCategories.map((category) => category._id)]
 }
