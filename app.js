@@ -56,7 +56,6 @@ const {
     getDebitContext,
     updateDebit,
     deleteDebit,
-    deleteCronJob,
 } = require('./controllers/debit')
 
 const {
@@ -184,6 +183,7 @@ app.get(
 
 app.get(
     '/expenses/:id',
+    isLoggedIn,
     catchAsync(async (req, res) => {
         const expense = await getSingleExpenseById(req, res)
         if (!expense) {
@@ -196,6 +196,7 @@ app.get(
 
 app.get(
     '/expenses/:id/edit',
+    isLoggedIn,
     catchAsync(async (req, res) => {
         const expense = await getSingleExpenseById(req, res)
         const { users, categories } = await getAllCategoriesAndUsers(req, res)
@@ -356,6 +357,7 @@ app.get('/categories/new', isLoggedIn, (req, res) => {
 
 app.get(
     '/categories/:id/edit',
+    isLoggedIn,
     catchAsync(async (req, res) => {
         const { id } = req.params
         const categories = await getCategory(req, res, id)
@@ -392,7 +394,19 @@ app.put(
     '/categories/:id',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        await updateCategoriesOrCreate(req, res, getCategoriesToEdit(req, res))
+        const result = await updateCategoriesOrCreate(
+            req,
+            res,
+            getCategoriesToEdit(req, res),
+        )
+        if (!result) {
+            req.flash('error', 'Iskane kategorije ni moč najti!')
+        } else if (result.deactivatedCount > 0) {
+            req.flash(
+                'success',
+                'Podkategorije z vnešenimi stroški niso izbrisane, ampak so nastavljene kot neaktivne.',
+            )
+        }
         res.redirect('/categories')
     }),
 )
@@ -437,6 +451,7 @@ app.post(
 
 app.get(
     '/debits/:id/edit',
+    isLoggedIn,
     catchAsync(async (req, res) => {
         const context = await getDebitContext(req, res)
         const usersAndCategories = await getAllCategoriesAndUsers(req, res)
@@ -463,7 +478,6 @@ app.delete(
     '/debits/:id',
     isLoggedIn,
     catchAsync(async (req, res) => {
-        deleteCronJob(req, res)
         deleteDebit(req, res)
     }),
 )

@@ -20,10 +20,18 @@ module.exports.getAllCategoriesAndUsers = async (req, res) => {
 
 module.exports.updateExpense = async (req, res) => {
     const { id } = req.params
-    const expense = await Expense.findByIdAndUpdate(id, {
-        ...req.body.expense,
-        shared: Boolean(req.body.expense.shared),
-    })
+    const expense = await Expense.findOneAndUpdate(
+        { _id: id, household: req.session.household },
+        {
+            ...req.body.expense,
+            household: req.session.household,
+            shared: Boolean(req.body.expense.shared),
+        },
+    )
+    if (!expense) {
+        req.flash('error', 'Iskanega stroška ni moč najti!')
+        return res.redirect('/expenses/new')
+    }
     req.flash('success', 'Uspešno posodobljen strošek!')
     res.redirect(`/expenses/${expense._id}`)
 }
@@ -112,7 +120,10 @@ module.exports.getExpensesForFilter = async (req, res, filter) => {
 }
 
 module.exports.getSingleExpenseById = async (req, res) => {
-    const expense = await Expense.findById(req.params.id)
+    const expense = await Expense.findOne({
+        _id: req.params.id,
+        household: req.session.household,
+    })
         .populate({
             path: 'category',
             populate: {
@@ -129,7 +140,14 @@ module.exports.getSingleExpenseById = async (req, res) => {
 
 module.exports.deleteExpense = async (req, res) => {
     const { id } = req.params
-    await Expense.findByIdAndDelete(id)
+    const expense = await Expense.findOneAndDelete({
+        _id: id,
+        household: req.session.household,
+    })
+    if (!expense) {
+        req.flash('error', 'Iskanega stroška ni moč najti!')
+        return res.redirect('/expenses')
+    }
     req.flash('success', 'Uspešno izbrisan strošek!')
     res.redirect('/expenses')
 }
