@@ -5,14 +5,14 @@
     </div>
     <div class="col-md-2 mb-4">
         <form action="/search" method="POST" id="addNewExpense">
-            <label for="keyword" class="form-label">Išči po kategoriji:</label>
+            <label for="keyword" class="form-label">Išči po kategoriji ali komentarju:</label>
             <div class="input-group">
                 <input
                     id="keyword"
                     name="keyword"
                     type="search"
                     class="form-control"
-                    placeholder="npr. elektrika"
+                    placeholder="npr. elektrika, pizza"
                     value="<%= context.keyword || '' %>"
                 />
                 <button class="btn btn-outline-success" aria-label="Išči">
@@ -155,7 +155,7 @@
     <% } %>
     <% if (context.keyword && context.expenses.length === 0) { %>
     <div class="col-md-7">
-        <p class="lead">Ni stroškov v kategorijah, ki vsebujejo "<%= context.keyword %>".</p>
+        <p class="lead">Ni stroškov, kjer kategorija ali komentar vsebuje "<%= context.keyword %>".</p>
     </div>
     <% } %>
     <% if(context.expenses.length > 0) { %>
@@ -178,6 +178,9 @@
                         <td><%=context.expenses[i].payDate.toLocaleDateString('de-CH',{year:"2-digit",month: "2-digit", day:"2-digit"})%></td>
                         <td>
                             <% if (context.expenses[i].parentCat[0]) { %><%= context.expenses[i].parentCat[0].name %> - <% } %><%= context.expenses[i].category[0].name %>
+                            <% if (context.expenses[i].description) { %>
+                            <div class="small text-muted"><%= context.expenses[i].description %></div>
+                            <% } %>
                         </td>
                         <td>
                             <a href="/expenses/<%= context.expenses[i]._id %>"

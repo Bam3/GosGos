@@ -26,11 +26,20 @@ module.exports.filterByCategoryAndDate = async (
     }
     let filterSharedExpenses = { shared: true }
     keyword = typeof keyword === 'string' ? keyword.trim() : ''
-    //Search by keyword in category and sub category names
+    //Search by keyword in category and sub category names and comments
     let filterByKeyword = {}
     if (keyword) {
-        const categoryIds = await getCategoryIdsByKeyword(req, keyword)
-        filterByKeyword = { 'category._id': { $in: categoryIds } }
+        const keywordRegex = {
+            $regex: keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+            $options: 'i',
+        }
+        const categoryIds = await getCategoryIdsByKeyword(req, keywordRegex)
+        filterByKeyword = {
+            $or: [
+                { 'category._id': { $in: categoryIds } },
+                { description: keywordRegex },
+            ],
+        }
     }
     //Sort by cat
     if (!subCategory && category) {
@@ -149,13 +158,12 @@ module.exports.filterByCategoryAndDate = async (
     }
 }
 
-// Ids of household categories whose name contains the keyword. A matching
+// Ids of household categories whose name matches the keyword. A matching
 // parent category also brings in all of its subcategories.
-const getCategoryIdsByKeyword = async (req, keyword) => {
-    const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+const getCategoryIdsByKeyword = async (req, keywordRegex) => {
     const matchingCategories = await Category.find({
         household: req.session.household,
-        name: { $regex: escapedKeyword, $options: 'i' },
+        name: keywordRegex,
     })
     const matchingIds = matchingCategories.map((category) => category._id)
     const subCategories = await Category.find({
