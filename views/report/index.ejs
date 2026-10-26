@@ -1,0 +1,144 @@
+<% layout('layouts/boilerplate')%>
+<% const formatCost = (cost) => cost ? cost.toFixed(2) : '–' %>
+<div class="row">
+    <div class="col-md-12 d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+        <h1>
+            Letno poročilo <%= year %>
+            <small class="text-muted fs-5">
+                <%= share === 'true' ? 'skupni' : 'moji' %> stroški
+            </small>
+        </h1>
+        <a class="btn btn-outline-secondary text-nowrap" href="/report/compare?share=<%= share %>"
+            >Primerjava let</a
+        >
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <form action="/report" method="GET">
+                    <label for="year">Leto:</label>
+                    <select id="year" name="year" class="form-select mb-3">
+                        <% for (const availableYear of availableYears) { %>
+                        <option value="<%= availableYear %>" <%= availableYear === year ? 'selected' : '' %>>
+                            <%= availableYear %>
+                        </option>
+                        <% } %>
+                    </select>
+                    <label for="share">Stroški:</label>
+                    <select id="share" name="share" class="form-select mb-3">
+                        <option value="true" <%= share === 'true' ? 'selected' : '' %>>Skupni</option>
+                        <option value="false" <%= share === 'false' ? 'selected' : '' %>>Moji</option>
+                    </select>
+                    <div class="d-grid col-12 mx-auto">
+                        <button class="btn btn-secondary">Prikaži</button>
+                    </div>
+                </form>
+                <hr />
+                <h4>Skupaj: €<%= total.toFixed(2) %></h4>
+                <p class="lead mb-0">
+                    Povprečje na mesec: €<%= (total / 12).toFixed(2) %>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="yearlyReportChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 table-responsive">
+        <% if (categoryRows.length === 0) { %>
+        <p class="lead">Za leto <%= year %> ni vnesenih stroškov.</p>
+        <% } else { %>
+        <table class="table table-hover table-sm text-end report-table">
+            <thead class="table-light">
+                <tr>
+                    <th class="text-start">Kategorija</th>
+                    <% for (const label of monthLabels) { %>
+                    <th><%= label %></th>
+                    <% } %>
+                    <th>Skupaj</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (const row of categoryRows) { %>
+                <tr
+                    class="fw-bold category-row"
+                    data-bs-toggle="collapse"
+                    data-bs-target=".sub-<%= row.id %>"
+                    role="button"
+                >
+                    <td class="text-start">
+                        <span
+                            class="category-color"
+                            style="background-color: <%= row.color || '#adb5bd' %>"
+                        ></span>
+                        <%= row.name %>
+                        <% if (row.subCategories.length) { %>
+                        <small class="text-muted">▾</small>
+                        <% } %>
+                        <div class="d-md-none small fw-normal text-muted">
+                            €<%= row.total.toFixed(2) %>
+                        </div>
+                    </td>
+                    <% for (const cost of row.months) { %>
+                    <td><%= formatCost(cost) %></td>
+                    <% } %>
+                    <td>
+                        <a
+                            href="/report/compare?category=<%= row.id %>&share=<%= share %>"
+                            title="Primerjaj z drugimi leti"
+                            >€<%= row.total.toFixed(2) %></a
+                        >
+                    </td>
+                </tr>
+                <% for (const subRow of row.subCategories) { %>
+                <tr class="collapse sub-<%= row.id %> text-muted">
+                    <td class="text-start ps-4">
+                        <%= subRow.name %>
+                        <div class="d-md-none small">
+                            €<%= subRow.total.toFixed(2) %>
+                        </div>
+                    </td>
+                    <% for (const cost of subRow.months) { %>
+                    <td><%= formatCost(cost) %></td>
+                    <% } %>
+                    <td>
+                        <a
+                            href="/report/compare?category=<%= subRow.id %>&share=<%= share %>"
+                            title="Primerjaj z drugimi leti"
+                            >€<%= subRow.total.toFixed(2) %></a
+                        >
+                    </td>
+                </tr>
+                <% } %> <% } %>
+            </tbody>
+            <tfoot class="table-light fw-bold">
+                <tr>
+                    <td class="text-start">Skupaj</td>
+                    <% for (const cost of monthTotals) { %>
+                    <td><%= formatCost(cost) %></td>
+                    <% } %>
+                    <td>€<%= total.toFixed(2) %></td>
+                </tr>
+            </tfoot>
+        </table>
+        <p class="text-muted small">
+            Klikni kategorijo za podkategorije, klikni znesek za primerjavo z
+            drugimi leti.
+        </p>
+        <% } %>
+    </div>
+</div>
+<script>
+    const monthLabels = <%- JSON.stringify(monthLabels) %>
+    const categoryRows = <%- JSON.stringify(categoryRows) %>
+</script>
+<script src="/javascripts/yearlyReportChart.js"></script>

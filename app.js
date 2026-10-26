@@ -51,6 +51,14 @@ const {
 const { updateSettings } = require('./controllers/settings')
 
 const {
+    getAvailableYears,
+    getYearlyReport,
+    getCategoryComparison,
+    parseShare,
+    monthLabels,
+} = require('./controllers/report')
+
+const {
     getAllLoggedInUserDebits,
     createDebit,
     getDebitContext,
@@ -347,6 +355,55 @@ app.delete(
     isLoggedIn,
     catchAsync(async (req, res) => {
         deleteExpense(req, res)
+    }),
+)
+
+app.get(
+    '/report',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const availableYears = await getAvailableYears(req)
+        const year = parseInt(req.query.year) || new Date().getFullYear()
+        const share = parseShare(req.query.share)
+        const report = await getYearlyReport(req, { year, share })
+        res.render('report/index', { ...report, availableYears })
+    }),
+)
+
+app.get(
+    '/report/compare',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const availableYears = await getAvailableYears(req)
+        const { categories } = await getAllCategoriesAndUsers(req, res)
+        const share = parseShare(req.query.share)
+        // ?years=2023&years=2024 or a single ?years=2024; default last 3 years
+        let years = [].concat(req.query.years || [])
+        years = years.map((year) => parseInt(year)).filter(Boolean)
+        if (years.length === 0) years = availableYears.slice(0, 3)
+
+        const categoryId = req.query.category
+        let comparison = null
+        if (categoryId) {
+            comparison = await getCategoryComparison(req, {
+                categoryId,
+                years,
+                share,
+            })
+            if (!comparison) {
+                req.flash('error', 'Iskane kategorije ni moč najti!')
+                return res.redirect('/report/compare')
+            }
+        }
+        res.render('report/compare', {
+            availableYears,
+            categories,
+            categoryId,
+            years,
+            share,
+            comparison,
+            monthLabels,
+        })
     }),
 )
 
