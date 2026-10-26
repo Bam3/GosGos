@@ -18,7 +18,7 @@
         </h1>
     </div>
 
-    <div class="col-md-3 mb-4">
+    <div class="col-md-4 mb-4">
         <div class="card">
             <div class="card-body">
                 <form
@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <div class="col-md-3 mb-4">
+    <div class="col-md-4 mb-4">
         <div class="card">
             <div class="card-body">
                 <p class="display-6">Obračun</p>
@@ -107,22 +107,13 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3 mb-4">
+    <div class="col-md-4 mb-4">
         <div class="card">
             <div class="card-body">
                 <canvas id="myChartCategories"></canvas>
             </div>
         </div>
     </div>
-    <% if (String(filter.share).toLowerCase() === 'true') { %>
-    <div class="col-md-3 mb-4">
-        <div class="card">
-            <div class="card-body">
-                <canvas id="myChartUsers"></canvas>
-            </div>
-        </div>
-    </div>
-    <% } %>
 
     <% for (category of comparison.expensesByCategory) { %>
     <div class="col-md-4 table-responsive">
@@ -172,6 +163,5 @@
 <script>
     const expenses = <%- JSON.stringify(expenses) %>
     const expensesByCategory = <%- JSON.stringify(comparison.expensesByCategory) %>
-    const expensesByUser = <%- JSON.stringify(comparison.expensesByUser) %>
 </script>
 <script src="/javascripts/chart.js"></script>

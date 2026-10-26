@@ -1,8 +1,5 @@
 const categoriesLabels = []
 const categoriesInputData = []
-const usersLabels = []
-const usersInputData = []
-const usersColor = []
 const categoriesColor = []
 
 //Categories Pie Chart
@@ -33,30 +30,3 @@ const myChart = new Chart(
     document.getElementById('myChartCategories'),
     configCategories,
 )
-
-//Users Pie Chart
-expensesByUser.forEach((user) => {
-    usersLabels.push(user.name)
-    usersInputData.push(user.sumOfPayments)
-    usersColor.push(user.color)
-})
-
-const dataUsers = {
-    datasets: [
-        {
-            data: usersInputData,
-            backgroundColor: usersColor,
-            hoverOffset: 4,
-        },
-    ],
-
-    labels: usersLabels,
-}
-
-const configUsers = {
-    type: 'pie',
-    data: dataUsers,
-    options: {},
-}
-
-const myChart2 = new Chart(document.getElementById('myChartUsers'), configUsers)
