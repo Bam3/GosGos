@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <rect width="512" height="512" fill="#212529"/>
+    <!-- body -->
+    <ellipse cx="270" cy="350" rx="130" ry="72" fill="#ffffff"/>
+    <!-- tail -->
+    <path d="M385 330 L425 300 L410 350 Z" fill="#ffffff"/>
+    <!-- neck -->
+    <path d="M150 340 C150 260 175 210 190 165 L235 165 C225 215 205 270 215 330 Z" fill="#ffffff"/>
+    <!-- head -->
+    <circle cx="205" cy="150" r="45" fill="#ffffff"/>
+    <!-- beak -->
+    <path d="M160 140 L105 162 L160 172 Z" fill="#fd7e14"/>
+    <!-- eye -->
+    <circle cx="197" cy="138" r="8" fill="#212529"/>
+    <!-- wing -->
+    <path d="M240 330 C280 300 340 300 375 335 C335 345 285 355 240 330 Z" fill="#dee2e6"/>
+    <!-- coin -->
+    <circle cx="340" cy="175" r="58" fill="#ffc107"/>
+    <circle cx="340" cy="175" r="46" fill="none" stroke="#e0a800" stroke-width="6"/>
+    <text x="340" y="198" font-family="Arial, Helvetica, sans-serif" font-size="66" font-weight="bold" fill="#212529" text-anchor="middle">€</text>
+</svg>
