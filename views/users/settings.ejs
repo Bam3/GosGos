@@ -63,3 +63,105 @@
     <hr />
     <button type="submit" class="btn btn-primary btn-lg mt-3">Shrani</button>
 </form>
+
+<hr class="my-4" />
+<section id="phone" class="mb-5">
+    <h2 class="h4">Povezava s telefonom</h2>
+    <p class="text-muted">
+        Telefon lahko plačila pošilja v GosGos, kjer počakajo med
+        <a href="/payments">čakajočimi stroški</a>, da jih potrdiš.
+    </p>
+
+    <% if (newApiKey) { %>
+    <div class="alert alert-warning">
+        <p class="mb-2">
+            <b>Tvoj nov ključ.</b> Kopiraj ga zdaj, kasneje ga ni več mogoče
+            prikazati.
+        </p>
+        <div class="input-group mb-2">
+            <input id="apiKey" class="form-control font-monospace" value="Bearer <%= newApiKey %>" readonly />
+            <button class="btn btn-outline-secondary" type="button" data-copy="apiKey">Kopiraj</button>
+        </div>
+    </div>
+    <% } %>
+
+    <p class="mb-2">
+        <% if (user.apiKeyCreated) { %>
+        Ključ ustvarjen <%= user.apiKeyCreated.toLocaleDateString('sl-SI') %>.
+        <% } else { %>
+        Ključ še ni ustvarjen.
+        <% } %>
+    </p>
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <form
+            action="/settings/api-key"
+            method="POST"
+            <% if (user.apiKeyCreated) { %>
+            onsubmit="return confirm('Star ključ bo prenehal delovati. Nadaljujem?')"
+            <% } %>
+        >
+            <button class="btn btn-primary">
+                <%= user.apiKeyCreated ? 'Ustvari nov ključ' : 'Ustvari ključ' %>
+            </button>
+        </form>
+        <% if (user.apiKeyCreated) { %>
+        <form
+            action="/settings/api-key?_method=DELETE"
+            method="POST"
+            onsubmit="return confirm('Telefon ne bo več mogel pošiljati plačil. Izbrišem ključ?')"
+        >
+            <button class="btn btn-outline-danger">Izbriši ključ</button>
+        </form>
+        <% } %>
+    </div>
+
+    <details>
+        <summary>Navodila za iPhone (Bližnjice)</summary>
+        <ol class="mt-2">
+            <li>Odpri <b>Bližnjice</b> (Shortcuts) → <b>Avtomatizacija</b> → <b>+</b>.</li>
+            <li>
+                Izberi <b>Denarnica</b> (Wallet), izberi svojo kartico →
+                <b>Zaženi takoj</b> → <b>Naprej</b> → <b>Nova prazna avtomatizacija</b>.
+            </li>
+            <li>Dodaj dejanje <b>Pridobi vsebino URL-ja</b> (Get Contents of URL).</li>
+            <li>
+                URL:
+                <div class="input-group input-group-sm my-1">
+                    <input id="paymentsUrl" class="form-control font-monospace" value="<%= paymentsUrl %>" readonly />
+                    <button class="btn btn-outline-secondary" type="button" data-copy="paymentsUrl">Kopiraj</button>
+                </div>
+            </li>
+            <li>Metoda: <b>POST</b>.</li>
+            <li>Glave (Headers): <code>Authorization</code> = tvoj ključ (začne se z <code>Bearer gg_</code>).</li>
+            <li>
+                Telo zahteve (Request Body): <b>JSON</b> s polji:
+                <ul>
+                    <li><code>amount</code> → <i>Vhod bližnjice → Znesek</i> (Amount)</li>
+                    <li><code>merchant</code> → <i>Vhod bližnjice → Trgovec</i> (Merchant)</li>
+                    <li><code>card</code> → <i>Vhod bližnjice → Ime</i> (Name)</li>
+                    <li><code>source</code> → besedilo <code>applepay</code></li>
+                </ul>
+            </li>
+        </ol>
+        <p class="small text-muted">
+            Za SMS banke izberi avtomatizacijo <b>Sporočilo</b> in pošlji
+            <code>text</code> → <i>Vhod bližnjice → Vsebina</i> ter
+            <code>source</code> = <code>sms</code>.
+        </p>
+    </details>
+</section>
+
+<script>
+    for (const button of document.querySelectorAll('[data-copy]')) {
+        button.addEventListener('click', async () => {
+            const input = document.getElementById(button.dataset.copy)
+            input.select()
+            try {
+                await navigator.clipboard.writeText(input.value)
+            } catch (e) {
+                document.execCommand('copy')
+            }
+            button.textContent = 'Kopirano ✓'
+        })
+    }
+</script>

@@ -93,18 +93,21 @@ module.exports.readQrCode = async (photo) => {
 const categoryHints = [
     [/ELEKTR(O|I[ČC]N)/i, 'Elektrika'],
     [/ZEMELJSKI\s+PLIN|PLINOVOD|ENERGETIKA/i, 'Plin'],
-    [/BENCIN|DIZEL|DIESEL|GORIVO|NAFTA|POLNILNICA/i, 'Gorivo'],
+    [
+        /BENCIN|DIZEL|DIESEL|GORIVO|NAFTA|POLNILNICA|PETROL|\bOMV\b|\bMOL\b|\bSHELL\b/i,
+        'Gorivo',
+    ],
     [/KOMUNAL|VODOVOD|SNAGA|ODPADK/i, 'Komunala'],
     [/TELEKOM|TELEMACH|T-2|INTERNET/i, 'Internet'],
     [/RTV\s*PRISPEVEK/i, 'RTV'],
     [/UPRAVNIK|UPRAVLJANJE|OBVEZNOSTI\s+ZA\s+OBDOBJE/i, 'Upravnik'],
 ]
 
-const countExpensesByCategory = (req, match) =>
+const countExpensesByCategory = (household, match) =>
     Expense.aggregate([
         {
             $match: {
-                household: new Types.ObjectId(req.session.household),
+                household: new Types.ObjectId(household),
                 ...match,
             },
         },
@@ -114,9 +117,9 @@ const countExpensesByCategory = (req, match) =>
 
 // Several categories can share a name (Gorivo under BMW and Clio),
 // pick the one the household uses most
-const pickMostUsed = async (req, candidates) => {
+const pickMostUsed = async (household, candidates) => {
     if (candidates.length <= 1) return candidates[0] || null
-    const counts = await countExpensesByCategory(req, {
+    const counts = await countExpensesByCategory(household, {
         category: { $in: candidates.map((category) => category._id) },
     })
     const mostUsedId = counts[0]?._id
@@ -137,9 +140,9 @@ const preferSubcategories = (matches) => {
 // 2. a category name that appears on the receipt (RTV)
 // 3. a category hinted by words on the bill (BENCIN -> Gorivo)
 // 4. the category most often used before for expenses mentioning the store
-const guessCategory = async (req, text, store) => {
+const guessCategory = async (household, text, store) => {
     const categories = await Category.find({
-        household: req.session.household,
+        household,
         active: true,
     })
 
@@ -150,14 +153,15 @@ const guessCategory = async (req, text, store) => {
                 containsWord(category.name, store),
         )
         if (byStore.length)
-            return pickMostUsed(req, preferSubcategories(byStore))
+            return pickMostUsed(household, preferSubcategories(byStore))
     }
 
     const byText = categories.filter(
         (category) =>
             category.name.length >= 3 && containsWord(text, category.name),
     )
-    if (byText.length) return pickMostUsed(req, preferSubcategories(byText))
+    if (byText.length)
+        return pickMostUsed(household, preferSubcategories(byText))
 
     const hintedNames = categoryHints
         .filter(([pattern]) => pattern.test(text))
@@ -165,10 +169,11 @@ const guessCategory = async (req, text, store) => {
     const byHint = categories.filter((category) =>
         hintedNames.includes(category.name.toLowerCase()),
     )
-    if (byHint.length) return pickMostUsed(req, preferSubcategories(byHint))
+    if (byHint.length)
+        return pickMostUsed(household, preferSubcategories(byHint))
 
     if (store) {
-        const [mostUsed] = await countExpensesByCategory(req, {
+        const [mostUsed] = await countExpensesByCategory(household, {
             description: {
                 $regex: store.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
                 $options: 'i',
@@ -184,6 +189,7 @@ const guessCategory = async (req, text, store) => {
     }
     return null
 }
+module.exports.guessCategory = guessCategory
 
 module.exports.scanReceipt = async (req) => {
     const photo = req.files?.receipt
@@ -205,7 +211,11 @@ module.exports.scanReceipt = async (req) => {
         )
         if (upn) {
             const text = [upn.store, upn.purpose].filter(Boolean).join('\n')
-            const category = await guessCategory(req, text, upn.store)
+            const category = await guessCategory(
+                req.session.household,
+                text,
+                upn.store,
+            )
             return {
                 ...upn,
                 category: category && { id: category.id, name: category.name },
@@ -215,7 +225,7 @@ module.exports.scanReceipt = async (req) => {
 
         const text = await module.exports.readReceiptText(photo.data)
         const store = findStore(text)
-        const category = await guessCategory(req, text, store)
+        const category = await guessCategory(req.session.household, text, store)
         return {
             cost: findTotal(text),
             date: findDate(text),

@@ -23,6 +23,16 @@ const UserSchema = new Schema({
     roll: {
         type: String,
     },
+    // Personal key for sending payments from the phone, only its hash
+    // is stored
+    apiKeyHash: {
+        type: String,
+        select: false,
+        index: true,
+    },
+    apiKeyCreated: {
+        type: Date,
+    },
 })
 //ta passpor-local-mongoose nam na našo schemo doda username,
 //salt, hash itd...
