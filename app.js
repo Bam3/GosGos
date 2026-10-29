@@ -742,7 +742,7 @@ app.delete(
         await deleteApiKey(req)
         req.flash(
             'success',
-            'Ključ je izbrisan, telefon ne more več pošiljati plačil.',
+            'Key deleted, your phone can no longer send payments.',
         )
         res.redirect('/settings#phone')
     }),
