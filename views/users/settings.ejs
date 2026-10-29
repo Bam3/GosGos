@@ -66,88 +66,177 @@
 
 <hr class="my-4" />
 <section id="phone" class="mb-5">
-    <h2 class="h4">Povezava s telefonom</h2>
+    <h2 class="h4">Phone connection</h2>
     <p class="text-muted">
-        Telefon lahko plačila pošilja v GosGos, kjer počakajo med
-        <a href="/payments">čakajočimi stroški</a>, da jih potrdiš.
+        Your phone can send card payments to GosGos. They wait under
+        <a href="/payments">Čakajoči</a> until you confirm them, only then
+        they become expenses.
     </p>
 
     <% if (newApiKey) { %>
     <div class="alert alert-warning">
         <p class="mb-2">
-            <b>Tvoj nov ključ.</b> Kopiraj ga zdaj, kasneje ga ni več mogoče
-            prikazati.
+            <b>Your new key.</b> Copy it now, it can not be shown again.
         </p>
         <div class="input-group mb-2">
             <input id="apiKey" class="form-control font-monospace" value="Bearer <%= newApiKey %>" readonly />
-            <button class="btn btn-outline-secondary" type="button" data-copy="apiKey">Kopiraj</button>
+            <button class="btn btn-outline-secondary" type="button" data-copy="apiKey">Copy</button>
         </div>
     </div>
     <% } %>
 
     <p class="mb-2">
         <% if (user.apiKeyCreated) { %>
-        Ključ ustvarjen <%= user.apiKeyCreated.toLocaleDateString('sl-SI') %>.
+        Key created on <%= user.apiKeyCreated.toLocaleDateString('en-GB') %>.
         <% } else { %>
-        Ključ še ni ustvarjen.
+        No key yet. Each person needs their own key, so payments are saved
+        under the right name.
         <% } %>
     </p>
-    <div class="d-flex flex-wrap gap-2 mb-3">
+    <div class="d-flex flex-wrap gap-2 mb-4">
         <form
             action="/settings/api-key"
             method="POST"
             <% if (user.apiKeyCreated) { %>
-            onsubmit="return confirm('Star ključ bo prenehal delovati. Nadaljujem?')"
+            onsubmit="return confirm('The old key will stop working. Continue?')"
             <% } %>
         >
             <button class="btn btn-primary">
-                <%= user.apiKeyCreated ? 'Ustvari nov ključ' : 'Ustvari ključ' %>
+                <%= user.apiKeyCreated ? 'Create new key' : 'Create key' %>
             </button>
         </form>
         <% if (user.apiKeyCreated) { %>
         <form
             action="/settings/api-key?_method=DELETE"
             method="POST"
-            onsubmit="return confirm('Telefon ne bo več mogel pošiljati plačil. Izbrišem ključ?')"
+            onsubmit="return confirm('Your phone will no longer be able to send payments. Delete the key?')"
         >
-            <button class="btn btn-outline-danger">Izbriši ključ</button>
+            <button class="btn btn-outline-danger">Delete key</button>
         </form>
         <% } %>
     </div>
 
-    <details>
-        <summary>Navodila za iPhone (Bližnjice)</summary>
-        <ol class="mt-2">
-            <li>Odpri <b>Bližnjice</b> (Shortcuts) → <b>Avtomatizacija</b> → <b>+</b>.</li>
+    <h3 class="h5">Values for the phone</h3>
+    <label class="form-label small text-muted mb-1" for="paymentsUrl">URL (method POST)</label>
+    <div class="input-group input-group-sm mb-2">
+        <input id="paymentsUrl" class="form-control font-monospace" value="<%= paymentsUrl %>" readonly />
+        <button class="btn btn-outline-secondary" type="button" data-copy="paymentsUrl">Copy</button>
+    </div>
+    <p class="small mb-4">
+        Header <code>Authorization</code> = your key, starting with
+        <code>Bearer gg_</code>.
+    </p>
+
+    <details class="mb-3">
+        <summary class="fw-semibold py-1">iPhone (Shortcuts)</summary>
+        <p class="mt-3 mb-1"><b>1. Test first, no payment needed</b></p>
+        <ol>
+            <li>Open <b>Shortcuts</b> → <b>Shortcuts</b> tab → <b>+</b>, name it "GosGos test".</li>
+            <li>Add the action <b>Get Contents of URL</b>, paste the URL above.</li>
             <li>
-                Izberi <b>Denarnica</b> (Wallet), izberi svojo kartico →
-                <b>Zaženi takoj</b> → <b>Naprej</b> → <b>Nova prazna avtomatizacija</b>.
+                Tap <b>▸</b> to show more: <b>Method</b> POST, <b>Headers</b>
+                <code>Authorization</code> = your key.
             </li>
-            <li>Dodaj dejanje <b>Pridobi vsebino URL-ja</b> (Get Contents of URL).</li>
             <li>
-                URL:
-                <div class="input-group input-group-sm my-1">
-                    <input id="paymentsUrl" class="form-control font-monospace" value="<%= paymentsUrl %>" readonly />
-                    <button class="btn btn-outline-secondary" type="button" data-copy="paymentsUrl">Kopiraj</button>
-                </div>
+                <b>Request Body</b> JSON with text fields:
+                <code>amount</code> = <code>12,34 €</code>,
+                <code>merchant</code> = <code>SPAR SLOVENIJA D.O.O.</code>,
+                <code>source</code> = <code>test</code>.
             </li>
-            <li>Metoda: <b>POST</b>.</li>
-            <li>Glave (Headers): <code>Authorization</code> = tvoj ključ (začne se z <code>Bearer gg_</code>).</li>
+            <li>Add the action <b>Show Result</b> and tap <b>▶</b>.</li>
             <li>
-                Telo zahteve (Request Body): <b>JSON</b> s polji:
+                The result should be <code>GosGos: €12.34 SPAR …</code>. The
+                test payment is now under <a href="/payments">Čakajoči</a>,
+                discard it there.
+            </li>
+        </ol>
+
+        <p class="mb-1"><b>2. Apple Pay payments</b></p>
+        <ol>
+            <li>
+                <b>Automation</b> tab → <b>+</b> → <b>Wallet</b> (called
+                Transaction on older iOS) → choose your cards.
+            </li>
+            <li><b>Run Immediately</b> → <b>Next</b> → <b>New Blank Automation</b>.</li>
+            <li>Add <b>Get Contents of URL</b> with the same URL, method and header as the test.</li>
+            <li>
+                <b>Request Body</b> JSON, this time with variables:
                 <ul>
-                    <li><code>amount</code> → <i>Vhod bližnjice → Znesek</i> (Amount)</li>
-                    <li><code>merchant</code> → <i>Vhod bližnjice → Trgovec</i> (Merchant)</li>
-                    <li><code>card</code> → <i>Vhod bližnjice → Ime</i> (Name)</li>
-                    <li><code>source</code> → besedilo <code>applepay</code></li>
+                    <li><code>amount</code> → <i>Shortcut Input → Amount</i></li>
+                    <li><code>merchant</code> → <i>Shortcut Input → Merchant</i></li>
+                    <li><code>card</code> → <i>Shortcut Input → Name</i></li>
+                    <li><code>source</code> → text <code>applepay</code></li>
                 </ul>
             </li>
         </ol>
         <p class="small text-muted">
-            Za SMS banke izberi avtomatizacijo <b>Sporočilo</b> in pošlji
-            <code>text</code> → <i>Vhod bližnjice → Vsebina</i> ter
-            <code>source</code> = <code>sms</code>.
+            Only works for Apple Pay. iPhone does not let apps read
+            notifications of other apps.
         </p>
+
+        <p class="mb-1"><b>3. Bank SMS (optional)</b></p>
+        <ol>
+            <li>
+                <b>Automation</b> → <b>+</b> → <b>Message</b>, Sender = your
+                bank, Message Contains <code>EUR</code> → <b>Run Immediately</b>.
+            </li>
+            <li>
+                <b>Get Contents of URL</b> as above, Request Body JSON:
+                <code>text</code> → <i>Shortcut Input → Content</i>,
+                <code>source</code> → text <code>sms</code>.
+            </li>
+        </ol>
+        <p class="small text-muted">
+            If a payment comes by Apple Pay and by SMS, GosGos keeps it only
+            once.
+        </p>
+    </details>
+
+    <details class="mb-3">
+        <summary class="fw-semibold py-1">Android (MacroDroid)</summary>
+        <ol class="mt-3">
+            <li>
+                Install <b>MacroDroid</b> from the Play Store and allow
+                <b>notification access</b>.
+            </li>
+            <li>
+                Settings → Apps → MacroDroid → Battery → <b>Unrestricted</b>,
+                otherwise Android may stop it.
+            </li>
+            <li>
+                <b>Add Macro</b>. Trigger: <b>Device Events → Notification →
+                Notification Received</b>, select your bank app, Text
+                <i>Contains</i> <code>EUR</code>.
+            </li>
+            <li>
+                Action: <b>Connectivity → HTTP Request</b>, method
+                <b>POST</b>, the URL above, header <code>Authorization</code> =
+                your key.
+            </li>
+            <li>
+                Body, content type <code>application/json</code>:
+                <div class="input-group input-group-sm my-1">
+                    <input id="androidBody" class="form-control font-monospace" value='{"text": "{not_title} {not_text}", "source": "notification"}' readonly />
+                    <button class="btn btn-outline-secondary" type="button" data-copy="androidBody">Copy</button>
+                </div>
+            </li>
+            <li>Name the macro "GosGos" and save it.</li>
+        </ol>
+        <p class="small text-muted">
+            The next card payment with a bank notification shows up under
+            Čakajoči. Check the amount, some banks also show the account
+            balance in the notification.
+        </p>
+    </details>
+
+    <details>
+        <summary class="fw-semibold py-1">If it does not work</summary>
+        <ul class="mt-3 small">
+            <li><code>Napačen ključ.</code> The key is wrong. It needs <code>Bearer </code> with a space before <code>gg_</code>. Create a new key if it is lost.</li>
+            <li><code>Znesek manjka.</code> The <code>amount</code> field is missing or misspelled.</li>
+            <li><code>Napačni podatki.</code> The request body is not JSON.</li>
+            <li>An HTML page or an address error: the URL is wrong.</li>
+        </ul>
     </details>
 </section>
 
@@ -161,7 +250,7 @@
             } catch (e) {
                 document.execCommand('copy')
             }
-            button.textContent = 'Kopirano ✓'
+            button.textContent = 'Copied ✓'
         })
     }
 </script>
