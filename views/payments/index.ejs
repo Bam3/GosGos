@@ -1,0 +1,77 @@
+<% layout('layouts/boilerplate')%>
+<%
+const sourceLabels = { applepay: 'Apple Pay', sms: 'SMS', notification: 'Obvestilo' }
+const categoryLabel = (category) => category.parentCategory
+    ? `${category.parentCategory.name} - ${category.name}`
+    : category.name
+%>
+<div class="row">
+    <div class="col-md-8 col-lg-6">
+        <h1>Čakajoči stroški</h1>
+        <p class="text-muted">
+            Plačila, ki jih je poslal telefon. Preveri jih in potrdi, šele
+            potem so med stroški.
+        </p>
+
+        <% if (payments.length === 0) { %>
+        <p class="lead">Ni čakajočih plačil.</p>
+        <p class="small text-muted">
+            Telefon povežeš v <a href="/settings#phone">nastavitvah</a>.
+        </p>
+        <% } %>
+
+        <% for (const payment of payments) { %>
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div>
+                        <h5 class="card-title mb-1">
+                            <%= payment.merchant || 'Neznana trgovina' %>
+                        </h5>
+                        <div class="small text-muted">
+                            <%= payment.payDate.toLocaleDateString('sl-SI') %>
+                            · <%= payment.user?.username %>
+                            <% if (payment.source) { %>
+                            · <%= sourceLabels[payment.source] || payment.source %>
+                            <% } %>
+                        </div>
+                    </div>
+                    <span class="fs-4 fw-bold text-nowrap">€<%= payment.cost.toFixed(2) %></span>
+                </div>
+
+                <% if (payment.text && payment.text !== payment.merchant) { %>
+                <p class="small text-muted mt-2 mb-0 text-break"><%= payment.text %></p>
+                <% } %>
+
+                <p class="mt-2 mb-3">
+                    Kategorija:
+                    <% if (payment.category) { %>
+                    <span class="badge bg-secondary"><%= categoryLabel(payment.category) %></span>
+                    <% } else { %>
+                    <span class="text-muted">ni predloga</span>
+                    <% } %>
+                </p>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <% if (payment.category) { %>
+                    <form action="/payments/<%= payment._id %>/confirm" method="POST">
+                        <button class="btn btn-success">✓ Potrdi</button>
+                    </form>
+                    <% } %>
+                    <a class="btn btn-outline-primary" href="/expenses/new?pending=<%= payment._id %>"
+                        >Uredi</a
+                    >
+                    <form
+                        action="/payments/<%= payment._id %>?_method=DELETE"
+                        method="POST"
+                        class="ms-auto"
+                        onsubmit="return confirm('Zavržem to plačilo?')"
+                    >
+                        <button class="btn btn-outline-danger">Zavrzi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</div>

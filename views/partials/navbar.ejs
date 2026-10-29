@@ -29,6 +29,14 @@
                 <a class="nav-link" href="/report">Poročilo</a>
                 <a class="nav-link" href="/categories">Kategorije</a>
                 <a class="nav-link" href="/debits">Trajniki</a>
+                <% if (currentUser) { %>
+                <a class="nav-link" href="/payments"
+                    >Čakajoči
+                    <% if (typeof pendingCount !== 'undefined' && pendingCount) { %>
+                    <span class="badge rounded-pill bg-warning text-dark"><%= pendingCount %></span>
+                    <% } %></a
+                >
+                <% } %>
                 <li class="nav-item dropdown">
                     <a
                         class="nav-link dropdown-toggle"

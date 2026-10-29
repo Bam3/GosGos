@@ -13,7 +13,15 @@
             id="addNewExpense"
             novalidate
         >
-            <% if (mode === 'create') { %>
+            <% const prefill = mode === 'create' && typeof pending !== 'undefined' ? pending : null %>
+            <% if (prefill) { %>
+            <input type="hidden" name="pendingPayment" value="<%= prefill._id %>" />
+            <div class="alert alert-info small">
+                Plačilo s telefona<%= prefill.card ? ` (${prefill.card})` : '' %>.
+                Preveri podatke in klikni Dodaj.
+            </div>
+            <% } %>
+            <% if (mode === 'create' && !prefill) { %>
             <div class="mb-3">
                 <label class="btn btn-outline-primary w-100" for="receiptPhoto">
                     📷 Skeniraj račun
@@ -43,7 +51,7 @@
                         <% if (category.active) { %>                        
                             <option
                                 value="<%= category._id %>"
-                                <% if (expense?.category._id.equals(category._id)) { %>
+                                <% if (expense?.category._id.equals(category._id) || prefill?.category?.equals(category._id)) { %>
                                     selected
                                 <% } %>
                             >
@@ -54,7 +62,7 @@
                                     <option
                                         id="Option"
                                         value="<%=subCategory._id%>"
-                                        <% if (expense?.category._id.equals(subCategory._id)) { %>
+                                        <% if (expense?.category._id.equals(subCategory._id) || prefill?.category?.equals(subCategory._id)) { %>
                                             selected
                                         <% } %>
                                     >
@@ -92,6 +100,8 @@
                         aria-label="Amount"
                         <% if (mode === 'edit') { %>
                             value="<%= expense.cost %>"
+                        <% } else if (prefill) { %>
+                            value="<%= prefill.cost.toFixed(2) %>"
                         <% } %>
                         required
                     />
@@ -108,7 +118,7 @@
                         name="expense[description]"
                         type="text"
                         class="form-control"
-                    ><%= mode === 'edit' ? expense.description : ''%></textarea>
+                    ><%= mode === 'edit' ? expense.description : (prefill?.merchant || prefill?.text || '') %></textarea>
                 </div>
             </div>
 
@@ -124,6 +134,8 @@
                         required
                         <% if (mode === 'edit') { %>
                             value="<%=expense.payDate.toISOString().substring(0, 10)%>"
+                        <% } else if (prefill) { %>
+                            value="<%=prefill.payDate.toISOString().substring(0, 10)%>"
                         <% } else { %>
                             value="<%=new Date().toJSON().slice(0, 10)%>"
                         <% } %>
@@ -163,7 +175,8 @@
                                 name="expense[payers]"
                                 autocomplete="off"
                                 <%
-                                    const isCurrentUser = mode === 'create' && currentUser.equals(user)
+                                    const isCurrentUser = mode === 'create' &&
+                                        (prefill ? prefill.user.equals(user._id) : currentUser.equals(user))
                                     const isExpensePayer =
                                         mode === 'edit' &&
                                         expense?.payers.map(payer => payer._id.toString()).includes(user._id.toString())
@@ -204,6 +217,6 @@
     </div>
 </div>
 <script src="/javascripts/popularCategories.js"></script>
-<% if (mode === 'create') { %>
+<% if (mode === 'create' && !prefill) { %>
 <script src="/javascripts/scanReceipt.js"></script>
 <% } %>

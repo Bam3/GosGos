@@ -31,6 +31,18 @@ const {
 
 const { scanReceipt } = require('./controllers/receipt')
 
+const {
+    createApiKey,
+    deleteApiKey,
+    findUserByApiKey,
+    receivePayment,
+    countPendingPayments,
+    getPendingPayments,
+    getPendingPayment,
+    deletePendingPayment,
+    confirmPendingPayment,
+} = require('./controllers/payments')
+
 const { filterByCategoryAndDate } = require('./controllers/filters')
 
 const {
@@ -125,6 +137,27 @@ const sessionConfig = {
     },
 }
 
+// Payments sent from the phone (iPhone Shortcuts, Android MacroDroid).
+// Authenticated with the user's personal key, before the session
+// middleware so these calls do not create sessions
+app.post('/api/payments', express.json({ limit: '16kb' }), async (req, res) => {
+    try {
+        const user = await findUserByApiKey(req)
+        if (!user) {
+            return res.status(401).json({ error: 'Napačen ključ.' })
+        }
+        const result = await receivePayment(user, req.body || {})
+        res.status(result.error ? 400 : 200).json(result)
+    } catch (e) {
+        console.log('Receiving payment failed', e)
+        res.status(500).json({ error: 'Plačila ni bilo mogoče shraniti.' })
+    }
+})
+// Broken JSON from the phone gets a JSON answer, not the error page
+app.use('/api', (err, req, res, next) => {
+    res.status(err.status || 400).json({ error: 'Napačni podatki.' })
+})
+
 app.use(session(sessionConfig))
 
 //middle ware
@@ -153,12 +186,18 @@ passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
 //local storage for storing things you need in templates...
-app.use((req, res, next) => {
-    res.locals.currentUser = req.user
-    res.locals.success = req.flash('success')
-    res.locals.error = req.flash('error')
-    next()
-})
+app.use(
+    catchAsync(async (req, res, next) => {
+        res.locals.currentUser = req.user
+        res.locals.success = req.flash('success')
+        res.locals.error = req.flash('error')
+        res.locals.pendingCount =
+            req.user && req.session.household
+                ? await countPendingPayments(req)
+                : 0
+        next()
+    }),
+)
 
 //first connection
 app.get('/', isLoggedIn, async (req, res) => {
@@ -176,6 +215,10 @@ app.get(
         )
         const popularCategories = await getPopularCategories(req)
         const currentHousehold = (await getLoggedinUser(req)).household
+        // Opened from a payment sent by the phone: fill in its values
+        const pending = req.query.pending
+            ? await getPendingPayment(req, req.query.pending)
+            : null
 
         res.render('expenses/create-edit', {
             users,
@@ -186,6 +229,7 @@ app.get(
             mode: 'create',
             popularCategories: popularCategories,
             currentHousehold,
+            pending,
         })
     }),
 )
@@ -340,6 +384,9 @@ app.post(
             res.redirect('/expenses/new')
             next()
         } else {
+            if (req.body.pendingPayment) {
+                await deletePendingPayment(req, req.body.pendingPayment)
+            }
             req.flash(newExpenseMessage.type, newExpenseMessage.message)
             res.redirect(`/expenses/${newExpenseMessage.newExpense._id}`)
         }
@@ -658,7 +705,16 @@ app.get(
     catchAsync(async (req, res) => {
         const user = await getLoggedinUser(req)
         const household = user.household
-        res.render('users/settings', { user, household })
+        // A new key is shown only once, right after it is created
+        const newApiKey = req.session.newApiKey
+        delete req.session.newApiKey
+        const protocol = req.get('x-forwarded-proto') || req.protocol
+        res.render('users/settings', {
+            user,
+            household,
+            newApiKey,
+            paymentsUrl: `${protocol}://${req.get('host')}/api/payments`,
+        })
     }),
 )
 app.post(
@@ -668,6 +724,61 @@ app.post(
         await updateSettings(req)
         req.flash('success', 'Nastavitve so bile uspešno shranjene.')
         res.redirect(`/settings`)
+    }),
+)
+
+app.post(
+    '/settings/api-key',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        req.session.newApiKey = await createApiKey(req)
+        res.redirect('/settings#phone')
+    }),
+)
+app.delete(
+    '/settings/api-key',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        await deleteApiKey(req)
+        req.flash(
+            'success',
+            'Ključ je izbrisan, telefon ne more več pošiljati plačil.',
+        )
+        res.redirect('/settings#phone')
+    }),
+)
+
+app.get(
+    '/payments',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const payments = await getPendingPayments(req)
+        res.render('payments/index', { payments })
+    }),
+)
+app.post(
+    '/payments/:id/confirm',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const expense = await confirmPendingPayment(req, req.params.id)
+        if (!expense) {
+            req.flash('error', 'Iskanega plačila ni moč najti!')
+        } else {
+            req.flash(
+                'success',
+                `Strošek €${expense.cost.toFixed(2)} je shranjen.`,
+            )
+        }
+        res.redirect('/payments')
+    }),
+)
+app.delete(
+    '/payments/:id',
+    isLoggedIn,
+    catchAsync(async (req, res) => {
+        const payment = await deletePendingPayment(req, req.params.id)
+        if (payment) req.flash('success', 'Plačilo je zavrženo.')
+        res.redirect('/payments')
     }),
 )
 
