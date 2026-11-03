@@ -109,26 +109,29 @@ module.exports.receivePayment = async (user, body) => {
     }
 }
 
+// Each person sees and confirms only the payments their own phone sent
+const ownPayments = (req) => ({
+    household: req.session.household,
+    user: req.session.usersID,
+})
+
 module.exports.countPendingPayments = (req) =>
-    PendingPayment.countDocuments({ household: req.session.household })
+    PendingPayment.countDocuments(ownPayments(req))
 
 module.exports.getPendingPayments = (req) =>
-    PendingPayment.find({ household: req.session.household })
+    PendingPayment.find(ownPayments(req))
         .sort({ payDate: -1 })
         .populate('user')
         .populate({ path: 'category', populate: { path: 'parentCategory' } })
 
 module.exports.getPendingPayment = (req, id) => {
     if (!Types.ObjectId.isValid(id)) return null
-    return PendingPayment.findOne({ _id: id, household: req.session.household })
+    return PendingPayment.findOne({ _id: id, ...ownPayments(req) })
 }
 
 module.exports.deletePendingPayment = (req, id) => {
     if (!Types.ObjectId.isValid(id)) return null
-    return PendingPayment.findOneAndDelete({
-        _id: id,
-        household: req.session.household,
-    })
+    return PendingPayment.findOneAndDelete({ _id: id, ...ownPayments(req) })
 }
 
 // Saves a pending payment as an expense with the guessed category
