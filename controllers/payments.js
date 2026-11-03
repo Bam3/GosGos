@@ -68,7 +68,16 @@ module.exports.receivePayment = async (user, body) => {
     let cost = parseAmount(body.amount)
     if (!cost && text) cost = findTotal(text)
     cost = Math.round(Math.abs(cost || 0) * 100) / 100
-    if (!cost) return { error: 'Znesek manjka.' }
+    if (!cost) {
+        // Send back what arrived, so the phone's log shows why no amount
+        // was found (e.g. an empty notification)
+        const received = [body.amount, body.merchant, body.text]
+            .filter((value) => value !== undefined && value !== null)
+            .map(String)
+            .join(' | ')
+        console.log('Payment without amount from', user.username, received)
+        return { error: 'Znesek manjka.', received: received || '(prazno)' }
+    }
 
     let payDate = body.date ? new Date(body.date) : new Date()
     if (isNaN(payDate)) payDate = new Date()
