@@ -216,9 +216,15 @@
             <li>
                 Body, content type <code>application/json</code>:
                 <div class="input-group input-group-sm my-1">
-                    <input id="androidBody" class="form-control font-monospace" value='{"text": "{not_title} {not_text}", "source": "notification"}' readonly />
+                    <input id="androidBody" class="form-control font-monospace" value='{"text": "{not_title} {notification}", "source": "notification"}' readonly />
                     <button class="btn btn-outline-secondary" type="button" data-copy="androidBody">Copy</button>
                 </div>
+                <span class="small text-muted">
+                    If a variable stays as plain text, delete it and insert
+                    <i>Notification title</i> and <i>Notification text</i>
+                    with the magic text button instead. Some banks have the
+                    amount only in the text, not in the title.
+                </span>
             </li>
             <li>Name the macro "GosGos" and save it.</li>
         </ol>
