@@ -6,6 +6,7 @@ const Expense = require('../models/expense')
 const PendingPayment = require('../models/pendingPayment')
 const { guessCategory } = require('./receipt')
 const { findTotal, findStore } = require('../utils/receiptParser')
+const { toPayDate } = require('../public/javascripts/pureFunctions')
 
 // The same payment can come twice (Apple Pay and SMS), within this time
 // it is saved only once
@@ -81,6 +82,7 @@ module.exports.receivePayment = async (user, body) => {
 
     let payDate = body.date ? new Date(body.date) : new Date()
     if (isNaN(payDate)) payDate = new Date()
+    payDate = toPayDate(payDate)
     const source = cleanText(body.source, 30)
 
     // Apple Pay and the bank SMS name the shop differently, so only the
@@ -151,7 +153,7 @@ module.exports.confirmPendingPayment = async (req, id) => {
     const expense = await Expense.create({
         cost: payment.cost,
         payers: [payment.user],
-        payDate: payment.payDate,
+        payDate: toPayDate(payment.payDate),
         description: payment.merchant || payment.text,
         category: payment.category,
         shared: household.defaultToSharedExpense,
