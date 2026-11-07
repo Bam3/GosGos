@@ -11,7 +11,33 @@ const { toPayDate } = require('../public/javascripts/pureFunctions')
 // The same payment can come twice (Apple Pay and SMS), within this time
 // it is saved only once
 const DUPLICATE_WINDOW = 15 * 60 * 1000
+// Android often posts a notification and updates it right away, so the
+// phone sends it twice. The same amount from the same source within this
+// time is one payment
+const REPEAT_WINDOW = 60 * 1000
 const MAX_TEXT_LENGTH = 1000
+
+// Recently received payments by user, amount and source. Kept in memory,
+// because the repeated requests arrive milliseconds apart, before the
+// first one is saved in the database
+const recentPayments = new Map()
+
+const isRepeated = (key) => {
+    const now = Date.now()
+    for (const [oldKey, time] of recentPayments) {
+        if (now - time > REPEAT_WINDOW) recentPayments.delete(oldKey)
+    }
+    if (recentPayments.has(key)) return true
+    recentPayments.set(key, now)
+    return false
+}
+
+// The fields the phone sent, for the logs: amount="" text="N26 ..."
+const describeBody = (body) =>
+    ['amount', 'merchant', 'text', 'card', 'source']
+        .filter((field) => body[field] !== undefined && body[field] !== null)
+        .map((field) => `${field}=${JSON.stringify(String(body[field]))}`)
+        .join(' ')
 
 const hashApiKey = (key) =>
     crypto.createHash('sha256').update(key).digest('hex')
@@ -69,14 +95,11 @@ module.exports.receivePayment = async (user, body) => {
     let cost = parseAmount(body.amount)
     if (!cost && text) cost = findTotal(text)
     cost = Math.round(Math.abs(cost || 0) * 100) / 100
+    const received = describeBody(body)
     if (!cost) {
         // Send back what arrived, so the phone's log shows why no amount
         // was found (e.g. an empty notification)
-        const received = [body.amount, body.merchant, body.text]
-            .filter((value) => value !== undefined && value !== null)
-            .map(String)
-            .join(' | ')
-        console.log('Payment without amount from', user.username, received)
+        console.log(`Payment from ${user.username}: no amount, ${received}`)
         return { error: 'Znesek manjka.', received: received || '(prazno)' }
     }
 
@@ -84,6 +107,11 @@ module.exports.receivePayment = async (user, body) => {
     if (isNaN(payDate)) payDate = new Date()
     payDate = toPayDate(payDate)
     const source = cleanText(body.source, 30)
+
+    if (isRepeated(`${user._id}:${cost}:${source}`)) {
+        console.log(`Payment from ${user.username}: repeated, ${received}`)
+        return { duplicate: true, message: 'Plačilo je že shranjeno.' }
+    }
 
     // Apple Pay and the bank SMS name the shop differently, so only the
     // amount is compared. The same amount twice from one source is most
@@ -95,6 +123,7 @@ module.exports.receivePayment = async (user, body) => {
         inputDate: { $gte: new Date(Date.now() - DUPLICATE_WINDOW) },
     })
     if (duplicate) {
+        console.log(`Payment from ${user.username}: duplicate, ${received}`)
         return { duplicate: true, message: 'Plačilo je že shranjeno.' }
     }
 
@@ -114,6 +143,9 @@ module.exports.receivePayment = async (user, body) => {
         text,
         category: category?._id,
     })
+    console.log(
+        `Payment from ${user.username}: saved €${cost.toFixed(2)}, ${received}`,
+    )
     return {
         id: payment._id,
         message: `GosGos: €${cost.toFixed(2)}${merchant ? ` ${merchant}` : ''}`,
