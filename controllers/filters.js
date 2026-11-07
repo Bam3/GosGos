@@ -1,5 +1,6 @@
 const Expense = require('../models/expense')
 const Category = require('../models/category')
+const { getDayAfter } = require('../public/javascripts/pureFunctions')
 const { sumBy } = require('lodash')
 const mongoose = require('mongoose')
 const {
@@ -89,7 +90,7 @@ module.exports.filterByCategoryAndDate = async (
         filterByDate = {
             payDate: {
                 $gte: new Date(dateFrom),
-                $lte: new Date(dateTo),
+                $lt: getDayAfter(dateTo),
             },
         }
         matchFilter = {

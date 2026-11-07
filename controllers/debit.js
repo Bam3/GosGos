@@ -3,6 +3,7 @@ var CronJobManager = require('cron-job-manager')
 const User = require('../models/user')
 const Debit = require('../models/debit')
 const Expense = require('../models/expense')
+const { toPayDate } = require('../public/javascripts/pureFunctions')
 //  ┌────────────── second (0 - 59) (optional)
 //  │ ┌──────────── minute (0 - 59)
 //  │ │ ┌────────── hour (0 - 23)
@@ -41,7 +42,7 @@ async function createCronJobs(debits) {
                 const newExpense = new Expense({
                     cost: debit.cost,
                     payers: [debit.debitOwner.id],
-                    payDate: Date.now(),
+                    payDate: toPayDate(),
                     description: debit.description,
                     category: debit.category.id,
                     shared: Boolean(debit.shared),

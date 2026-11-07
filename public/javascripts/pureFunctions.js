@@ -123,3 +123,21 @@ module.exports.getNextMonthStartEndDate = function (
         to: `${nextYear}-${nextMonth}-${String(lastDay).padStart(2, '0')}`,
     }
 }
+
+// Day of a moment in Slovenia, stored like dates from the expense form:
+// midnight UTC, without time
+module.exports.toPayDate = function (date = new Date()) {
+    return new Date(
+        new Date(date).toLocaleDateString('en-CA', {
+            timeZone: 'Europe/Ljubljana',
+        }),
+    )
+}
+
+// End of a date range: before the next day, so expenses saved with a time
+// on the last day are included too
+module.exports.getDayAfter = function (date) {
+    const dayAfter = new Date(date)
+    dayAfter.setUTCDate(dayAfter.getUTCDate() + 1)
+    return dayAfter
+}

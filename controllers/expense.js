@@ -8,6 +8,7 @@ const {
     groupExpensesByCategory,
     generateCategoryLabel,
     getLastMonthStartEndDate,
+    getDayAfter,
 } = require('../public/javascripts/pureFunctions')
 
 module.exports.getAllCategoriesAndUsers = async (req, res) => {
@@ -76,7 +77,7 @@ module.exports.getExpensesForFilter = async (req, res, filter) => {
         household: req.session.household,
         payDate: {
             $gte: new Date(filter.from),
-            $lte: new Date(filter.to),
+            $lt: getDayAfter(filter.to),
         },
         shared: filter.share,
     }
